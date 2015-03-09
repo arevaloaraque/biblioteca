@@ -1,0 +1,140 @@
+/*
+ * Base structure
+ *
+ *
+ * Global add-ons
+ */
+
+.sub-header {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+/*
+ * Top navigation
+ * Hide default border to remove 1px line.
+ */
+.navbar-fixed-top {
+  border: 0;
+}
+
+/*
+ * Sidebar
+ */
+
+@media (min-width: 768px) {
+  .navbar {
+    background-color: #222;
+  }
+}
+
+.navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:hover, .navbar-default .navbar-nav>.active>a:focus {
+  color: #fff;
+  background-color: #428bca;
+}
+
+.navbar-default{
+  color: #fff;
+  background-color: #222;
+}
+
+.navbar-default .navbar-nav>li>a:hover {
+  color: #fff;
+}
+
+
+/*
+ * Main content
+ */
+
+.main {
+  padding: 20px;
+}
+@media (min-width: 768px) {
+  .main {
+    padding-right: 40px;
+    padding-left: 40px;
+  }
+}
+.main .page-header {
+  margin-top: 0;
+}
+
+
+/*
+ * Placeholder dashboard ideas
+ */
+
+.placeholders {
+  margin-bottom: 30px;
+  text-align: center;
+}
+.placeholders h4 {
+  margin-bottom: 0;
+}
+.placeholder {
+  margin-bottom: 20px;
+}
+.placeholder img {
+  display: inline-block;
+  border-radius: 50%;
+}
+ 
+
+/****
+* estilos sub-nav
+*/
+.sidebar-nav .navbar-inverse .sub-nav {
+background: #2b2b2b;
+}
+.sidebar-nav .sub-nav .nav-stacked{
+z-index: 1050;
+margin-bottom: 0;
+background-color: #f2f2f2;
+background: #3b3b3b;
+background-image: -moz-linear-gradient(left,#fff,#f2f2f2);
+background-image: -webkit-gradient(linear,0 0,100% 0,from(#fff),to(#f2f2f2));
+background-image: -webkit-linear-gradient(left,#fff,#f2f2f2);
+background-image: -o-linear-gradient(left,#fff,#f2f2f2);
+background-image: linear-gradient(to right,#fff,#f2f2f2);
+background-repeat: repeat-x;
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff',endColorstr='#fff2f2f2',GradientType=1);
+}
+.sidebar-nav .nav {
+margin-bottom: 0;
+}
+ul ul, ul ol, ol ol, ol ul {
+margin-bottom: 0;
+}
+ul, ol {
+padding: 0;
+margin: 0 0 10px 0;
+}
+.nav-stacked{
+  background: #3b3b3b;
+}
+.current {
+background: #555 url(../img/sidebar_active.png) no-repeat 100%;
+}
+
+  /* make sidebar nav vertical */ 
+@media (min-width: 768px) {
+  .sidebar-nav .navbar .navbar-collapse {
+    padding: 0;
+    max-height: none;
+  }
+  .sidebar-nav .navbar ul {
+    float: none;
+  }
+  .sidebar-nav .navbar ul:not {
+    display: block;
+  }
+  .sidebar-nav .navbar li {
+    float: none;
+    display: block;
+  }
+  .sidebar-nav .navbar li a {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+}

@@ -1,0 +1,17 @@
+.div_cust {
+	background-color: 	#b70101;
+	color:				#fff;
+}
+
+.div_cust a {
+	color:				#fff;
+}
+
+#menu-item {
+	font-weight: 		bold;
+}
+
+#menu-item li:hover,#menu-item li a:hover {
+	background-color: 	#3f3737;
+	color:				#fff;
+}
