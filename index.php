@@ -1,11 +1,11 @@
-
+<?php session_start(); ?>
 <!doctype html>
 <html lang="es">
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
+  <link rel="shortcut icon" href="images/favicon.png" />
   <title>..:: Inicio - BibloWeb v1.0 ::..&nbsp;&nbsp;&nbsp;</title>
   <link rel="stylesheet" type="text/css" href="librerias/bootstrap/css/bootstrap.min.css" />
   <link rel="stylesheet" type="text/css" href="librerias/bootstrap/css/dashboard.css" />
@@ -74,7 +74,15 @@
           <div class="navbar-collapse collapse sidebar-navbar-collapse">
             <ul class="nav navbar-nav" id="menu-item">
               <li id="liHome"><a href="index.php"><i class="glyphicon glyphicon-home"></i>&nbsp;&nbsp;Inicio</a></li>
-              <li><a href="#"><i class="glyphicon glyphicon-off"></i>&nbsp;&nbsp;Cerrar Sesión</a></li>
+              <li id="liRecursos">
+                <a data-toggle="collapse" data-parent="#accordion" href="#ulRecursos"><i class="glyphicon glyphicon-book"></i>&nbsp;&nbsp;Recursos <b class="caret"></b></a>
+                <ul id="ulRecursos" class="ul-collapse nav nav-stacked sub-nav collapse in">
+                  <li><a href="#"><i class="glyphicon glyphicon-ok"></i>&nbsp;&nbsp;Libros</a></li>
+                  <li><a href="#"><i class="glyphicon glyphicon-ok"></i>&nbsp;&nbsp;Tesis</abbr></a></li>
+                  <li><a href="#"><i class="glyphicon glyphicon-ok"></i>&nbsp;&nbsp;Material</abbr></a></li>
+                </ul>
+              </li>           
+              <li><a href="index.php?page=login&exit"><i class="glyphicon glyphicon-off"></i>&nbsp;&nbsp;Cerrar Sesión</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -83,18 +91,21 @@
     <?php endif; ?>
     <?php 
       if (isset($_SESSION['session'])):
-        if (isset($_GET['page'])):
+        if (isset($_GET['page']) && !isset($_GET['exit']) && !stristr($_GET['page'], 'login')):
           if (file_exists('modulos/'.$_GET['page'].'.php')):
-            echo 'existe';
+            include_once('modulos/'.$_GET['page'].'.php');
           else:
             echo 'no existe';
           endif;
         else:
-          echo 'no get';
+          if (isset($_GET['page']) && isset($_GET['exit']) && stristr($_GET['page'], 'login')):
+            include_once('modulos/login.php');
+          else:
+            include_once('modulos/inicio.php');
+          endif;
         endif;
       else:
-        $content_page = file_get_contents('modulos/login.php');
-        echo $content_page;
+        include_once('modulos/login.php');
       endif;
     ?>
   </div>

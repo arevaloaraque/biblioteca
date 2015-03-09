@@ -20,3 +20,19 @@ function titlemove() {
 if (document.title) 
 	titlemove()
 /* FIN Movimiento de la barra de titulo */
+
+
+/* Hora actual */
+var diaSem = {1:'Lunes',2:'Martes',3:'Miercoles',4:'Jueves',5:'Viernes',6:'Sabado',7:'Domingo'};
+var mes    = {0:'Enero',1:'Febrero',2:'Marzo',3:'Abril',4:'Mayo',5:'Junio',6:'Julio',7:'Agosto',8:'Septiembre',9:'Octubre',10:'Noviembre',11:'Diciembre'};
+function horaActual() {
+	var date = new Date();
+	var time = diaSem[date.getDay()] + ' ' + date.getDate() + ' de ' + mes[date.getMonth()] + ' del ' + date.getFullYear();
+	return time;
+}
+/* FIN Hora actual */
+
+
+/* Menu cerrado por defecto */
+$('#accordion').collapse("hide");
+/* FIN Menu cerrado por defecto */
