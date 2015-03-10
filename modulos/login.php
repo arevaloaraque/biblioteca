@@ -35,8 +35,9 @@
     endif;
 
     if(isset($_GET['exit']) && isset($_SESSION['session'])):
+      session_unset();
       session_destroy();
-      header('location: index.php?page=login');
+      echo '<script>location.href = "index.php?page=login";</script>';
     endif;
 ?>
 <div class="container-fluid">

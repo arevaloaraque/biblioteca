@@ -34,5 +34,5 @@ function horaActual() {
 
 
 /* Menu cerrado por defecto */
-$('#accordion').collapse("hide");
+$('#ulRecursos .in').collapse('hide');
 /* FIN Menu cerrado por defecto */

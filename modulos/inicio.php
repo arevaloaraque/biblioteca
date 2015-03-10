@@ -5,12 +5,12 @@
     </div>
     <div class="panel-body">
       <div class="col-md-3">
-        <img src="images/user-icon.png" class="img-responsive img-circle" style="border:1px solid #444;">
+        <img src="images/user-icon.png" data-toggle="collapse" class="img-responsive img-circle" style="border:1px solid #444;">
       </div>
       <div class="col-md-8">
         <ul class="list-group">
-          <li class="list-group-item text-right"><b><i>
-            <script type="text/javascript">document.write(horaActual());</script></i>&nbsp;<img src="images/calendar.png" /></b></li>
+          <li class="list-group-item text-right"><b>
+            <script type="text/javascript">document.write(horaActual());</script>&nbsp;<img src="images/calendar.png" /></b></li>
           <li class="list-group-item">
             <strong><i class="glyphicon glyphicon-user"></i>&nbsp;Operador:&nbsp;&nbsp;</strong><?php echo $_SESSION['nombre'].' '.$_SESSION['apellido']; ?></li>
           <li class="list-group-item">
