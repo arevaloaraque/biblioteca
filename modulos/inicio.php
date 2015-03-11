@@ -14,8 +14,6 @@
           <li class="list-group-item">
             <strong><i class="glyphicon glyphicon-user"></i>&nbsp;Operador:&nbsp;&nbsp;</strong><?php echo $_SESSION['nombre'].' '.$_SESSION['apellido']; ?></li>
           <li class="list-group-item">
-            <strong><i class="glyphicon glyphicon-credit-card"></i>&nbsp;Cedula:&nbsp;&nbsp;</strong><?php echo $_SESSION['cedula']; ?></li>
-          <li class="list-group-item">
             <strong><i class="glyphicon glyphicon-star"></i>&nbsp;Privilegio:&nbsp;&nbsp;</strong><?php echo $_SESSION['privilegio']; ?></li>
           <li class="list-group-item text-right">
             <button class="btn btn-primary">Cambiar contrase&ntilde;a</button></li>

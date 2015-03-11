@@ -16,7 +16,7 @@
 	color:				#fff;
 }
 
-#menu-item li:active,#menu-item li a:active {
+#menu-item li:focus,#menu-item li a:focus {
 	background-color: 	#3f3737;
 	color:				#fff;
 }
@@ -24,4 +24,9 @@
 button.navbar-toggle {
 	background-color: 	#3f3737;
 	color: 				#fff;
+}
+
+.active {
+	background-color: 	#3f3737;
+	color:				#fff;
 }

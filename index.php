@@ -74,7 +74,7 @@
           <div class="navbar-collapse collapse sidebar-navbar-collapse">
             <ul class="nav navbar-nav" id="menu-item">
               <li id="liHome"><a href="index.php"><i class="glyphicon glyphicon-home"></i>&nbsp;&nbsp;Inicio</a></li>
-              <li id="liPretamos"><a href="#"><i class="glyphicon glyphicon-folder-open"></i>&nbsp;&nbsp;Prestamo(s)</a></li>
+              <li id="liPrestamos"><a href="index.php?page=prestamos"><i class="glyphicon glyphicon-folder-open"></i>&nbsp;&nbsp;Prestamo(s)</a></li>
               <li id="liRecursos">
                 <a data-toggle="collapse" data-parent="#accordion" href="#ulRecursos"><i class="glyphicon glyphicon-book"></i>&nbsp;&nbsp;Recursos <b class="caret"></b></a>
                 <ul id="ulRecursos" class="ul-collapse collapse nav nav-stacked sub-nav">
@@ -83,6 +83,17 @@
                   <li><a href="#"><i class="glyphicon glyphicon-ok"></i>&nbsp;&nbsp;Material</abbr></a></li>
                 </ul>
               </li>
+              <?php if (isset($_SESSION['privilegio']) && (trim($_SESSION['privilegio']) == 'ADMINISTRADOR')):?>
+                <li id="liUsuarios">
+                  <a data-toggle="collapse" data-parent="#accordion" href="#ulUsuarios"><i class="glyphicon glyphicon-user"></i>&nbsp;&nbsp;Usuarios <b class="caret"></b></a>
+                  <ul id="ulUsuarios" class="ul-collapse collapse nav nav-stacked sub-nav">
+                    <li><a href="#"><i class="glyphicon glyphicon-star"></i>&nbsp;&nbsp;Operador(es)</a></li>
+                    <li><a href="#"><i class="glyphicon glyphicon-star-empty"></i>&nbsp;&nbsp;Usuario(s) Biblioteca</abbr></a></li>
+                  </ul>
+                </li>
+              <?php else: ?>
+                <li><a href="#"><i class="glyphicon glyphicon-user"></i>&nbsp;&nbsp;Usuario(s)</abbr></a></li>
+              <?php endif; ?>
               <li><a href="index.php?page=login&exit"><i class="glyphicon glyphicon-off"></i>&nbsp;&nbsp;Cerrar Sesión</a></li>
             </ul>
           </div><!--/.nav-collapse -->
