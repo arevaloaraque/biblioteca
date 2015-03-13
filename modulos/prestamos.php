@@ -5,7 +5,26 @@
     </div>
     <div class="panel-body">
       <div class="col-md-12">
-        
+            
+
+          <ul class="nav nav-tabs">
+            <li class="active" id="inx"><a class="text-danger" href="#tab_a" data-toggle="tab">Libros</a></li>
+            <li><a href="#tab_b" class="text-danger" data-toggle="tab">Tesis</a></li>
+            <li><a href="#tab_c" class="text-danger" data-toggle="tab">Materiales</a></li>
+          </ul>
+          <div class="tab-content">
+              <div class="tab-pane fade in active" id="tab_a">
+                  div.
+              </div>
+              <div class="tab-pane fade" id="tab_b">
+                  Tesis
+              </div>
+              <div class="tab-pane fade" id="tab_c">
+                  Materiales
+              </div>
+          </div><!-- tab content -->
+
+
       </div>
     </div>
     <div class="panel-footer text-center">
@@ -17,7 +36,7 @@
 </div>
 <script>
   $(document).ready(function() {
-    $("ul .active").removeClass('active');
+    $("menu-item .active").removeClass('active');
     $('#liPrestamos').addClass('active');
   });
 </script>
