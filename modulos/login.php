@@ -9,14 +9,12 @@
         echo '<script>alertify.error("<b>Ambos campos son obligatorios</b>")</script>';
       else:
         include_once('modulos/modelo.php');
-        $consultasbd  = new Consultasbd;
-        $idconx       = $consultasbd->conectar();
-        $user         = $consultasbd->select($idconx,$table='tbl_operador',$campos='*',$where='WHERE cedula=\''.$cedula.'\' AND password=\''.$passwd.'\'');
+        $user         = $consultasbd->select($table='tbl_operador',$campos='*',$where='WHERE cedula=\''.$cedula.'\' AND password=\''.$passwd.'\'');
         if ($consultasbd->num_rows($user)):
           $datos = $consultasbd->fetch_array($user);
 
           // consulta privilegios
-          $sql_priv = $consultasbd->select($idconx,$table='tbl_privilegios',$campos='*',$where='WHERE id_privilegio=\''.$datos['id_privilegio'].'\'');
+          $sql_priv = $consultasbd->select($table='tbl_privilegios',$campos='*',$where='WHERE id_privilegio=\''.$datos['id_privilegio'].'\'');
           $res_priv = $consultasbd->fetch_array($sql_priv);
 
           $_SESSION['id_operador']    = $datos['id_operador'];

@@ -27,3 +27,9 @@
     </div>
   </div>
 </div>
+<script>
+  $(document).ready(function() {
+    $("menu-item .active").removeClass('active');
+    $('#liHome').addClass('active');
+  });
+</script>

@@ -2,23 +2,13 @@
 	class Consultasbd {
 		
 		// metodo de conexion a base de datos
-		public function conectar($host='localhost',$user='desarrollo',$pass='aarevalo',$db='bd_biblioteca') {
+		public function __construct($host='localhost',$user='lapascua',$pass='lapascua',$db='bd_biblioteca') {
 			$this->idconx = pg_connect('host='.$host.' user='.$user.' password='.$pass.'  dbname='.$db) or die ('Error al conectar con la base de datos, ');
-			return $this->idconx;
 		}
 
-		// cerrar conexiones existentes
-		public function cerrar_conexion($idconx) {
-			if(is_resource($idconx)):
-				pg_close($idconx);
-			else:
-				pg_close();
-			endif;
-		}
-
-		public function select($idconx,$tabla,$campos="*",$where="") {
-			$sql = "SELECT ".$campos." FROM ".$tabla." ".$where;
-			$res = pg_query($idconx,$sql) or die ('Error al ejecutar la consulta'.pg_result_error());
+		public function select($tabla,$campos="*",$where="") {
+			$sql = "SELECT ".$campos." FROM ".$tabla." ".(($where != '')?$where:'');
+			$res = pg_query($this->idconx,$sql) or die ('Error al ejecutar la consulta'.pg_result_error());
 			return $res;
 		}
 
@@ -30,5 +20,17 @@
 			return pg_num_rows($res_sql);
 		}
 
+		// cerrar conexiones existentes
+		public function __destruct() {
+	       if(is_resource($this->idconx)):
+				pg_close($this->idconx);
+			else:
+				pg_close();
+			endif;
+	    }
+
 	}
+
+	// instancia para uso
+	$consultasbd  = new Consultasbd;
 ?>
