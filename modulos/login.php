@@ -1,4 +1,5 @@
 <?php 
+    $title = "Login";
     // si envio datos via POST/Form
     if (isset($_POST['txt_cedula'])):
       
@@ -83,6 +84,9 @@
 </div>
 <script type="text/javascript">
   $(document).on('ready',function(){
+      // title page
+      $('title').html('..:: Login de Usuario ::..&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
+      valuesTitle();
       // permitir solo numeros en campo de cedula
       $('#txt_cedula').keypress(function validar2(evt){
         evt = (evt) ? evt : event

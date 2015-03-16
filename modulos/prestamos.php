@@ -18,7 +18,7 @@
                   <br/>
                   <form class="form-inline" id="form-l">
                     <div class="form-group">
-                      <input type="hidden" name="tipo_prestamo" value="libro" />
+                      <input type="hidden" name="tipo_recurso" value="libro" />
                       <input type="hidden" name="function" value="consultar_recurso" />
                       <input type="text" class="form-control" size="10" id="txt_codigol" name="txt_codigol" placeholder="C&oacute;digo Libro" />
                     </div>
@@ -35,7 +35,7 @@
                   <br/>
                   <form class="form-inline" id="form-t">
                     <div class="form-group">
-                      <input type="hidden" name="tipo_prestamo" value="tesis" />
+                      <input type="hidden" name="tipo_recurso" value="tesis" />
                       <input type="hidden" name="function" value="consultar_recurso" />
                       <input type="text" class="form-control" size="10" id="txt_codigot" name="txt_codigot" placeholder="C&oacute;digo Tesis" />
                     </div>
@@ -52,7 +52,7 @@
                   <br/>
                   <form class="form-inline" id="form-m">
                     <div class="form-group">
-                      <input type="hidden" name="tipo_prestamo" value="material" />
+                      <input type="hidden" name="tipo_recurso" value="material" />
                       <input type="hidden" name="function" value="consultar_recurso" />
                       <input type="text" class="form-control" size="10" id="txt_codigom" name="txt_codigom" placeholder="C&oacute;digo Material" />
                     </div>
@@ -66,6 +66,18 @@
               </div> <!-- Materiales -->
           </div><!-- tab content -->
 
+          <p>&nbsp;</p>
+          <!-- Resultado de la busqueda -->
+          <div id="table-result">
+            <table class='table table-responsive table-bordered table-hover datatable dataTable'>
+              <thead>
+                <tr class='danger'><th class='col-lg-2'>C&oacute;digo</th><th class='col-lg-2'>Tipo</th><th class="col-lg-7">Descripci&oacute;n</th><th class="text-center col-lg-1">Acciones</th></tr>
+              </thead>
+              <tbody id='content-result'>
+                
+              </tbody>
+            </table>
+          </div>
 
       </div>
     </div>
@@ -76,6 +88,9 @@
     </div>
   </div>
 </div>
+<link rel="stylesheet" type="text/css" href="plugins/dataTables/css/datatables.css">
+<script src="plugins/dataTables/js/jquery.dataTables.js" type="text/javascript"></script>
+<script src="plugins/dataTables/js/datatables.js" type="text/javascript"></script>
 <script>
   $(document).ready(function() {
     $('#menu-item li.active').removeClass('active');
@@ -88,17 +103,45 @@
       else {
         $.ajax({
           beforeSend: function(){
-            $('#load-'+prefx).show(function(){ $(this).fadeIn('slow'); });
+            $('#load-'+prefx).fadeIn();
           },
           type:     'POST',
           url:      'modulos/response_ajax.php',
           data:     $('#form-'+prefx).serialize(),
           dataType: 'json',
           success: function (resp) {
-            
+            $('#load-'+prefx).fadeOut();
+            if (resp == 0) { 
+              alertify.error('<b>No se encontraron datos</b>');
+              $('#txt_codigo'+prefx).val(''); $('#txt_descripcion'+prefx).val(''); 
+            } else if(resp == 1){
+              alertify.error('<b>Acceso denegado</b>');
+            } else if(typeof(resp) == "object") {
+              $.each(resp,function(index,array){
+                  console.log(array);
+                  //$('#content-result').append('<tr><td>'+ array.id+'' +'</td><td></td><td></td><td></td></tr>');
+              });
+            }
           }
         });
       }
     });
+
+    // Configuracion datatable
+    $('.datatable').dataTable({
+      "sPaginationType": "bs_normal"
+    }); 
+    $('.datatable').each(function(){
+      var datatable = $(this);
+      // SEARCH - Add the placeholder for Search and Turn this into in-line form control
+      var search_input = datatable.closest('.dataTables_wrapper').find('div[id$=_filter] input');
+      search_input.attr({'placeholder':'Buscar','id':'btn_search_table'});
+      search_input.addClass('form-control input-sm');
+      // LENGTH - Inline-Form control
+      var length_sel = datatable.closest('.dataTables_wrapper').find('div[id$=_length] select');
+      length_sel.addClass('form-control input-sm');
+    });
+    $('#btn_search_table').attr('title','Filtrar resultado');
+    $('#btn_search_table').tooltip();
   });
 </script>

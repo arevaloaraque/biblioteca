@@ -3,7 +3,12 @@ var repeat = 1; //enter 0 to not repeat scrolling after 1 run, othersise, enter 
 var title  = document.title ;
 var leng   = title.length;
 var start  = 1 ;
-var meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+function valuesTitle() {
+	repeat = 1; //enter 0 to not repeat scrolling after 1 run, othersise, enter 1 
+	title  = document.title ;
+	leng   = title.length;
+	start  = 1 ;
+}
 
 function titlemove() { 
 	titl = title.substring(start, leng) + title.substring(0, start) 
@@ -23,6 +28,7 @@ if (document.title)
 
 
 /* Hora actual */
+var meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 var diaSem = {1:'Lunes',2:'Martes',3:'Miercoles',4:'Jueves',5:'Viernes',6:'Sabado',7:'Domingo'};
 var mes    = {0:'Enero',1:'Febrero',2:'Marzo',3:'Abril',4:'Mayo',5:'Junio',6:'Julio',7:'Agosto',8:'Septiembre',9:'Octubre',10:'Noviembre',11:'Diciembre'};
 function horaActual() {

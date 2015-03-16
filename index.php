@@ -84,9 +84,9 @@
               <li id="liRecursos">
                 <a data-toggle="collapse" data-parent="#accordion" href="#ulRecursos"><i class="glyphicon glyphicon-book"></i>&nbsp;&nbsp;Recursos&nbsp;<b class="caret"></b></a>
                 <ul id="ulRecursos" class="ul-collapse collapse nav nav-stacked sub-nav">
-                  <li><a href="#"><i class="glyphicon glyphicon-ok"></i>&nbsp;&nbsp;Libros</a></li>
-                  <li><a href="#"><i class="glyphicon glyphicon-ok"></i>&nbsp;&nbsp;Tesis</abbr></a></li>
-                  <li><a href="#"><i class="glyphicon glyphicon-ok"></i>&nbsp;&nbsp;Material</abbr></a></li>
+                  <li><a href="#"><i class="glyphicon glyphicon-book"></i>&nbsp;&nbsp;Libros</a></li>
+                  <li><a href="#"><i class="glyphicon glyphicon-tags"></i>&nbsp;&nbsp;Tesis</abbr></a></li>
+                  <li><a href="#"><i class="glyphicon glyphicon-floppy-disk"></i>&nbsp;&nbsp;Material</abbr></a></li>
                 </ul>
               </li>
               <?php if (isset($_SESSION['privilegio']) && (trim($_SESSION['privilegio']) == 'ADMINISTRADOR')):?>

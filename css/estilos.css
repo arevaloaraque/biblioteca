@@ -34,3 +34,8 @@ button.navbar-toggle {
 .load-l, .load-t,.load-m {
 	display: 			none;
 }
+
+/* dataTable en consulta de disponibilidad */
+#table-result {
+	display: 			none;
+}
