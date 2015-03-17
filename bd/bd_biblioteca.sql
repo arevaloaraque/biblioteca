@@ -166,8 +166,8 @@ ALTER SEQUENCE tbl_auditoria_id_auditoria_seq OWNED BY tbl_auditoria.id_auditori
 
 CREATE TABLE tbl_autor (
     id_autor integer NOT NULL,
-    nombre character(30),
-    apellido character(30)
+    nombre character varying(30),
+    apellido character varying(30)
 );
 
 
@@ -221,9 +221,9 @@ ALTER SEQUENCE tbl_autor_id_autor_seq OWNED BY tbl_autor.id_autor;
 
 CREATE TABLE tbl_autor_tesis (
     id_autor_tesis integer NOT NULL,
-    mension character(30),
-    nombre character(30),
-    apellido character(30)
+    mension character varying(30),
+    nombre character varying(30),
+    apellido character varying(30)
 );
 
 
@@ -485,7 +485,7 @@ CREATE TABLE tbl_libros (
     id_materia integer,
     edicion character varying,
     fecha_publicacion date,
-    descripcion character(60)
+    descripcion character varying(60)
 );
 
 
@@ -537,7 +537,7 @@ COMMENT ON COLUMN tbl_libros.fecha_publicacion IS 'Fecha de publicacion';
 -- Name: COLUMN tbl_libros.descripcion; Type: COMMENT; Schema: public; Owner: postgres
 --
 
-COMMENT ON COLUMN tbl_libros.descripcion IS 'DESCRIPCION DEL LIBRO';
+COMMENT ON COLUMN tbl_libros.descripcion IS 'Descripcion del Libro';
 
 
 --
@@ -567,7 +567,7 @@ ALTER SEQUENCE tbl_libros_id_libro_seq OWNED BY tbl_libros.id_libro;
 
 CREATE TABLE tbl_materia (
     id_materia integer NOT NULL,
-    nombre_materia character(30)
+    nombre_materia character varying(30)
 );
 
 
@@ -1611,6 +1611,311 @@ ALTER TABLE ONLY tbl_tesis ALTER COLUMN id_tesis SET DEFAULT nextval('tbl_tesis_
 --
 
 ALTER TABLE ONLY tbl_tipo_material ALTER COLUMN id_tipo_material SET DEFAULT nextval('tbl_tipo_material_id_tipo_material_seq'::regclass);
+
+
+--
+-- Name: id_operador_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('id_operador_seq', 2, true);
+
+
+--
+-- Data for Name: tbl_accion; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+
+
+--
+-- Name: tbl_accion_id_accion_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tbl_accion_id_accion_seq', 2, true);
+
+
+--
+-- Data for Name: tbl_auditoria; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+
+
+--
+-- Name: tbl_auditoria_id_auditoria_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tbl_auditoria_id_auditoria_seq', 1, false);
+
+
+--
+-- Data for Name: tbl_autor; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO tbl_autor VALUES (1, 'AREVALO', 'ARAQUE');
+
+
+--
+-- Name: tbl_autor_id_autor_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tbl_autor_id_autor_seq', 1, true);
+
+
+--
+-- Data for Name: tbl_autor_tesis; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO tbl_autor_tesis VALUES (1, 'PUBLICACION', 'CESAR', 'ARAQUE');
+
+
+--
+-- Name: tbl_autor_tesis_id_autor_tesis_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tbl_autor_tesis_id_autor_tesis_seq', 1, true);
+
+
+--
+-- Data for Name: tbl_castigo; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+
+
+--
+-- Name: tbl_castigo_id_castigo_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tbl_castigo_id_castigo_seq', 1, false);
+
+
+--
+-- Data for Name: tbl_denominacion; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+
+
+--
+-- Name: tbl_denominacion_id_denominacion_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tbl_denominacion_id_denominacion_seq', 1, false);
+
+
+--
+-- Data for Name: tbl_editorial; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO tbl_editorial VALUES (1, 'PROGRAMALO                    ', 'APURE                         ');
+
+
+--
+-- Name: tbl_editorial_id_editorial_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tbl_editorial_id_editorial_seq', 1, true);
+
+
+--
+-- Data for Name: tbl_falta; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+
+
+--
+-- Name: tbl_falta_id_falta_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tbl_falta_id_falta_seq', 1, false);
+
+
+--
+-- Data for Name: tbl_libros; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO tbl_libros VALUES (1, 1, 1, 1, '9na', '2013-01-01', 'Programación en Python y Django');
+INSERT INTO tbl_libros VALUES (2, 1, 1, 1, 'APUREÑA', '2015-03-17', 'MongoDB');
+
+
+--
+-- Name: tbl_libros_id_libro_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tbl_libros_id_libro_seq', 2, true);
+
+
+--
+-- Data for Name: tbl_materia; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO tbl_materia VALUES (1, 'PROGRAMACION');
+
+
+--
+-- Name: tbl_materia_id_materia_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tbl_materia_id_materia_seq', 1, true);
+
+
+--
+-- Data for Name: tbl_material; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO tbl_material VALUES (1, 1, 'AREVALO                       ');
+
+
+--
+-- Name: tbl_material_id_material_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tbl_material_id_material_seq', 1, true);
+
+
+--
+-- Data for Name: tbl_novedad_libro; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+
+
+--
+-- Name: tbl_novedad_libro_id_novedad_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tbl_novedad_libro_id_novedad_seq', 1, false);
+
+
+--
+-- Data for Name: tbl_novedad_material; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+
+
+--
+-- Name: tbl_novedad_material_id_novedad_material_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tbl_novedad_material_id_novedad_material_seq', 1, false);
+
+
+--
+-- Data for Name: tbl_novedad_tesis; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+
+
+--
+-- Name: tbl_novedad_tesis_id_novedad_tesis_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tbl_novedad_tesis_id_novedad_tesis_seq', 1, false);
+
+
+--
+-- Data for Name: tbl_operador; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO tbl_operador VALUES (1, 1, 'AREVALO                       ', 'ARAQUE                        ', 21005501, '202cb962ac59075b964b07152d234b70                  ', NULL, NULL);
+INSERT INTO tbl_operador VALUES (2, 2, 'CESAR ANTONIO                 ', 'VIZCAYA                       ', 20724884, '202cb962ac59075b964b07152d234b70                  ', '2015-03-08', '2015-03-08');
+
+
+--
+-- Data for Name: tbl_penalizacion; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+
+
+--
+-- Name: tbl_penalizacion_id_penalizacion_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tbl_penalizacion_id_penalizacion_seq', 1, false);
+
+
+--
+-- Data for Name: tbl_prestamo_libro; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+
+
+--
+-- Name: tbl_prestamo_libro_id_prestamo_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tbl_prestamo_libro_id_prestamo_seq', 1, false);
+
+
+--
+-- Data for Name: tbl_prestamo_material; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+
+
+--
+-- Name: tbl_prestamo_material_id_prestamo_material_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tbl_prestamo_material_id_prestamo_material_seq', 1, false);
+
+
+--
+-- Data for Name: tbl_prestamo_tesis; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+
+
+--
+-- Name: tbl_prestamo_tesis_id_prestamo_tesis_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tbl_prestamo_tesis_id_prestamo_tesis_seq', 1, false);
+
+
+--
+-- Data for Name: tbl_privilegios; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO tbl_privilegios VALUES (1, 'ADMINISTRADOR       ');
+INSERT INTO tbl_privilegios VALUES (2, 'BIBLIOTECARIO       ');
+
+
+--
+-- Name: tbl_privilegios_id_privilegio_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tbl_privilegios_id_privilegio_seq', 2, true);
+
+
+--
+-- Data for Name: tbl_tesis; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO tbl_tesis VALUES (1, 1, 1, 'Firmas Espectrales Agricolas  ', '2015-03-17');
+
+
+--
+-- Name: tbl_tesis_id_tesis_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tbl_tesis_id_tesis_seq', 1, true);
+
+
+--
+-- Data for Name: tbl_tipo_material; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO tbl_tipo_material VALUES (1, 'RECICLAR                      ');
+
+
+--
+-- Name: tbl_tipo_material_id_tipo_material_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tbl_tipo_material_id_tipo_material_seq', 1, true);
+
+
+--
+-- Data for Name: tbl_usuario; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
 
 
 --
