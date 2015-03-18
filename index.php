@@ -84,9 +84,9 @@
               <li id="liRecursos">
                 <a data-toggle="collapse" data-parent="#accordion" href="#ulRecursos"><i class="glyphicon glyphicon-book"></i>&nbsp;&nbsp;Recursos&nbsp;<b class="caret"></b></a>
                 <ul id="ulRecursos" class="ul-collapse collapse nav nav-stacked sub-nav">
-                  <li><a href="#"><i class="glyphicon glyphicon-book"></i>&nbsp;&nbsp;Libros</a></li>
-                  <li><a href="#"><i class="glyphicon glyphicon-tags"></i>&nbsp;&nbsp;Tesis</abbr></a></li>
-                  <li><a href="#"><i class="glyphicon glyphicon-floppy-disk"></i>&nbsp;&nbsp;Material</abbr></a></li>
+                  <li><a href="index.php?page=libros"><i class="glyphicon glyphicon-book"></i>&nbsp;&nbsp;Libros</a></li>
+                  <li><a href="index.php?page=tesis"><i class="glyphicon glyphicon-tags"></i>&nbsp;&nbsp;Tesis</abbr></a></li>
+                  <li><a href="index.php?page=materiales"><i class="glyphicon glyphicon-floppy-disk"></i>&nbsp;&nbsp;Material</abbr></a></li>
                 </ul>
               </li>
               <?php if (isset($_SESSION['privilegio']) && (trim($_SESSION['privilegio']) == 'ADMINISTRADOR')):?>
@@ -113,7 +113,7 @@
           if (file_exists('modulos/'.$_GET['page'].'.php')):
             include_once('modulos/'.$_GET['page'].'.php');
           else:
-            echo 'no existe';
+            include_once('modulos/404.php');
           endif;
         else:
           if (isset($_GET['page']) && isset($_GET['exit']) && stristr($_GET['page'], 'login')):

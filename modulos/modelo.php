@@ -2,12 +2,17 @@
 	class Consultasbd {
 		
 		// metodo de conexion a base de datos
-		public function __construct($host='localhost',$user='lapascua',$pass='lapascua',$db='bd_biblioteca') {
+		public function __construct($host='localhost',$user='desarrollo',$pass='aarevalo',$db='bd_biblioteca') {
 			$this->idconx = pg_connect('host='.$host.' user='.$user.' password='.$pass.'  dbname='.$db) or die ('Error al conectar con la base de datos, ');
 		}
 
 		public function select($tabla,$campos="*",$where="") {
 			$sql = "SELECT ".$campos." FROM ".$tabla." ".(($where != '')?$where:'');
+			$res = pg_query($this->idconx,$sql) or die ('Error al ejecutar la consulta'.pg_result_error());
+			return $res;
+		}
+
+		public function query($sql) {
 			$res = pg_query($this->idconx,$sql) or die ('Error al ejecutar la consulta'.pg_result_error());
 			return $res;
 		}

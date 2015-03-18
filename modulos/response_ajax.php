@@ -12,18 +12,27 @@
 			$prefx  = substr($_POST['tipo_recurso'], 0,1); 
 			if ($prefx == 'l') {
 				$where  = ' WHERE'.((!empty($_POST['txt_codigo'.$prefx]))?(' id_'.$_POST['tipo_recurso'].'=\''.$_POST['txt_codigo'.$prefx].'\' '):(' '));
-				if (!empty($_POST['txt_codigo']) && !empty($_POST['txt_descripcion'])) {
+				if (!empty($_POST['txt_codigo'.$prefx]) && !empty($_POST['txt_descripcion'.$prefx])) {
 					$where .= ' AND ';
 				}
 				$where .= ((!empty($_POST['txt_descripcion'.$prefx]))?(' descripcion ILIKE\'%'.$_POST['txt_descripcion'.$prefx].'%\''):(''));
+				$result = $this->consultasbd->select($tipo_recurso[$tabla=$_POST['tipo_recurso']],$campos='*',$where);
 			} else if ($prefx == 't') {
 				$where  = ' WHERE'.((!empty($_POST['txt_codigo'.$prefx]))?(' id_'.$_POST['tipo_recurso'].'=\''.$_POST['txt_codigo'.$prefx].'\' '):(' '));
+				if (!empty($_POST['txt_codigo'.$prefx]) && !empty($_POST['txt_descripcion'.$prefx])) {
+					$where .= ' AND ';
+				}
 				$where .= ((!empty($_POST['txt_descripcion'.$prefx]))?(' titulo ILIKE\'%'.$_POST['txt_descripcion'.$prefx].'%\''):(''));
+				$result = $this->consultasbd->select($tipo_recurso[$tabla=$_POST['tipo_recurso']],$campos='*',$where);
 			} else if ($prefx == 'm') {
-
+				$sql = 'select * from tbl_material as tbl_mat left outer join tbl_tipo_material tbl_tipo on tbl_mat.id_tipo=tbl_tipo.id_tipo_material';
+				$where  = ' WHERE'.((!empty($_POST['txt_codigo'.$prefx]))?(' id_'.$_POST['tipo_recurso'].'=\''.$_POST['txt_codigo'.$prefx].'\' '):(' '));
+				if (!empty($_POST['txt_codigo'.$prefx]) && !empty($_POST['txt_descripcion'.$prefx])) {
+					$where .= ' AND ';
+				}
+				$where .= ((!empty($_POST['txt_descripcion'.$prefx]))?(' descripcion_tipo ILIKE\'%'.$_POST['txt_descripcion'.$prefx].'%\''):(''));
+				$result = $this->consultasbd->query($sql.$where);
 			}
-
-			$result = $this->consultasbd->select($tipo_recurso[$tabla=$_POST['tipo_recurso']],$campos='*',$where);
 			
 			if ($this->consultasbd->num_rows($result) > 0) {
 				$response = array();
@@ -68,6 +77,7 @@
 					}
 				} else if ($prefx == 'm') {
 					while($array = $this->consultasbd->fetch_array($result)) {
+						
 						$response[] = $array;
 					}
 				}

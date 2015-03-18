@@ -155,13 +155,17 @@
                       $('#head-result').append('<tr class="danger"><th class=\'col-lg-1 text-center\'>C&oacute;digo</th><th class=\'col-lg-2 text-center\'>Autor</th><th class=\'col-lg-2 text-center\'>Editorial</th><th class=\'col-lg-2 text-center\'>Materia</th><th class=\'col-lg-3\'>Descripci&oacute;n</th><th class=\'col-lg-1 text-center\'>Fecha</th><th class=\'text-center col-lg-1\'>Solicitud(s)</th></tr>');
                   } else if (prefx == 't') {
                       $('#head-result').append('<tr class="danger"><th class=\'col-lg-1 text-center\'>C&oacute;digo</th><th class=\'col-lg-2 text-center\'>Materia</th><th class=\'col-lg-2 text-center\'>Autor</th><th class=\'col-lg-2\'>Titulo</th><th class=\'col-lg-1 text-center\'>Fecha Publicaci&oacute;n</th><th class=\'col-lg-1 text-center\'>Mensi&oacute;n</th><th class=\'text-center col-lg-1\'>Solicitud(s)</th></tr>');
-                  } else if (prefx == 'm') {}
+                  } else if (prefx == 'm') {
+                      $('#head-result').append('<tr class="danger"><th class=\'col-lg-1 text-center\'>C&oacute;digo</th><th class=\'col-lg-2 text-center\'>Nombre</th><th class=\'col-lg-3\'>Descripci&oacute;n</th><th class=\'text-center col-lg-1\'>Solicitud(s)</th></tr>');
+                  }
               $.each(resp,function(index,array){
                   if (prefx == 'l') {
                       $('#content-result').append('<tr><td class=\'text-center\'>'+ array['id_libro'] +'</td><td class=\'text-center\'>'+ array['id_autor'].toUpperCase() +'</td><td class=\'text-center\'>'+ array['id_editorial'].toUpperCase() +'</td><td class=\'text-center\'>'+ array['id_materia'].toUpperCase() +'</td><td>'+ array['descripcion'].toUpperCase() +'</td><td class=\'text-center\'>'+ array['fecha_publicacion'] +'</td><td class=\'text-center\'><button class=\'btn btn-danger\'>Prestar&nbsp;&nbsp;<i class=\'glyphicon glyphicon-transfer\'></i></button></td></tr>');
                   } else if (prefx == 't') {
                       $('#content-result').append('<tr><td class=\'text-center\'>'+ array['id_tesis'] +'</td><td class=\'text-center\'>'+ array['id_materia'].toUpperCase() +'</td><td class=\'text-center\'>'+ array['id_autor_tesis'].toUpperCase() +'</td><td>'+ array['titulo'].toUpperCase() +'</td><td class=\'text-center\'>'+ array['fecha_publicacion'] +'</td><td class=\'text-center\'>'+ array['mension'].toUpperCase() +'</td><td class=\'text-center\'><button class=\'btn btn-danger\'>Prestar&nbsp;&nbsp;<i class=\'glyphicon glyphicon-transfer\'></i></button></td></tr>');
-                  } else if (prefx == 'm') {}
+                  } else if (prefx == 'm') {
+                      $('#content-result').append('<tr><td class=\'text-center\'>'+ array['id_material'] +'</td><td class=\'text-center\'>'+ array['nombre'].toUpperCase() +'</td><td>'+ array['descripcion_tipo'].toUpperCase() +'</td><td class=\'text-center\'><button class=\'btn btn-danger\'>Prestar&nbsp;&nbsp;<i class=\'glyphicon glyphicon-transfer\'></i></button></td></tr>');
+                  }
               });
               $('#table-result').fadeIn();
               if (control_datatable == 0) {create_datatable(); control_datatable++;}
