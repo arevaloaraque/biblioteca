@@ -83,18 +83,19 @@
       		<div class="row">
 			  	<div class="form-group col-lg-4">
 			    	<label for="txt_autor">Autor</label>
+			    	<span class="pull-right">&nbsp;+</span>
 			    	<select name="txt_autor" id="txt_autor" class="form-control">
 			    		<option value="">Seleccione Autor</option>
 			    	</select>
 			  	</div>
 			  	<div class="form-group col-lg-4">
-			    	<label for="txt_editorial">Editorial</label>
+			    	<label for="txt_editorial">Editorial&nbsp;+</label>
 			    	<select name="txt_editorial" id="txt_editorial" class="form-control">
 			    		<option value="">Seleccione Editorial</option>
 			    	</select>
 			  	</div>
 			  	<div class="form-group col-lg-4">
-			    	<label for="txt_materia">Materia</label>
+			    	<label for="txt_materia">Materia&nbsp;+</label>
 			    	<select name="txt_materia" id="txt_materia" class="form-control">
 			    		<option value="">Seleccione Materia</option>
 			    	</select>
@@ -113,7 +114,7 @@
 			<div class="row">
 				<div class="form-group col-lg-12">
 			    	<label for="txt_descripcion">Descripci&oacute;n</label>
-			    	<input type="text" name="txt_descripcion" id="txt_descripcion" class="form-control" />
+			    	<textarea name="txt_descripcion" id="txt_descripcion" class="form-control"></textarea>
 			  	</div>
 			</div>
 		</form>
