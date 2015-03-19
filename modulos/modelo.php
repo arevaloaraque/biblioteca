@@ -12,6 +12,10 @@
 			return $res;
 		}
 
+		public function insert($table,$campos,$values) {
+			//$sql = "INSERT INTO("
+		}
+
 		public function query($sql) {
 			$res = pg_query($this->idconx,$sql) or die ('Error al ejecutar la consulta'.pg_result_error());
 			return $res;

@@ -83,19 +83,19 @@
       		<div class="row">
 			  	<div class="form-group col-lg-4">
 			    	<label for="txt_autor">Autor</label>
-			    	<span class="pull-right">&nbsp;+</span>
-			    	<select name="txt_autor" id="txt_autor" class="form-control">
+			    	<select name="txt_autor" id="txt_autor" class="chosen-select form-control" data-placeholder="Seleccione autor">
 			    		<option value="">Seleccione Autor</option>
 			    	</select>
 			  	</div>
 			  	<div class="form-group col-lg-4">
-			    	<label for="txt_editorial">Editorial&nbsp;+</label>
+			    	<label for="txt_editorial">Editorial</label>
 			    	<select name="txt_editorial" id="txt_editorial" class="form-control">
 			    		<option value="">Seleccione Editorial</option>
+			    		<option value="">Agregar nuevo</option>
 			    	</select>
 			  	</div>
 			  	<div class="form-group col-lg-4">
-			    	<label for="txt_materia">Materia&nbsp;+</label>
+			    	<label for="txt_materia">Materia</label>
 			    	<select name="txt_materia" id="txt_materia" class="form-control">
 			    		<option value="">Seleccione Materia</option>
 			    	</select>
@@ -103,7 +103,7 @@
 			</div>
 			<div class="row">
 			  	<div class="form-group col-lg-6">
-			    	<label for="txt_edicion">edicion</label>
+			    	<label for="txt_edicion">Edici&oacute;n</label>
 			    	<input type="text" name="txt_edicion" id="txt_edicion" class="form-control" />
 			  	</div>
 			  	<div class="form-group col-lg-6">
@@ -126,36 +126,90 @@
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<div id="dialog" title="Nuevo Autor">
+  <p id="contentdialog">
+	<div class="form-group">
+		<label for="txt_nombre">Nombre autor:</label>
+		<input type="email" class="form-control" id="txt_nombre" name="txt_nombre" placeholder="Ingrese nombre autor">
+	</div>
+	<div class="form-group">
+		<label for="txt_apellido">Apellido autor</label>
+		<input type="password" class="form-control" id="txt_apellido" name="txt_apellido" placeholder="Ingrese apellido autor">
+	</div>
+		<button class="btn btn-danger pull-right" id="btn-new-autor">Guardar&nbsp;&nbsp;<i class="glyphicon glyphicon-save"></i></button>
+  </p>
+</div>
+<script src="librerias/jquery-ui/jquery-ui.min.js" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="librerias/jquery-ui/jquery-ui.min.css">
 <link rel="stylesheet" type="text/css" href="plugins/dataTables/css/datatables.css">
 <script src="plugins/dataTables/js/jquery.dataTables.js" type="text/javascript"></script>
 <script src="plugins/dataTables/js/datatables.js" type="text/javascript"></script>
-<link rel="stylesheet" type="text/css" href="plugins/chosen/chosen.css">
-<script src="plugins/chosen/chosen.jquery.js" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="plugins/chosen_v1.4.0/chosen.css">
+<script src="plugins/chosen_v1.4.0/chosen.jquery.js" type="text/javascript"></script>
 <script type="text/javascript" >
-	// Configuracion datatable
-    $('#datatable').dataTable({
-      "AaSorting": [[0, "asc"]],
-      "sPaginationType": "bs_normal",
-      ajax: "data.json"
-    }); 
-    $('.datatable').each(function(){
-      var datatable = $(this);
-      // SEARCH - Add the placeholder for Search and Turn this into in-line form control
-      var search_input = datatable.closest('.dataTables_wrapper').find('div[id$=_filter] input');
-      search_input.attr({'placeholder':'Buscar Libro','id':'btn_search_table'});
-      search_input.addClass('form-control input-sm');
-      // LENGTH - Inline-Form control
-      var length_sel = datatable.closest('.dataTables_wrapper').find('div[id$=_length] select');
-      length_sel.addClass('form-control input-sm');
-    });
-    $('#btn_search_table').attr('title','Filtrar resultado');
-    $('#btn_search_table').tooltip();
+	$(document).on('ready',function(){
+		$('#menu-item li.active').removeClass('active');
+	    $('#liRecursos').addClass('active');
+	    // title page
+		$('title').html('..:: Listado General de Libros ::..&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
+		valuesTitle();
+		// creacion de la ventana de dialogo
+		 $( "#dialog" ).dialog();
+		 $( ".ui-dialog" ).css({'border':'2px solid #000'});
+		 $( ".ui-dialog" ).hide();
+		// Configuracion datatable
+	    $('#datatable').dataTable({
+	      "AaSorting": [[0, "asc"]],
+	      "sPaginationType": "bs_normal",
+	      ajax: "data.json"
+	    }); 
+	    $('.datatable').each(function(){
+	      var datatable = $(this);
+	      // SEARCH - Add the placeholder for Search and Turn this into in-line form control
+	      var search_input = datatable.closest('.dataTables_wrapper').find('div[id$=_filter] input');
+	      search_input.attr({'placeholder':'Buscar Libro','id':'btn_search_table'});
+	      search_input.addClass('form-control input-sm');
+	      // LENGTH - Inline-Form control
+	      var length_sel = datatable.closest('.dataTables_wrapper').find('div[id$=_length] select');
+	      length_sel.addClass('form-control input-sm');
+	    });
+	    $('#btn_search_table').attr('title','Filtrar resultado');
+	    $('#btn_search_table').tooltip();
 
-    // agregar libro
-    // consulta de avances en la tarea
-    $('#add-libro').click(function(e){
-    	$('#modalwindow').modal('show');
-        $('.modal-title').html('Registro de nuevo libro&nbsp;&nbsp;<i class="glyphicon glyphicon-book"></i>');
-        $('.modal-footer').html('<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>');
-    });
+	    // convertir selects a chosen
+	    $('#txt_autor').chosen({no_results_text:'<a class="crear_recurso" title="Registrar nuevo autor" >Crear!</a>',width:"100%"});
+	    // crear recurso
+	    $(document).on( "click",".crear_recurso",function() {
+	    	valor = $(".chosen-search input").val();
+	    	$('.ui-dialog').fadeIn();
+	    	$('#modalwindow').modal('hide');
+	    });
+	    // mostrar ventana modal para registro de libro
+	    $('#add-libro').click(function(e){
+	    	$('#modalwindow').modal('show');
+	        $('.modal-title').html('Registro de nuevo libro&nbsp;&nbsp;<i class="glyphicon glyphicon-book"></i>');
+	        $('.modal-footer').html('<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>');
+	    });
+
+	    // validacion de nuevo autor
+	    $('#btn-new-autor').click(function(){
+	    	if ($('#txt_nombre').val() == '') {
+	    		$('#txt_nombre').focus();
+	    		alertify.error('<b>Nombre autor es obligatorios</b>');
+	    		return false;
+	    	} else if ($('#txt_apellido').val() == '') {
+	    		$('#txt_apellido').focus();
+	    		alertify.error('<b>Apellido autor es obligatorios</b>');
+	    		return false;
+	    	} else {
+	    		$.post('modulos/response_ajax.php',{'nombre':$('#txt_nombre').val(), 'apellido':$('#txt_apellido'), 'function':'insertar_autor'}, function(data){
+					respuesta = parseInt(data);
+					$("#PlanSiembraRubroId").append("<option value='"+respuesta+"'>"+valor+"</option>");
+	    		});
+	    		$('.ui-dialog').fadeOut();
+	    		alertify.success('Todo esta bien!');
+	    		$('#modalwindow').modal('show');
+	    	}
+	    });
+	});
 </script>

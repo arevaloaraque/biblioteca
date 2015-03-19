@@ -12,9 +12,9 @@
 			$prefx  = substr($_POST['tipo_recurso'], 0,1); 
 			if ($prefx == 'l') {
 				$where  = ' WHERE'.((!empty($_POST['txt_codigo'.$prefx]))?(' id_'.$_POST['tipo_recurso'].'=\''.$_POST['txt_codigo'.$prefx].'\' '):(' '));
-				if (!empty($_POST['txt_codigo'.$prefx]) && !empty($_POST['txt_descripcion'.$prefx])) {
+				if (!empty($_POST['txt_codigo'.$prefx]) && !empty($_POST['txt_descripcion'.$prefx])):
 					$where .= ' AND ';
-				}
+				endif;
 				$where .= ((!empty($_POST['txt_descripcion'.$prefx]))?(' descripcion ILIKE\'%'.$_POST['txt_descripcion'.$prefx].'%\''):(''));
 				$result = $this->consultasbd->select($tipo_recurso[$tabla=$_POST['tipo_recurso']],$campos='*',$where);
 			} else if ($prefx == 't') {
@@ -87,19 +87,24 @@
 			}
 		}
 
+		public function insertar_autor_libro () {
+
+		}
+
 	}
 	
 	include_once('modelo.php');
 
-	if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'):
-		if (isset($_POST) && count($_POST) > 0):
+	if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+		if (isset($_POST) && count($_POST) > 0) {
 			$functions = new Functions($consultasbd);
-			$functions->$_POST['function']();
-			exit();
-		else:
+			if (method_exists($functions,$functions->$_POST['function']())){
+				$functions->$_POST['function']();
+			}
+		} else {
 			echo json_encode(1);
-		endif;
-	else:
-		echo 'Hola Mundo!';
-	endif;
+		}
+	} else {
+		header('location: ../index.php?page=404');
+	}
 ?>
