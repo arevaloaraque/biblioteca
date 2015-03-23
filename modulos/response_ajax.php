@@ -88,7 +88,12 @@
 		}
 
 		public function insertar_autor_libro () {
-
+			$nombre   = (isset($_POST['nombre']))?$_POST['nombre']:'';
+			$apellido = (isset($_POST['apellido']))?$_POST['apellido']:'';
+			$res = $this->consultasbd->insert($tabla='tbl_autor',$campos='nombre,apellido',$values='\''.$nombre.'\''.','.'\''.$apellido.'\'');
+			if ($res) {
+				echo 1;
+			}
 		}
 
 	}
@@ -98,8 +103,10 @@
 	if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
 		if (isset($_POST) && count($_POST) > 0) {
 			$functions = new Functions($consultasbd);
-			if (method_exists($functions,$functions->$_POST['function']())){
+			if (method_exists('Functions',$_POST['function'])){
 				$functions->$_POST['function']();
+			}else {
+				echo 0;
 			}
 		} else {
 			echo json_encode(1);

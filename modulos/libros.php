@@ -130,11 +130,11 @@
   <p id="contentdialog">
 	<div class="form-group">
 		<label for="txt_nombre">Nombre autor:</label>
-		<input type="email" class="form-control" id="txt_nombre" name="txt_nombre" placeholder="Ingrese nombre autor">
+		<input type="text" class="form-control" id="txt_nombre" name="txt_nombre" placeholder="Ingrese nombre autor">
 	</div>
 	<div class="form-group">
 		<label for="txt_apellido">Apellido autor</label>
-		<input type="password" class="form-control" id="txt_apellido" name="txt_apellido" placeholder="Ingrese apellido autor">
+		<input type="text" class="form-control" id="txt_apellido" name="txt_apellido" placeholder="Ingrese apellido autor">
 	</div>
 		<button class="btn btn-danger pull-right" id="btn-new-autor">Guardar&nbsp;&nbsp;<i class="glyphicon glyphicon-save"></i></button>
   </p>
@@ -202,9 +202,10 @@
 	    		alertify.error('<b>Apellido autor es obligatorios</b>');
 	    		return false;
 	    	} else {
-	    		$.post('modulos/response_ajax.php',{'nombre':$('#txt_nombre').val(), 'apellido':$('#txt_apellido'), 'function':'insertar_autor'}, function(data){
-					respuesta = parseInt(data);
-					$("#PlanSiembraRubroId").append("<option value='"+respuesta+"'>"+valor+"</option>");
+	    		$.post('modulos/response_ajax.php',{'nombre':$('#txt_nombre').val(), 'apellido':$('#txt_apellido'), 'function':'insertar_autor_libro'}, function(data){
+					if (data == 0) {
+						alertify.error('<b>Por favor, no alterar contenido HTML</b>');
+					}
 	    		});
 	    		$('.ui-dialog').fadeOut();
 	    		alertify.success('Todo esta bien!');
