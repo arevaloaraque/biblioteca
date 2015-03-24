@@ -84,20 +84,16 @@
 			  	<div class="form-group col-lg-4">
 			    	<label for="txt_autor">Autor</label>
 			    	<select name="txt_autor" id="txt_autor" class="chosen-select form-control" data-placeholder="Seleccione autor">
-			    		<option value="">Seleccione Autor</option>
 			    	</select>
 			  	</div>
 			  	<div class="form-group col-lg-4">
 			    	<label for="txt_editorial">Editorial</label>
 			    	<select name="txt_editorial" id="txt_editorial" class="form-control">
-			    		<option value="">Seleccione Editorial</option>
-			    		<option value="">Agregar nuevo</option>
 			    	</select>
 			  	</div>
 			  	<div class="form-group col-lg-4">
 			    	<label for="txt_materia">Materia</label>
 			    	<select name="txt_materia" id="txt_materia" class="form-control">
-			    		<option value="">Seleccione Materia</option>
 			    	</select>
 			  	</div>
 			</div>
@@ -136,7 +132,7 @@
 		<label for="txt_apellido">Apellido autor</label>
 		<input type="text" class="form-control" id="txt_apellido" name="txt_apellido" placeholder="Ingrese apellido autor">
 	</div>
-		<button class="btn btn-danger pull-right" id="btn-new-autor">Guardar&nbsp;&nbsp;<i class="glyphicon glyphicon-save"></i></button>
+	<button class="btn btn-danger pull-right" id="btn-new-autor">Guardar&nbsp;&nbsp;<i class="glyphicon glyphicon-save"></i></button>
   </p>
 </div>
 <script src="librerias/jquery-ui/jquery-ui.min.js" type="text/javascript"></script>
@@ -147,7 +143,64 @@
 <link rel="stylesheet" type="text/css" href="plugins/chosen_v1.4.0/chosen.css">
 <script src="plugins/chosen_v1.4.0/chosen.jquery.js" type="text/javascript"></script>
 <script type="text/javascript" >
+	var select_autor 	 = function () {};
+	var select_editorial = function () {};
+	var select_materia   = function () {};
 	$(document).on('ready',function(){
+		select_autor = function () {
+			$.ajax({
+				url: 'modulos/response_ajax.php',
+				method: 'POST',
+				data: {'function':'get_data','tabla':'tbl_autor'},
+				success: function (resp) {
+					if (resp != '') {
+						var data = JSON.parse(resp);
+						var html = '<option value="">Seleccione Autor</option>';
+						for (var i = 0; i < data.length; i++) {
+							html += '<option value="'+data[i].id_autor+'">'+data[i].nombre.toUpperCase()+' '+data[i].apellido.toUpperCase()+'</option>';
+						};
+						$('#txt_autor').html(html);
+						$('#txt_autor').trigger("chosen:updated");
+					}
+				}
+			});
+		};
+		select_editorial = function () {
+			$.ajax({
+				url: 'modulos/response_ajax.php',
+				method: 'POST',
+				data: {'function':'get_data','tabla':'tbl_editorial'},
+				success: function (resp) {
+					if (resp != '') {
+						var data = JSON.parse(resp);
+						var html = '<option value="">Seleccione Editorial</option>';
+						for (var i = 0; i < data.length; i++) {
+							html += '<option value="'+data[i].id_editorial+'">'+data[i].nombre.toUpperCase()+' '+data[i].ciudad.toUpperCase()+'</option>';
+						};
+						$('#txt_editorial').html(html);
+						$('#txt_editorial').trigger("chosen:updated");
+					}
+				}
+			});
+		};
+		select_materia = function () {
+			$.ajax({
+				url: 'modulos/response_ajax.php',
+				method: 'POST',
+				data: {'function':'get_data','tabla':'tbl_materia'},
+				success: function (resp) {
+					if (resp != '') {
+						var data = JSON.parse(resp);
+						var html = '<option value="">Seleccione Materia</option>';
+						for (var i = 0; i < data.length; i++) {
+							html += '<option value="'+data[i].id_materia+'">'+data[i].nombre_materia.toUpperCase()+'</option>';
+						};
+						$('#txt_materia').html(html);
+						$('#txt_materia').trigger("chosen:updated");
+					}
+				}
+			});
+		};
 		$('#menu-item li.active').removeClass('active');
 	    $('#liRecursos').addClass('active');
 	    // title page
@@ -177,15 +230,20 @@
 	    $('#btn_search_table').tooltip();
 
 	    // convertir selects a chosen
-	    $('#txt_autor').chosen({no_results_text:'<a class="crear_recurso" title="Registrar nuevo autor" >Crear!</a>',width:"100%"});
+	    $('#txt_autor').chosen({no_results_text:'<a class="crear_recurso_autor" title="Registrar nuevo autor" >Crear!</a>',width:"100%"});
+	    $('#txt_editorial').chosen({no_results_text:'<a class="crear_recurso_editorial" title="Registrar nueva editorial" >Crear!</a>',width:"100%"});
+	    $('#txt_materia').chosen({no_results_text:'<a class="crear_recurso_materia" title="Registrar nueva materia" >Crear!</a>',width:"100%"});
 	    // crear recurso
-	    $(document).on( "click",".crear_recurso",function() {
+	    $(document).on( "click",".crear_recurso_autor",function() {
 	    	valor = $(".chosen-search input").val();
 	    	$('.ui-dialog').fadeIn();
 	    	$('#modalwindow').modal('hide');
 	    });
 	    // mostrar ventana modal para registro de libro
 	    $('#add-libro').click(function(e){
+	    	select_autor();
+	    	select_editorial();
+	    	select_materia();
 	    	$('#modalwindow').modal('show');
 	        $('.modal-title').html('Registro de nuevo libro&nbsp;&nbsp;<i class="glyphicon glyphicon-book"></i>');
 	        $('.modal-footer').html('<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>');
@@ -202,7 +260,7 @@
 	    		alertify.error('<b>Apellido autor es obligatorios</b>');
 	    		return false;
 	    	} else {
-	    		$.post('modulos/response_ajax.php',{'nombre':$('#txt_nombre').val(), 'apellido':$('#txt_apellido'), 'function':'insertar_autor_libro'}, function(data){
+	    		$.post('modulos/response_ajax.php',{'nombre':$('#txt_nombre').val(), 'apellido':$('#txt_apellido').val(), 'function':'insertar_autor_libro'}, function(data){
 					if (data == 0) {
 						alertify.error('<b>Por favor, no alterar contenido HTML</b>');
 					}

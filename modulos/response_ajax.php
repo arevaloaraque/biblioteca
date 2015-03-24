@@ -96,6 +96,18 @@
 			}
 		}
 
+		public function get_data() {
+			$tabla = $_POST['tabla'];
+			$res = $this->consultasbd->select($tabla=$tabla);
+			if ($this->consultasbd->num_rows($res)>0) {
+				$data = array();
+				while ($detalle = $this->consultasbd->fetch_array($res)) {
+					$data[] = $detalle;
+				}
+				echo json_encode($data);
+			}
+		}
+
 	}
 	
 	include_once('modelo.php');
