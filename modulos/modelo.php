@@ -2,7 +2,7 @@
 	class Consultasbd {
 		
 		// metodo de conexion a base de datos
-		public function __construct($host='localhost',$user='lapascua',$pass='lapascua',$db='bd_biblioteca') {
+		public function __construct($host='localhost',$user='desarrollo',$pass='aarevalo',$db='bd_biblioteca') {
 			$this->idconx = pg_connect('host='.$host.' user='.$user.' password='.$pass.'  dbname='.$db) or die ('Error al conectar con la base de datos, ');
 		}
 
@@ -29,6 +29,12 @@
 
 		public function num_rows($res_sql) {
 			return pg_num_rows($res_sql);
+		}
+
+		public function max_id($tabla,$id) {
+			$sql = "SELECT MAX(".$id.") AS id FROM ".$tabla."";
+			$res = pg_query($this->idconx,$sql) or die ('Error al ejecutar la consulta'.pg_result_error());
+			return $res;
 		}
 
 		// cerrar conexiones existentes

@@ -92,7 +92,24 @@
 			$apellido = (isset($_POST['apellido']))?$_POST['apellido']:'';
 			$res = $this->consultasbd->insert($tabla='tbl_autor',$campos='nombre,apellido',$values='\''.$nombre.'\''.','.'\''.$apellido.'\'');
 			if ($res) {
-				echo 1;
+				$res = $this->consultasbd->max_id($tabla='tbl_autor',$id='id_autor');
+				$dat = $this->consultasbd->fetch_array($res);
+				echo $dat['id'];
+			} else {
+				echo '';
+			}
+		}
+
+		public function insertar_editorial () {
+			$nombre_editorial = $_POST['nombre_editorial'];
+			$ciudad_editorial = $_POST['ciudad_editorial'];
+			$res = $this->consultasbd->insert($tabla='tbl_editorial',$campos='nombre,ciudad',$values='\''.$nombre_editorial.'\''.','.'\''.$ciudad_editorial.'\'');
+			if ($res) {
+				$res = $this->consultasbd->max_id($tabla='tbl_editorial',$id='id_editorial');
+				$dat = $this->consultasbd->fetch_array($res);
+				echo $dat['id'];
+			} else {
+				echo '';
 			}
 		}
 

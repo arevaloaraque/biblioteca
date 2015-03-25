@@ -122,17 +122,37 @@
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-<div id="dialog" title="Nuevo Autor">
+<div id="dialog" title="Agregando">
   <p id="contentdialog">
-	<div class="form-group">
-		<label for="txt_nombre">Nombre autor:</label>
-		<input type="text" class="form-control" id="txt_nombre" name="txt_nombre" placeholder="Ingrese nombre autor">
+  	<div id="capa_autor" style="display:none;">
+		<div class="form-group">
+			<label for="txt_nombre">Nombre autor:</label>
+			<input type="text" class="form-control" id="txt_nombre" name="txt_nombre" placeholder="Ingrese nombre autor">
+		</div>
+		<div class="form-group">
+			<label for="txt_apellido">Apellido autor</label>
+			<input type="text" class="form-control" id="txt_apellido" name="txt_apellido" placeholder="Ingrese apellido autor">
+		</div>
+		<button class="btn btn-danger pull-right" id="btn-new-autor">Guardar&nbsp;&nbsp;<i class="glyphicon glyphicon-save"></i></button>
 	</div>
-	<div class="form-group">
-		<label for="txt_apellido">Apellido autor</label>
-		<input type="text" class="form-control" id="txt_apellido" name="txt_apellido" placeholder="Ingrese apellido autor">
+	<div id="capa_editorial" style="display:none;">
+		<div class="form-group">
+			<label for="txt_nombre_editorial">Nombre editorial:</label>
+			<input type="text" class="form-control" id="txt_nombre_editorial" name="txt_nombre_editorial" placeholder="Ingrese nombre editorial">
+		</div>
+		<div class="form-group">
+			<label for="txt_ciudad_editorial">Ciudad editorial</label>
+			<input type="text" class="form-control" id="txt_ciudad_editorial" name="txt_ciudad_editorial" placeholder="Ingrese ciudad editorial">
+		</div>
+		<button class="btn btn-danger pull-right" id="btn-new-editorial">Guardar&nbsp;&nbsp;<i class="glyphicon glyphicon-save"></i></button>
 	</div>
-	<button class="btn btn-danger pull-right" id="btn-new-autor">Guardar&nbsp;&nbsp;<i class="glyphicon glyphicon-save"></i></button>
+	<div id="capa_materia" style="display:none;">
+		<div class="form-group">
+			<label for="txt_nombre_materia">Nombre materia:</label>
+			<input type="text" class="form-control" id="txt_nombre_materia" name="txt_nombre_materia" placeholder="Ingrese nombre materia">
+		</div>
+		<button class="btn btn-danger pull-right" id="btn-new-materia">Guardar&nbsp;&nbsp;<i class="glyphicon glyphicon-save"></i></button>
+	</div>
   </p>
 </div>
 <script src="librerias/jquery-ui/jquery-ui.min.js" type="text/javascript"></script>
@@ -201,6 +221,32 @@
 				}
 			});
 		};
+		$('#txt_fecha').datepicker({
+			showOn: 'both',
+			buttonImage: 'images/calendar.png',
+			buttonImageOnly: true,
+			changeYear: true
+		});
+		$('#txt_fecha').attr('readOnly',true);
+
+		$.datepicker.regional['es'] = {
+		      closeText: 'Cerrar',
+		      prevText: '<<',
+		      nextText: '>>',
+		      currentText: 'Hoy',
+		      monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+		      monthNamesShort: ['Ene','Feb','Mar','Abr', 'May','Jun','Jul','Ago','Sep', 'Oct','Nov','Dic'],
+		      dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+		      dayNamesShort: ['Dom','Lun','Mar','Mié','Juv','Vie','Sáb'],
+		      dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','Sá'],
+		      weekHeader: 'Sm',
+		      dateFormat: 'yy/mm/dd',
+		      firstDay: 1,
+		      isRTL: false,
+		      showMonthAfterYear: false,
+		      yearSuffix: ''
+		 };
+		 $.datepicker.setDefaults($.datepicker.regional['es']);
 		$('#menu-item li.active').removeClass('active');
 	    $('#liRecursos').addClass('active');
 	    // title page
@@ -237,6 +283,30 @@
 	    $(document).on( "click",".crear_recurso_autor",function() {
 	    	valor = $(".chosen-search input").val();
 	    	$('.ui-dialog').fadeIn();
+	    	$('#capa_editorial').hide();
+	    	$('#capa_materia').hide();
+	    	$('#capa_autor').show();
+	    	$("#txt_nombre").val(valor);
+	    	$('#txt_apellido').val('');
+	    	$('#modalwindow').modal('hide');
+	    });
+	    $(document).on( "click",".crear_recurso_editorial",function() {
+	    	$('#txt_ciudad_editorial').val('');
+	    	valor = $(".chosen-search input").val();
+	    	$('.ui-dialog').fadeIn();
+	    	$('#capa_materia').hide();
+	    	$('#capa_autor').hide();
+	    	$('#capa_editorial').show();
+	    	$("#txt_nombre_editorial").val(valor);
+	    	$('#modalwindow').modal('hide');
+	    });
+	    $(document).on( "click",".crear_recurso_materia",function() {
+	    	valor = $(".chosen-search input").val();
+	    	$('.ui-dialog').fadeIn();
+	    	$('#capa_autor').hide();
+	    	$('#capa_editorial').hide();
+	    	$('#capa_materia').show();
+	    	$("#txt_nombre_materia").val(valor);
 	    	$('#modalwindow').modal('hide');
 	    });
 	    // mostrar ventana modal para registro de libro
@@ -244,6 +314,7 @@
 	    	select_autor();
 	    	select_editorial();
 	    	select_materia();
+	    	$('.ui-dialog').fadeOut();
 	    	$('#modalwindow').modal('show');
 	        $('.modal-title').html('Registro de nuevo libro&nbsp;&nbsp;<i class="glyphicon glyphicon-book"></i>');
 	        $('.modal-footer').html('<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>');
@@ -261,12 +332,56 @@
 	    		return false;
 	    	} else {
 	    		$.post('modulos/response_ajax.php',{'nombre':$('#txt_nombre').val(), 'apellido':$('#txt_apellido').val(), 'function':'insertar_autor_libro'}, function(data){
-					if (data == 0) {
-						alertify.error('<b>Por favor, no alterar contenido HTML</b>');
+					if (data != '') {
+						html = '<option value="'+data+'">'+$('#txt_nombre').val().toUpperCase()+' '+$('#txt_apellido').val().toUpperCase()+'</option>';
+						$('#txt_autor option:eq(0)').after(html);
+						$('#txt_autor').trigger("chosen:updated");
 					}
 	    		});
 	    		$('.ui-dialog').fadeOut();
-	    		alertify.success('Todo esta bien!');
+	    		$('#capa_editorial').hide();
+	    		$('#modalwindow').modal('show');
+	    	}
+	    });
+	    // validacion de nueva editorial
+	    $('#btn-new-editorial').click(function(){
+	    	if ($('#txt_nombre_editorial').val() == '') {
+	    		$('#txt_nombre_editorial').focus();
+	    		alertify.error('<b>Nombre editorial es obligatorios</b>');
+	    		return false;
+	    	} else if ($('#txt_ciudad_editorial').val() == '') {
+	    		$('#txt_ciudad_editorial').focus();
+	    		alertify.error('<b>Ciudad editorial es obligatorios</b>');
+	    		return false;
+	    	} else {
+	    		$.post('modulos/response_ajax.php',{'nombre_editorial':$('#txt_nombre_editorial').val(), 'ciudad_editorial':$('#txt_ciudad_editorial').val(), 'function':'insertar_editorial'}, function(data){
+					if (data != '') {
+						html = '<option value="'+data+'">'+$('#txt_nombre_editorial').val().toUpperCase()+' '+$('#txt_ciudad_editorial').val().toUpperCase()+'</option>';
+						$('#txt_editorial option:eq(0)').after(html);
+						$('#txt_editorial').trigger("chosen:updated");
+					}
+	    		});
+	    		$('.ui-dialog').fadeOut();
+	    		$('#capa_autor').hide();
+	    		$('#modalwindow').modal('show');
+	    	}
+	    });
+		// validacion de nueva materia
+	    $('#btn-new-materia').click(function(){
+	    	if ($('#txt_nombre_materia').val() == '') {
+	    		$('#txt_nombre_materia').focus();
+	    		alertify.error('<b>Nombre materia es obligatorios</b>');
+	    		return false;
+	    	} else {
+	    		$.post('modulos/response_ajax.php',{'nombre_materia':$('#txt_nombre_materia').val(), 'function':'insertar_materia'}, function(data){
+					if (data != '') {
+						html = '<option value="'+data+'">'+$('#txt_nombre_materia').val().toUpperCase()+'</option>';
+						$('#txt_materia option:eq(0)').after(html);
+						$('#txt_materia').trigger("chosen:updated");
+					}
+	    		});
+	    		$('.ui-dialog').fadeOut();
+	    		$('#capa_materia').hide();
 	    		$('#modalwindow').modal('show');
 	    	}
 	    });
