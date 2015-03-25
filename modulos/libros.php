@@ -70,47 +70,47 @@
   </div>
 </div>
 
-<!-- Ventana Modal, Información General de Tarea -->
+<!-- Ventana Modal, Agregar nuevo libro -->
 <div class="modal fade" id="modalwindow">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true" class="text-danger"><small>[&times;]</small></span><span class="sr-only"></span></button>
         <h4 class="modal-title"></h4>
       </div>
       <div class="modal-body">
-      	<form class="form">
+      	<form class="form" id="form-new-libro">
       		<div class="row">
 			  	<div class="form-group col-lg-4">
 			    	<label for="txt_autor">Autor</label>
-			    	<select name="txt_autor" id="txt_autor" class="chosen-select form-control" data-placeholder="Seleccione autor">
+			    	<select name="txt_autor" id="txt_autor" class="chosen-select form-control required" data-placeholder="Seleccione autor" title="Autor">
 			    	</select>
 			  	</div>
 			  	<div class="form-group col-lg-4">
 			    	<label for="txt_editorial">Editorial</label>
-			    	<select name="txt_editorial" id="txt_editorial" class="form-control">
+			    	<select name="txt_editorial" id="txt_editorial" class="form-control required" data-placeholder="Seleccione editorial" title="Editorial">
 			    	</select>
 			  	</div>
 			  	<div class="form-group col-lg-4">
 			    	<label for="txt_materia">Materia</label>
-			    	<select name="txt_materia" id="txt_materia" class="form-control">
+			    	<select name="txt_materia" id="txt_materia" class="form-control required" data-placeholder="Seleccione materia" title="Materia">
 			    	</select>
 			  	</div>
 			</div>
 			<div class="row">
 			  	<div class="form-group col-lg-6">
 			    	<label for="txt_edicion">Edici&oacute;n</label>
-			    	<input type="text" name="txt_edicion" id="txt_edicion" class="form-control" />
+			    	<input type="text" name="txt_edicion" id="txt_edicion" class="form-control required" title="Edici&oacute;n" />
 			  	</div>
 			  	<div class="form-group col-lg-6">
 			    	<label for="txt_fecha">Fecha Publicaci&oacute;n</label>
-			    	<input type="text" name="txt_fecha" id="txt_fecha" class="form-control" />
+			    	<input type="text" name="txt_fecha" id="txt_fecha" class="form-control required" title="Fecha Publicaci&oacute;n" />
 			  	</div>
 			</div>
 			<div class="row">
 				<div class="form-group col-lg-12">
 			    	<label for="txt_descripcion">Descripci&oacute;n</label>
-			    	<textarea name="txt_descripcion" id="txt_descripcion" class="form-control"></textarea>
+			    	<textarea name="txt_descripcion" id="txt_descripcion" class="form-control required" title="Descripci&oacute;n"></textarea>
 			  	</div>
 			</div>
 		</form>
@@ -151,6 +151,7 @@
 			<label for="txt_nombre_materia">Nombre materia:</label>
 			<input type="text" class="form-control" id="txt_nombre_materia" name="txt_nombre_materia" placeholder="Ingrese nombre materia">
 		</div>
+		<input type="hidden" name="function" value="insertar_libro" />
 		<button class="btn btn-danger pull-right" id="btn-new-materia">Guardar&nbsp;&nbsp;<i class="glyphicon glyphicon-save"></i></button>
 	</div>
   </p>
@@ -162,6 +163,11 @@
 <script src="plugins/dataTables/js/datatables.js" type="text/javascript"></script>
 <link rel="stylesheet" type="text/css" href="plugins/chosen_v1.4.0/chosen.css">
 <script src="plugins/chosen_v1.4.0/chosen.jquery.js" type="text/javascript"></script>
+<style type="text/css">
+	.ui-datepicker-year {
+		color: #000;
+	}
+</style>
 <script type="text/javascript" >
 	var select_autor 	 = function () {};
 	var select_editorial = function () {};
@@ -175,7 +181,7 @@
 				success: function (resp) {
 					if (resp != '') {
 						var data = JSON.parse(resp);
-						var html = '<option value="">Seleccione Autor</option>';
+						var html = '<option value=""></option>';
 						for (var i = 0; i < data.length; i++) {
 							html += '<option value="'+data[i].id_autor+'">'+data[i].nombre.toUpperCase()+' '+data[i].apellido.toUpperCase()+'</option>';
 						};
@@ -193,7 +199,7 @@
 				success: function (resp) {
 					if (resp != '') {
 						var data = JSON.parse(resp);
-						var html = '<option value="">Seleccione Editorial</option>';
+						var html = '<option value=""></option>';
 						for (var i = 0; i < data.length; i++) {
 							html += '<option value="'+data[i].id_editorial+'">'+data[i].nombre.toUpperCase()+' '+data[i].ciudad.toUpperCase()+'</option>';
 						};
@@ -211,7 +217,7 @@
 				success: function (resp) {
 					if (resp != '') {
 						var data = JSON.parse(resp);
-						var html = '<option value="">Seleccione Materia</option>';
+						var html = '<option value=""></option>';
 						for (var i = 0; i < data.length; i++) {
 							html += '<option value="'+data[i].id_materia+'">'+data[i].nombre_materia.toUpperCase()+'</option>';
 						};
@@ -240,7 +246,7 @@
 		      dayNamesShort: ['Dom','Lun','Mar','Mié','Juv','Vie','Sáb'],
 		      dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','Sá'],
 		      weekHeader: 'Sm',
-		      dateFormat: 'yy/mm/dd',
+		      dateFormat: 'yy-mm-dd',
 		      firstDay: 1,
 		      isRTL: false,
 		      showMonthAfterYear: false,
@@ -281,7 +287,7 @@
 	    $('#txt_materia').chosen({no_results_text:'<a class="crear_recurso_materia" title="Registrar nueva materia" >Crear!</a>',width:"100%"});
 	    // crear recurso
 	    $(document).on( "click",".crear_recurso_autor",function() {
-	    	valor = $(".chosen-search input").val();
+	    	valor = $("#txt_autor_chosen .chosen-search input").val();
 	    	$('.ui-dialog').fadeIn();
 	    	$('#capa_editorial').hide();
 	    	$('#capa_materia').hide();
@@ -292,7 +298,7 @@
 	    });
 	    $(document).on( "click",".crear_recurso_editorial",function() {
 	    	$('#txt_ciudad_editorial').val('');
-	    	valor = $(".chosen-search input").val();
+	    	valor = $("#txt_editorial_chosen .chosen-search input").val();
 	    	$('.ui-dialog').fadeIn();
 	    	$('#capa_materia').hide();
 	    	$('#capa_autor').hide();
@@ -301,7 +307,7 @@
 	    	$('#modalwindow').modal('hide');
 	    });
 	    $(document).on( "click",".crear_recurso_materia",function() {
-	    	valor = $(".chosen-search input").val();
+	    	valor = $("#txt_materia_chosen .chosen-search input").val();
 	    	$('.ui-dialog').fadeIn();
 	    	$('#capa_autor').hide();
 	    	$('#capa_editorial').hide();
@@ -317,7 +323,7 @@
 	    	$('.ui-dialog').fadeOut();
 	    	$('#modalwindow').modal('show');
 	        $('.modal-title').html('Registro de nuevo libro&nbsp;&nbsp;<i class="glyphicon glyphicon-book"></i>');
-	        $('.modal-footer').html('<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>');
+	        $('.modal-footer').html('<button type="button" class="btn btn-primary" id="add-new-libro">Guardar&nbsp;<i class="glyphicon glyphicon-ok"></i></button><button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar&nbsp;<i class="glyphicon glyphicon-remove"></i></button>');
 	    });
 
 	    // validacion de nuevo autor
@@ -335,6 +341,7 @@
 					if (data != '') {
 						html = '<option value="'+data+'">'+$('#txt_nombre').val().toUpperCase()+' '+$('#txt_apellido').val().toUpperCase()+'</option>';
 						$('#txt_autor option:eq(0)').after(html);
+						$('#txt_autor option[value='+data+']').attr('selected','selected');
 						$('#txt_autor').trigger("chosen:updated");
 					}
 	    		});
@@ -358,6 +365,7 @@
 					if (data != '') {
 						html = '<option value="'+data+'">'+$('#txt_nombre_editorial').val().toUpperCase()+' '+$('#txt_ciudad_editorial').val().toUpperCase()+'</option>';
 						$('#txt_editorial option:eq(0)').after(html);
+						$('#txt_editorial option[value='+data+']').attr('selected','selected');
 						$('#txt_editorial').trigger("chosen:updated");
 					}
 	    		});
@@ -377,12 +385,44 @@
 					if (data != '') {
 						html = '<option value="'+data+'">'+$('#txt_nombre_materia').val().toUpperCase()+'</option>';
 						$('#txt_materia option:eq(0)').after(html);
+						$('#txt_materia option[value='+data+']').attr('selected','selected');
 						$('#txt_materia').trigger("chosen:updated");
 					}
 	    		});
 	    		$('.ui-dialog').fadeOut();
 	    		$('#capa_materia').hide();
 	    		$('#modalwindow').modal('show');
+	    	}
+	    });
+	    // validacion de formulaio de nuevo libro
+
+	    $(document).on('click','#add-new-libro',function(){
+	    	var band = true;
+	    	$.each($('.required'),band = function(index,val){
+	    		if ($(this).val() == '') {
+	    			alertify.error('<b>'+$(this).attr('title')+' es un campo obligatorio</b>');
+	    			$(this).focus();
+	    			$(this).trigger('chosen:activate');
+	    			band = 0;
+	    			return false;
+	    		}
+	    	});
+	    	if (band) { 
+	    		alertify.success('<b>Enviando datos</b>');
+	    		array = {};
+	    		//array.push($('#form-new-libro').serialize());
+	    		console.log($('#form-new-libro').serialize());
+	    		$.post(,{'array':'valor'},function(data){
+	    			console.log(data);
+	    		});
+	    		$.ajax({
+	    			url:'modulos/response_ajax.php',
+	    			method:'POST',
+	    			data:$('#form-new-libro').serialize(),
+	    			success:function(resp){
+	    				
+	    			}
+	    		});
 	    	}
 	    });
 	});

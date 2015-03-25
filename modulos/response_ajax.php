@@ -113,6 +113,22 @@
 			}
 		}
 
+		public function insertar_materia () {
+			$nombre_materia = $_POST['nombre_materia'];
+			$res = $this->consultasbd->insert($tabla='tbl_materia',$campos='nombre_materia',$values='\''.$nombre_materia.'\'');
+			if ($res) {
+				$res = $this->consultasbd->max_id($tabla='tbl_materia',$id='id_materia');
+				$dat = $this->consultasbd->fetch_array($res);
+				echo $dat['id'];
+			} else {
+				echo '';
+			}
+		}
+
+		public function insertar_libro () {
+			var_dump($_POST);
+		}
+
 		public function get_data() {
 			$tabla = $_POST['tabla'];
 			$res = $this->consultasbd->select($tabla=$tabla);
