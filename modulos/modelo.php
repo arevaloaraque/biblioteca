@@ -13,9 +13,15 @@
 		}
 
 		public function insert($tabla,$campos,$values) {
-			$sql = "INSERT INTO ".$tabla."(".$campos.") VALUES(".$values.")";
+			$sql = "INSERT INTO ".$tabla.$campos." VALUES(".$values.")";
 			$res = pg_query($this->idconx,$sql) or die ('Error al ejecutar la consulta'.pg_result_error());
 			return $res;
+		}
+
+		public function delete($tabla,$campo,$valor) {
+			$sql = "DELETE FROM ".$tabla." WHERE ".$campo."=".$valor."";
+			$res = pg_query($this->idconx,$sql) or die ('Error al ejecutar la consulta'.pg_result_error());
+			return $res;	
 		}
 
 		public function query($sql) {

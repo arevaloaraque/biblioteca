@@ -9,8 +9,9 @@
     </div>
     <div class="panel-body">
     	<button class='pull-right btn btn-primary' id='add-libro'>Agregar&nbsp;&nbsp;<i class="glyphicon glyphicon-plus"></i></button>
+    	<button data-toggle="tooltip" data-placement="top" title="Actualizar tabla" class='btn btn-info' id='add-libro' onclick="location.reload();"><i class="glyphicon glyphicon-refresh"></i></button>
     	<br/><br/>
-    	<?php if ($consultasbd->num_rows($libros) > 0): ?>
+    	<?php //if ($consultasbd->num_rows($libros) > 0): ?>
       	<div class="table-responsive">
 			<table class='table table-bordered table-striped table-hover datatable dataTable' id="datatable" style='border-radius:5px;'>
 			  <thead>
@@ -21,7 +22,7 @@
 			  			<th class='col-lg-2 text-center'>Materia</th>
 			  			<th class='col-lg-3'>Descripci&oacute;n</th>
 			  			<th class='col-lg-1 text-center'>Fecha</th>
-			  			<th class='text-center col-lg-1'>Acci&oacute;n(s)</th>
+			  			<th class='text-center col-lg-1'>Acci&oacute;nes</th>
 			  		</tr>
 			  </thead>
 			  <tbody>
@@ -45,28 +46,39 @@
 					$libro['id_materia'] = $materia;
 					$libro['fecha_publicacion'] = date('d-m-Y',strtotime($libro['fecha_publicacion']));
 			  	?>
-			  		<tr>
+			  		<tr id="<?php echo $libro['id_libro']; ?>">
 			  			<td class='text-center'><?php echo $libro['id_libro']; ?></td>
-			  			<td class='text-center'><?php echo strtoupper($libro['id_autor']); ?></td>
-			  			<td class='text-center'><?php echo strtoupper($libro['id_editorial']); ?></td>
-			  			<td class='text-center'><?php echo strtoupper($libro['id_materia']); ?></td>
-			  			<td><?php echo strtoupper($libro['descripcion']); ?></td>
-			  			<td class='text-center'><?php echo $libro['fecha_publicacion']; ?></td>
-			  			<td class='text-center'></td>
+			  			<td class='text-center autor_libro'><?php echo strtoupper($libro['id_autor']); ?></td>
+			  			<td class='text-center editorial_libro'><?php echo strtoupper($libro['id_editorial']); ?></td>
+			  			<td class='text-center materia_libro'><?php echo strtoupper($libro['id_materia']); ?></td>
+			  			<td class='descripcion_libro'><?php echo strtoupper($libro['descripcion']); ?></td>
+			  			<td class='text-center fecha_libro'><?php echo $libro['fecha_publicacion']; ?></td>
+			  			<td class='text-center'>
+			  				<button id="edit-<?php echo $libro['id_libro']; ?>" class="edit-libro text-info btn" data-toggle="tooltip" data-placement="top" title="Actualizar libro"><i class="glyphicon glyphicon-edit"></i></button>
+			  				<button id="del-<?php echo $libro['id_libro']; ?>" class="del-libro text-danger btn" data-toggle="tooltip" data-placement="top" title="Eliminar libro"><i class="glyphicon glyphicon-trash"></i></button>
+			  			</td>
 			  		</tr>
 			  	<?php } ?>
 			  </tbody>
 			</table>
 		</div>
-		<?php else: ?>
+		<?php //else: ?>
 
-		<?php endif; ?>
+		<?php //endif; ?>
     </div>
     <div class="panel-footer text-center">
       <div class="btn-group">
           <p><i class="text-muted">BibloWeb v1.0</i></p>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- Generated markup by the plugin -->
+<div class="tooltip top" role="tooltip">
+  <div class="tooltip-arrow"></div>
+  <div class="tooltip-inner">
+    
   </div>
 </div>
 
@@ -110,9 +122,10 @@
 			<div class="row">
 				<div class="form-group col-lg-12">
 			    	<label for="txt_descripcion">Descripci&oacute;n</label>
-			    	<textarea name="txt_descripcion" id="txt_descripcion" class="form-control required" title="Descripci&oacute;n"></textarea>
+			    	<textarea name="txt_descripcion" maxlength="60" id="txt_descripcion" class="form-control required" title="Descripci&oacute;n"></textarea>
 			  	</div>
 			</div>
+			<input type="hidden" name="function" value="insertar_libro" />
 		</form>
       </div>
       <div class="modal-footer">
@@ -151,7 +164,6 @@
 			<label for="txt_nombre_materia">Nombre materia:</label>
 			<input type="text" class="form-control" id="txt_nombre_materia" name="txt_nombre_materia" placeholder="Ingrese nombre materia">
 		</div>
-		<input type="hidden" name="function" value="insertar_libro" />
 		<button class="btn btn-danger pull-right" id="btn-new-materia">Guardar&nbsp;&nbsp;<i class="glyphicon glyphicon-save"></i></button>
 	</div>
   </p>
@@ -173,6 +185,7 @@
 	var select_editorial = function () {};
 	var select_materia   = function () {};
 	$(document).on('ready',function(){
+		$('[data-toggle="tooltip"]').tooltip();
 		select_autor = function () {
 			$.ajax({
 				url: 'modulos/response_ajax.php',
@@ -266,7 +279,6 @@
 	    $('#datatable').dataTable({
 	      "AaSorting": [[0, "asc"]],
 	      "sPaginationType": "bs_normal",
-	      ajax: "data.json"
 	    }); 
 	    $('.datatable').each(function(){
 	      var datatable = $(this);
@@ -320,6 +332,9 @@
 	    	select_autor();
 	    	select_editorial();
 	    	select_materia();
+	    	$('#txt_edicion').val('');
+	    	$('#txt_fecha').val('');
+	    	$('#txt_descripcion').val('');
 	    	$('.ui-dialog').fadeOut();
 	    	$('#modalwindow').modal('show');
 	        $('.modal-title').html('Registro de nuevo libro&nbsp;&nbsp;<i class="glyphicon glyphicon-book"></i>');
@@ -408,22 +423,54 @@
 	    		}
 	    	});
 	    	if (band) { 
-	    		alertify.success('<b>Enviando datos</b>');
-	    		array = {};
-	    		//array.push($('#form-new-libro').serialize());
-	    		console.log($('#form-new-libro').serialize());
-	    		$.post(,{'array':'valor'},function(data){
-	    			console.log(data);
-	    		});
-	    		$.ajax({
-	    			url:'modulos/response_ajax.php',
-	    			method:'POST',
-	    			data:$('#form-new-libro').serialize(),
-	    			success:function(resp){
-	    				
+	    		$.post('modulos/response_ajax.php',$('#form-new-libro').serialize(),function(data){
+	    			data = parseInt(data)
+	    			if (typeof(data) == 'number' && data > 0) {
+	    				var autor     	= $('#txt_autor option:selected').text();
+	    				var editorial 	= $('#txt_editorial option:selected').text();
+	    				var materia		= $('#txt_materia option:selected').text();
+	    				var edicion 	= $('#txt_edicion').val(); $('#txt_edicion').val('');
+	    				var fecha 		= $('#txt_fecha').val(); $('#txt_fecha').val('');
+	    				var descripcion = $('#txt_descripcion').val(); $('#txt_descripcion').val('');
+	    				var html = '<tr class="odd" id="'+data+'"><td class="text-center  sorting_1">'+data+'</td><td class="text-center ">'+autor+'</td><td class="text-center ">'+editorial+'</td><td class="text-center ">'+materia+'</td><td class="descripcion_libro">'+descripcion.toUpperCase()+'</td><td class="text-center ">'+fecha+'</td><td class="text-center"><button id="edit-'+data+'" class="edit-libro text-info btn" data-toggle="tooltip" data-placement="top" title="Actualizar libro"><i class="glyphicon glyphicon-edit"></i></button>&nbsp;<button id="del-'+data+'" class="del-libro text-danger btn" data-toggle="tooltip" data-placement="top" title="Eliminar libro"><i class="glyphicon glyphicon-trash"></i></button></td></tr>';
+			  			$('#datatable tbody').prepend(html); 
+			  			$('#'+data).show(function(){$('#'+data).fadeIn();});
+			  			$('#modalwindow').modal('hide');
+	    				alertify.success('<b>Libro guardado con exito</b>');
+	    			} else {
+	    				alertify.error('<b>Ocurrio un error</b>');
 	    			}
 	    		});
 	    	}
 	    });
+
+		$(document).on('click','.del-libro',function(){
+			var id = $(this).attr('id').substring(4,$(this).attr('id').length);
+			var mensaje = "¿Realmente desea eliminar el libro \""+$('#'+id+' .descripcion_libro').text()+"\"?<br/>&nbsp;Este proceso es irreversible";
+            alertify.confirm(mensaje, function (e) {
+                if (e) {
+                    $.ajax({
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {'campo':'id_libro','val':id,'function':'eliminar','tabla':'tbl_libros'},
+                        url: 'modulos/response_ajax.php',
+                        success: function (resp) {
+                            if (resp == 0) { alertify.error('<b>Error al eliminar libro!</b>'); }
+                            else if(resp == 1){ $("#"+id).fadeOut(); alertify.success('<b>Libro eliminado con exito!</b>'); }
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            //console.log(xhr.status);
+                            //console.log(thrownError);
+                        },
+                    });
+                }
+            });
+		});
+
+		$(document).on('click','.edit-libro',function(){
+			var id = $(this).attr('id').substring(5,$(this).attr('id').length);
+			alertify.warning(id);
+
+		});
 	});
 </script>

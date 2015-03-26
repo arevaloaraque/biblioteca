@@ -1,5 +1,7 @@
 <?php 
 
+	session_start();
+
 	class Functions {
 
 		public function __construct($consultasbd) {
@@ -90,10 +92,17 @@
 		public function insertar_autor_libro () {
 			$nombre   = (isset($_POST['nombre']))?$_POST['nombre']:'';
 			$apellido = (isset($_POST['apellido']))?$_POST['apellido']:'';
-			$res = $this->consultasbd->insert($tabla='tbl_autor',$campos='nombre,apellido',$values='\''.$nombre.'\''.','.'\''.$apellido.'\'');
+			$res = $this->consultasbd->insert($tabla='tbl_autor',$campos='(nombre,apellido)',$values='\''.$nombre.'\''.','.'\''.$apellido.'\'');
 			if ($res) {
 				$res = $this->consultasbd->max_id($tabla='tbl_autor',$id='id_autor');
 				$dat = $this->consultasbd->fetch_array($res);
+				// auditoria
+				$auditar_mnsj = "Registró nuevo autor. datos: (nombre=>".$nombre.",apellido=>".$apellido.",id=>".$dat['id'].")";
+				$auditar_user = $_SESSION['id_operador'];
+				$auditar_date = date('Y-m-d');
+				$auditar_hour = date('H:m');
+				$this->consultasbd->insert($tabla='tbl_auditoria',$campos='(id_operador,descripcion,hora,fecha_auditoria)',$values='\''.$auditar_user.'\',\''.$auditar_mnsj.'\',\''.$auditar_hour.'\',\''.$auditar_date.'\'');
+				// FIN auditoria
 				echo $dat['id'];
 			} else {
 				echo '';
@@ -103,10 +112,17 @@
 		public function insertar_editorial () {
 			$nombre_editorial = $_POST['nombre_editorial'];
 			$ciudad_editorial = $_POST['ciudad_editorial'];
-			$res = $this->consultasbd->insert($tabla='tbl_editorial',$campos='nombre,ciudad',$values='\''.$nombre_editorial.'\''.','.'\''.$ciudad_editorial.'\'');
+			$res = $this->consultasbd->insert($tabla='tbl_editorial',$campos='(nombre,ciudad)',$values='\''.$nombre_editorial.'\''.','.'\''.$ciudad_editorial.'\'');
 			if ($res) {
 				$res = $this->consultasbd->max_id($tabla='tbl_editorial',$id='id_editorial');
 				$dat = $this->consultasbd->fetch_array($res);
+				// auditoria
+				$auditar_mnsj = "Registró nueva editorial. datos: (nombre editorial=>".$nombre_editorial.",ciudad=>".$ciudad_editorial.",id=>".$dat['id'].")";
+				$auditar_user = $_SESSION['id_operador'];
+				$auditar_date = date('Y-m-d');
+				$auditar_hour = date('H:m');
+				$this->consultasbd->insert($tabla='tbl_auditoria',$campos='(id_operador,descripcion,hora,fecha_auditoria)',$values='\''.$auditar_user.'\',\''.$auditar_mnsj.'\',\''.$auditar_hour.'\',\''.$auditar_date.'\'');
+				// FIN auditoria
 				echo $dat['id'];
 			} else {
 				echo '';
@@ -115,10 +131,17 @@
 
 		public function insertar_materia () {
 			$nombre_materia = $_POST['nombre_materia'];
-			$res = $this->consultasbd->insert($tabla='tbl_materia',$campos='nombre_materia',$values='\''.$nombre_materia.'\'');
+			$res = $this->consultasbd->insert($tabla='tbl_materia',$campos='(nombre_materia)',$values='\''.$nombre_materia.'\'');
 			if ($res) {
 				$res = $this->consultasbd->max_id($tabla='tbl_materia',$id='id_materia');
 				$dat = $this->consultasbd->fetch_array($res);
+				// auditoria
+				$auditar_mnsj = "Registró nueva materia. datos: (nombre materia=>".$nombre_materia.",id=>".$dat['id'].")";
+				$auditar_user = $_SESSION['id_operador'];
+				$auditar_date = date('Y-m-d');
+				$auditar_hour = date('H:m');
+				$this->consultasbd->insert($tabla='tbl_auditoria',$campos='(id_operador,descripcion,hora,fecha_auditoria)',$values='\''.$auditar_user.'\',\''.$auditar_mnsj.'\',\''.$auditar_hour.'\',\''.$auditar_date.'\'');
+				// FIN auditoria
 				echo $dat['id'];
 			} else {
 				echo '';
@@ -126,7 +149,30 @@
 		}
 
 		public function insertar_libro () {
-			var_dump($_POST);
+			$autor 		 = $_POST['txt_autor'];
+			$descripcion = $_POST['txt_descripcion'];
+			$edicion	 = $_POST['txt_edicion'];
+			$editorial   = $_POST['txt_editorial'];
+			$fecha 		 = $_POST['txt_fecha'];
+			$materia 	 = $_POST['txt_materia'];
+			$tabla 		 = 'tbl_libros';
+			$campos		 = '(id_autor,id_editorial,id_materia,edicion,fecha_publicacion,descripcion)';
+			$values	 	 = '\''.$autor.'\',\''.$editorial.'\',\''.$materia.'\',\''.$edicion.'\',\''.$fecha.'\',\''.$descripcion.'\'';
+			$res = $this->consultasbd->insert($tabla,$campos,$values);
+			if ($res) {
+				$res = $this->consultasbd->max_id($tabla='tbl_libros',$id='id_libro');
+				$dat = $this->consultasbd->fetch_array($res);
+				// auditoria
+				$auditar_mnsj = "Registró nueva libro. datos: (descripcion=>".$descripcion.",id=>".$dat['id'].")";
+				$auditar_user = $_SESSION['id_operador'];
+				$auditar_date = date('Y-m-d');
+				$auditar_hour = date('H:m');
+				$this->consultasbd->insert($tabla='tbl_auditoria',$campos='(id_operador,descripcion,hora,fecha_auditoria)',$values='\''.$auditar_user.'\',\''.$auditar_mnsj.'\',\''.$auditar_hour.'\',\''.$auditar_date.'\'');
+				// FIN auditoria
+				echo $dat['id'];
+			} else {
+				echo 0;
+			}
 		}
 
 		public function get_data() {
@@ -141,6 +187,25 @@
 			}
 		}
 
+		public function eliminar() {
+			$tabla = $_POST['tabla'];
+			$campo = $_POST['campo'];
+			$valor = $_POST['val'];
+			$res = $this->consultasbd->delete($tabla,$campo,$valor);
+			if ($res) {
+				// auditoria
+				$auditar_mnsj = "Eliminó registro. datos: (tabla=>".$tabla.",campo=>".$campo.",valor=>".$valor.")";
+				$auditar_user = $_SESSION['id_operador'];
+				$auditar_date = date('Y-m-d');
+				$auditar_hour = date('H:m');
+				$this->consultasbd->insert($tabla='tbl_auditoria',$campos='(id_operador,descripcion,hora,fecha_auditoria)',$values='\''.$auditar_user.'\',\''.$auditar_mnsj.'\',\''.$auditar_hour.'\',\''.$auditar_date.'\'');
+				// FIN auditoria
+				echo 1;
+			} else {
+				echo 0;
+			}
+		}
+
 	}
 	
 	include_once('modelo.php');
@@ -148,9 +213,13 @@
 	if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
 		if (isset($_POST) && count($_POST) > 0) {
 			$functions = new Functions($consultasbd);
-			if (method_exists('Functions',$_POST['function'])){
-				$functions->$_POST['function']();
-			}else {
+			if (isset($_POST['function'])) {
+				if (method_exists('Functions',$_POST['function'])){
+					$functions->$_POST['function']();
+				}else {
+					echo 0;
+				}				
+			} else {
 				echo 0;
 			}
 		} else {

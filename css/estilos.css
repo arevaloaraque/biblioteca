@@ -39,3 +39,7 @@ button.navbar-toggle {
 #table-result {
 	display: 			none;
 }
+
+.del-libro, .edit-libro {
+	border:				1px double #444;
+}

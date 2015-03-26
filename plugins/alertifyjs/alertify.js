@@ -43,7 +43,7 @@
             position:'top-right'
         },
         glossary:{
-            title:'AlertifyJS',
+            title:'Mensaje BibloWeb-v1.0',
             ok: 'OK',
             cancel: 'Cancel',
             acccpt: 'Accept',
