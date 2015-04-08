@@ -469,8 +469,26 @@
 
 		$(document).on('click','.edit-libro',function(){
 			var id = $(this).attr('id').substring(5,$(this).attr('id').length);
-			alertify.warning(id);
-
+			console.log(id);
+			var autor = $('#'+id+' .autor_libro').text();
+			console.log(autor);
+			var editorial = $('#'+id+' .editorial_libro').text();
+			console.log(editorial);
+			var materia = $('#'+id+' .materia_libro').text();
+			console.log(materia);
+			var descripcion = $('#'+id+' .descripcion_libro').text();
+			console.log(descripcion);
+			var fecha = $('#'+id+' .fecha_libro').text();
+			console.log(fecha);
+			select_autor();
+	    	select_editorial();
+	    	select_materia();
+			$('#modalwindow').modal('show');
+	        $('.modal-title').html('Actualizaci&oacute;n de libro&nbsp;&nbsp;<i class="glyphicon glyphicon-book"></i>');
+	        $('.modal-footer').html('<button type="button" class="btn btn-primary" id="edit-libro">Guardar&nbsp;<i class="glyphicon glyphicon-ok"></i></button><button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar&nbsp;<i class="glyphicon glyphicon-remove"></i></button>');
+	        $('#txt_autor > option[value=\''+autor+'\']').attr('selected','selected');
+	        $('#txt_autor').trigger("chosen:updated");
+	        console.log($('#txt_autor > option[value=\''+autor+'\']').length);
 		});
 	});
 </script>
