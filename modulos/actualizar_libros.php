@@ -1,97 +1,23 @@
 <?php
 	include_once('modulos/modelo.php');
-	$libros = $consultasbd->select($tabla='tbl_libros');
+	if (isset($_GET['id_libro'])) {
+		$id_libro = $_GET['id_libro'];
+	}
+	$libros = $consultasbd->select($tabla='tbl_libros',$campos="*",$where=' WHERE id_libro='.$id_libro.';');
+	$libro = $consultasbd->fetch_array($libros);
+	if ($consultasbd->num_rows($libros) == 0){
+		echo '<script>location.href="index.php?page=libros";</script>';
+	}
+
 ?>
 <div class="col-sm-9 col-md-10">
   <div class="panel panel-primary">
     <div class="panel-heading">
-      <h3 class="panel-title"><b>Listado&nbsp;general&nbsp;de&nbsp;libros<i class="glyphicon glyphicon-book" style="float:right;"></i></b></h3>
+      <h3 class="panel-title"><b>Actualizaci&oacute;n&nbsp;de&nbsp;libros<i class="glyphicon glyphicon-book" style="float:right;"></i></b></h3>
     </div>
     <div class="panel-body">
-    	<button class='pull-right btn btn-primary' id='add-libro'>Agregar&nbsp;&nbsp;<i class="glyphicon glyphicon-plus"></i></button>
-    	<button data-toggle="tooltip" data-placement="top" title="Actualizar tabla" class='btn btn-info' id='add-libro' onclick="location.reload();"><i class="glyphicon glyphicon-refresh"></i></button>
     	<br/><br/>
-    	<?php //if ($consultasbd->num_rows($libros) > 0): ?>
-      	<div class="table-responsive">
-			<table class='table table-bordered table-striped table-hover datatable dataTable' id="datatable" style='border-radius:5px;'>
-			  <thead>
-			  		<tr class="danger">
-			  			<th class='col-lg-1 text-center'>C&oacute;digo</th>
-			  			<th class='col-lg-2 text-center'>Autor</th>
-			  			<th class='col-lg-2 text-center'>Editorial</th>
-			  			<th class='col-lg-2 text-center'>Materia</th>
-			  			<th class='col-lg-3'>Descripci&oacute;n</th>
-			  			<th class='col-lg-1 text-center'>Fecha</th>
-			  			<th class='text-center col-lg-1'>Acci&oacute;nes</th>
-			  		</tr>
-			  </thead>
-			  <tbody>
-			  	<?php while ($libro = $consultasbd->fetch_array($libros)) { ?>
-			  	<?php 
-			  		// datos de autor
-					$res_autor = $consultasbd->select($tabla='tbl_autor',$campos='*',$where = ((!empty($libro['id_autor']))?'WHERE id_autor=\''.$libro['id_autor'].'\'':''));
-					$fetch_autor = $consultasbd->fetch_array($res_autor);
-					$autor = $fetch_autor['nombre'].' '.$fetch_autor['apellido'];
-					// datos de editorial
-					$res_editorial = $consultasbd->select($tabla='tbl_editorial',$campos='*',$where = ((!empty($libro['id_editorial']))?'WHERE id_editorial=\''.$libro['id_editorial'].'\'':''));
-					$fetch_editorial = $consultasbd->fetch_array($res_editorial);
-					$editorial = $fetch_editorial['nombre'].' '.$fetch_editorial['ciudad'];
-					// datos de materia
-					$res_materia = $consultasbd->select($tabla='tbl_materia',$campos='*',$where = ((!empty($libro['id_materia']))?'WHERE id_materia=\''.$libro['id_materia'].'\'':''));
-					$fetch_materia = $consultasbd->fetch_array($res_materia);
-					$materia = $fetch_materia['nombre_materia'];
-
-					$libro['id_autor'] = $autor;
-					$libro['id_editorial'] = $editorial;
-					$libro['id_materia'] = $materia;
-					$libro['fecha_publicacion'] = date('d-m-Y',strtotime($libro['fecha_publicacion']));
-			  	?>
-			  		<tr id="<?php echo $libro['id_libro']; ?>">
-			  			<td class='text-center'><?php echo $libro['id_libro']; ?></td>
-			  			<td class='text-center autor_libro'><?php echo strtoupper($libro['id_autor']); ?></td>
-			  			<td class='text-center editorial_libro'><?php echo strtoupper($libro['id_editorial']); ?></td>
-			  			<td class='text-center materia_libro'><?php echo strtoupper($libro['id_materia']); ?></td>
-			  			<td class='descripcion_libro'><?php echo strtoupper($libro['descripcion']); ?></td>
-			  			<td class='text-center fecha_libro'><?php echo $libro['fecha_publicacion']; ?></td>
-			  			<td class='text-center'>
-			  				<button id="edit-<?php echo $libro['id_libro']; ?>" class="edit-libro text-info btn" data-toggle="tooltip" data-placement="top" title="Actualizar libro"><i class="glyphicon glyphicon-edit"></i></button>
-			  				<button id="del-<?php echo $libro['id_libro']; ?>" class="del-libro text-danger btn" data-toggle="tooltip" data-placement="top" title="Eliminar libro"><i class="glyphicon glyphicon-trash"></i></button>
-			  			</td>
-			  		</tr>
-			  	<?php } ?>
-			  </tbody>
-			</table>
-		</div>
-		<?php //else: ?>
-
-		<?php //endif; ?>
-    </div>
-    <div class="panel-footer text-center">
-      <div class="btn-group">
-          <p><i class="text-muted">BibloWeb v1.0</i></p>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Generated markup by the plugin -->
-<div class="tooltip top" role="tooltip">
-  <div class="tooltip-arrow"></div>
-  <div class="tooltip-inner">
-    
-  </div>
-</div>
-
-<!-- Ventana Modal, Agregar nuevo libro -->
-<div class="modal fade" id="modalwindow">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true" class="text-danger"><small>[&times;]</small></span><span class="sr-only"></span></button>
-        <h4 class="modal-title"></h4>
-      </div>
-      <div class="modal-body">
-      	<form class="form" id="form-new-libro">
+    	<form class="form" id="form-new-libro">
       		<div class="row">
 			  	<div class="form-group col-lg-4">
 			    	<label for="txt_autor">Autor</label>
@@ -127,13 +53,15 @@
 			</div>
 			<input type="hidden" name="function" value="insertar_libro" />
 		</form>
+    </div>
+    <div class="panel-footer text-center">
+      <div class="btn-group">
+          <p><i class="text-muted">BibloWeb v1.0</i></p>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+    </div>
+  </div>
+</div>
+
 
 <div id="dialog" title="Agregando">
   <p id="contentdialog">
@@ -166,8 +94,10 @@
 		</div>
 		<button class="btn btn-danger pull-right" id="btn-new-materia">Guardar&nbsp;&nbsp;<i class="glyphicon glyphicon-save"></i></button>
 	</div>
+		<button class="btn btn-danger pull-right" id="btn-new-cancel">Cancelar&nbsp;&nbsp;<i class="glyphicon glyphicon-remove"></i></button>
   </p>
 </div>
+
 <script src="librerias/jquery-ui/jquery-ui.min.js" type="text/javascript"></script>
 <link rel="stylesheet" type="text/css" href="librerias/jquery-ui/jquery-ui.min.css">
 <link rel="stylesheet" type="text/css" href="plugins/dataTables/css/datatables.css">
@@ -185,7 +115,6 @@
 	var select_editorial = function () {};
 	var select_materia   = function () {};
 	$(document).on('ready',function(){
-		$('[data-toggle="tooltip"]').tooltip();
 		select_autor = function () {
 			$.ajax({
 				url: 'modulos/response_ajax.php',
@@ -265,40 +194,29 @@
 		      showMonthAfterYear: false,
 		      yearSuffix: ''
 		 };
-		 $.datepicker.setDefaults($.datepicker.regional['es']);
-		$('#menu-item li.active').removeClass('active');
+		$.datepicker.setDefaults($.datepicker.regional['es']);
 	    $('#liRecursos').addClass('active');
 	    // title page
-		$('title').html('..:: Listado General de Libros ::..&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
+		$('title').html('..:: Actualizaci&oacute;n de Libros ::..&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
 		valuesTitle();
 		// creacion de la ventana de dialogo
-		 $( "#dialog" ).dialog();
-		 $( ".ui-dialog" ).css({'border':'2px solid #000'});
-		 $( ".ui-dialog" ).hide();
-		// Configuracion datatable
-	    $('#datatable').dataTable({
-	      "AaSorting": [[0, "asc"]],
-	      "sPaginationType": "bs_normal",
-	    }); 
-	    $('.datatable').each(function(){
-	      var datatable = $(this);
-	      // SEARCH - Add the placeholder for Search and Turn this into in-line form control
-	      var search_input = datatable.closest('.dataTables_wrapper').find('div[id$=_filter] input');
-	      search_input.attr({'placeholder':'Buscar Libro','id':'btn_search_table'});
-	      search_input.addClass('form-control input-sm');
-	      // LENGTH - Inline-Form control
-	      var length_sel = datatable.closest('.dataTables_wrapper').find('div[id$=_length] select');
-	      length_sel.addClass('form-control input-sm');
-	    });
-	    $('#btn_search_table').attr('title','Filtrar resultado');
-	    $('#btn_search_table').tooltip();
+		$( "#dialog" ).dialog();
+		$( ".ui-dialog" ).css({'border':'2px solid #000'});
+		$( ".ui-dialog" ).hide();
+		$("#btn-new-cancel").click(function(){
+			$( ".ui-dialog" ).hide();
+		});
 
+		select_autor();
+    	select_editorial();
+    	select_materia();
 	    // convertir selects a chosen
 	    $('#txt_autor').chosen({no_results_text:'<a class="crear_recurso_autor" title="Registrar nuevo autor" >Crear!</a>',width:"100%"});
 	    $('#txt_editorial').chosen({no_results_text:'<a class="crear_recurso_editorial" title="Registrar nueva editorial" >Crear!</a>',width:"100%"});
 	    $('#txt_materia').chosen({no_results_text:'<a class="crear_recurso_materia" title="Registrar nueva materia" >Crear!</a>',width:"100%"});
 	    // crear recurso
 	    $(document).on( "click",".crear_recurso_autor",function() {
+	    	$('#txt_autor').trigger("chosen:updated");
 	    	valor = $("#txt_autor_chosen .chosen-search input").val();
 	    	$('.ui-dialog').fadeIn();
 	    	$('#capa_editorial').hide();
@@ -306,26 +224,25 @@
 	    	$('#capa_autor').show();
 	    	$("#txt_nombre").val(valor);
 	    	$('#txt_apellido').val('');
-	    	$('#modalwindow').modal('hide');
 	    });
 	    $(document).on( "click",".crear_recurso_editorial",function() {
 	    	$('#txt_ciudad_editorial').val('');
+	    	$('#txt_editorial').trigger("chosen:updated");
 	    	valor = $("#txt_editorial_chosen .chosen-search input").val();
 	    	$('.ui-dialog').fadeIn();
 	    	$('#capa_materia').hide();
 	    	$('#capa_autor').hide();
 	    	$('#capa_editorial').show();
 	    	$("#txt_nombre_editorial").val(valor);
-	    	$('#modalwindow').modal('hide');
 	    });
 	    $(document).on( "click",".crear_recurso_materia",function() {
+	    	$('#txt_materia').trigger("chosen:updated");
 	    	valor = $("#txt_materia_chosen .chosen-search input").val();
 	    	$('.ui-dialog').fadeIn();
 	    	$('#capa_autor').hide();
 	    	$('#capa_editorial').hide();
 	    	$('#capa_materia').show();
 	    	$("#txt_nombre_materia").val(valor);
-	    	$('#modalwindow').modal('hide');
 	    });
 	    // mostrar ventana modal para registro de libro
 	    $('#add-libro').click(function(e){
@@ -336,9 +253,6 @@
 	    	$('#txt_fecha').val('');
 	    	$('#txt_descripcion').val('');
 	    	$('.ui-dialog').fadeOut();
-	    	$('#modalwindow').modal('show');
-	        $('.modal-title').html('Registro de nuevo libro&nbsp;&nbsp;<i class="glyphicon glyphicon-book"></i>');
-	        $('.modal-footer').html('<button type="button" class="btn btn-primary" id="add-new-libro">Guardar&nbsp;<i class="glyphicon glyphicon-ok"></i></button><button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar&nbsp;<i class="glyphicon glyphicon-remove"></i></button>');
 	    });
 
 	    // validacion de nuevo autor
@@ -362,7 +276,6 @@
 	    		});
 	    		$('.ui-dialog').fadeOut();
 	    		$('#capa_editorial').hide();
-	    		$('#modalwindow').modal('show');
 	    	}
 	    });
 	    // validacion de nueva editorial
@@ -444,32 +357,5 @@
 	    	}
 	    });
 
-		$(document).on('click','.del-libro',function(){
-			var id = $(this).attr('id').substring(4,$(this).attr('id').length);
-			var mensaje = "¿Realmente desea eliminar el libro \""+$('#'+id+' .descripcion_libro').text()+"\"?<br/>&nbsp;Este proceso es irreversible";
-            alertify.confirm(mensaje, function (e) {
-                if (e) {
-                    $.ajax({
-                        type: 'POST',
-                        dataType: 'json',
-                        data: {'campo':'id_libro','val':id,'function':'eliminar','tabla':'tbl_libros'},
-                        url: 'modulos/response_ajax.php',
-                        success: function (resp) {
-                            if (resp == 0) { alertify.error('<b>Error al eliminar libro!</b>'); }
-                            else if(resp == 1){ $("#"+id).fadeOut(); alertify.success('<b>Libro eliminado con exito!</b>'); }
-                        },
-                        error: function (xhr, ajaxOptions, thrownError) {
-                            //console.log(xhr.status);
-                            //console.log(thrownError);
-                        },
-                    });
-                }
-            });
-		});
-
-		$(document).on('click','.edit-libro',function(){
-			var id = $(this).attr('id').substring(5,$(this).attr('id').length);
-			location.href = "index.php?page=actualizar_libros&id_libro="+id;
-		});
 	});
 </script>
