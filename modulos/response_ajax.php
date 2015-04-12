@@ -69,11 +69,9 @@
 						$res_autor = $this->consultasbd->select($tabla='tbl_autor_tesis',$campos='*',$where = ((!empty($array['id_autor_tesis']))?'WHERE id_autor_tesis=\''.$array['id_autor_tesis'].'\'':''));
 						$fetch_autor = $this->consultasbd->fetch_array($res_autor);
 						$autor = $fetch_autor['nombre'].' '.$fetch_autor['apellido'];
-						$mension = $fetch_autor['mension'];
 
 						$array['id_autor_tesis'] = $autor;
 						$array['id_materia'] = $materia;
-						$array['mension'] = $mension;
 						$array['fecha_publicacion'] = date('d-m-Y',strtotime($array['fecha_publicacion']));
 						$response[] = $array;
 					}
@@ -172,6 +170,52 @@
 				echo $dat['id'];
 			} else {
 				echo 0;
+			}
+		}
+
+		public function insertar_tesis () {
+			$materia 	 = $_POST['txt_materia'];
+			$autor 		 = $_POST['txt_autor_tesis'];
+			$titulo 	 = $_POST['txt_titulo'];
+			$fecha 		 = $_POST['txt_fecha'];
+			$mension	 = $_POST['txt_mension'];
+			$tabla 		 = 'tbl_tesis';
+			$campos		 = '(id_materia,id_autor_tesis,titulo,fecha_publicacion,mension)';
+			$values	 	 = '\''.$materia.'\',\''.$autor.'\',\''.$titulo.'\',\''.$fecha.'\''.',\''.$mension.'\'';
+			$res = $this->consultasbd->insert($tabla,$campos,$values,$type='insert');
+			if ($res) {
+				$res = $this->consultasbd->max_id($tabla='tbl_tesis',$id='id_tesis');
+				$dat = $this->consultasbd->fetch_array($res);
+				// auditoria
+				$auditar_mnsj = "Registró nueva tesis. datos: (titulo=>".$titulo.",id=>".$dat['id'].")";
+				$auditar_user = $_SESSION['id_operador'];
+				$auditar_date = date('Y-m-d');
+				$auditar_hour = date('H:m');
+				$this->consultasbd->insert($tabla='tbl_auditoria',$campos='(id_operador,descripcion,hora,fecha_auditoria)',$values='\''.$auditar_user.'\',\''.$auditar_mnsj.'\',\''.$auditar_hour.'\',\''.$auditar_date.'\'');
+				// FIN auditoria
+				echo $dat['id'];
+			} else {
+				echo 0;
+			}
+		}
+
+		public function insertar_autor_tesis() {
+			$nombre   = (isset($_POST['nombre']))?$_POST['nombre']:'';
+			$apellido = (isset($_POST['apellido']))?$_POST['apellido']:'';
+			$res = $this->consultasbd->insert($tabla='tbl_autor_tesis',$campos='(nombre,apellido)',$values='\''.$nombre.'\''.','.'\''.$apellido.'\'');
+			if ($res) {
+				$res = $this->consultasbd->max_id($tabla='tbl_autor_tesis',$id='id_autor_tesis');
+				$dat = $this->consultasbd->fetch_array($res);
+				// auditoria
+				$auditar_mnsj = "Registró nuevo autor de tesis. datos: (nombre=>".$nombre.",apellido=>".$apellido.",id=>".$dat['id'].")";
+				$auditar_user = $_SESSION['id_operador'];
+				$auditar_date = date('Y-m-d');
+				$auditar_hour = date('H:m');
+				$this->consultasbd->insert($tabla='tbl_auditoria',$campos='(id_operador,descripcion,hora,fecha_auditoria)',$values='\''.$auditar_user.'\',\''.$auditar_mnsj.'\',\''.$auditar_hour.'\',\''.$auditar_date.'\'');
+				// FIN auditoria
+				echo $dat['id'];
+			} else {
+				echo '';
 			}
 		}
 

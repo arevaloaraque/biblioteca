@@ -1,99 +1,88 @@
 <?php
 	include_once('modulos/modelo.php');
-	if (isset($_GET['id_libro'])) {
-		$id_libro = $_GET['id_libro'];
-		$libros = $consultasbd->select($tabla='tbl_libros',$campos="*",$where=' WHERE id_libro='.$id_libro.';');
-		$libro = $consultasbd->fetch_array($libros);
-		if ($consultasbd->num_rows($libros) == 0){
-			echo '<script>location.href="index.php?page=libros";</script>';
+	if (isset($_GET['id_tesis'])) {
+		$id_tesis = $_GET['id_tesis'];
+		$tesis = $consultasbd->select($tabla='tbl_tesis',$campos="*",$where=' WHERE id_tesis='.$id_tesis.';');
+		$tesi = $consultasbd->fetch_array($tesis);
+		if ($consultasbd->num_rows($tesis) == 0){
+			echo '<script>location.href="index.php?page=tesis";</script>';
 		}
-		// datos de autor
-		$res_autor = $consultasbd->select($tabla='tbl_autor',$campos='*',$where = ((!empty($libro['id_autor']))?'WHERE id_autor=\''.$libro['id_autor'].'\'':''));
-		$fetch_autor = $consultasbd->fetch_array($res_autor);
-		$autor = $fetch_autor['nombre'].' '.$fetch_autor['apellido'];
-		// datos de editorial
-		$res_editorial = $consultasbd->select($tabla='tbl_editorial',$campos='*',$where = ((!empty($libro['id_editorial']))?'WHERE id_editorial=\''.$libro['id_editorial'].'\'':''));
-		$fetch_editorial = $consultasbd->fetch_array($res_editorial);
-		$editorial = $fetch_editorial['nombre'].' '.$fetch_editorial['ciudad'];
 		// datos de materia
-		$res_materia = $consultasbd->select($tabla='tbl_materia',$campos='*',$where = ((!empty($libro['id_materia']))?'WHERE id_materia=\''.$libro['id_materia'].'\'':''));
+		$res_materia = $consultasbd->select($tabla='tbl_materia',$campos='*',$where = ((!empty($tesi['id_materia']))?'WHERE id_materia=\''.$tesi['id_materia'].'\'':''));
 		$fetch_materia = $consultasbd->fetch_array($res_materia);
 		$materia = $fetch_materia['nombre_materia'];
+		// datos de autor
+		$res_autor = $consultasbd->select($tabla='tbl_autor_tesis',$campos='*',$where = ((!empty($tesi['id_autor_tesis']))?'WHERE id_autor_tesis=\''.$tesi['id_autor_tesis'].'\'':''));
+		$fetch_autor = $consultasbd->fetch_array($res_autor);
+		$autor = $fetch_autor['nombre'].' '.$fetch_autor['apellido'];
 
-		$libro['id_autor'] = $autor;
-		$libro['id_editorial'] = $editorial;
-		$libro['id_materia'] = $materia;
-		$libro['fecha_publicacion'] = date('d-m-Y',strtotime($libro['fecha_publicacion']));
-	} else if (isset($_POST['id_libro_h'])){
-		$id_libro    = $_POST['id_libro_h'];
-		$autor 		 = $_POST['txt_autor'];
-		$descripcion = $_POST['txt_descripcion'];
-		$edicion	 = $_POST['txt_edicion'];
-		$editorial   = $_POST['txt_editorial'];
-		$fecha 		 = $_POST['txt_fecha'];
+		$tesi['id_autor_tesis'] = $autor;
+		$tesi['id_materia'] = $materia;
+		$tesi['fecha_publicacion'] = date('d-m-Y',strtotime($tesi['fecha_publicacion']));
+	} else if (isset($_POST['id_tesis_h'])){
+		$id_tesis    = $_POST['id_tesis_h'];
 		$materia 	 = $_POST['txt_materia'];
-		$tabla 		 = 'tbl_libros';
-		$set  		 = 'id_autor=\''.$autor.'\', id_editorial=\''.$editorial.'\', id_materia=\''.$materia.'\',';
-		$set  		.= 'edicion=\''.$edicion.'\', fecha_publicacion=\''.$fecha.'\', descripcion=\''.$descripcion.'\'';
-		$where 		 = ' WHERE id_libro=\''.$id_libro.'\'';
-		if (empty($_POST['id_libro_h']) || empty($_POST['txt_autor']) || empty($_POST['txt_descripcion']) || empty($_POST['txt_edicion']) || empty($_POST['txt_editorial']) || empty($_POST['txt_fecha']) || empty($_POST['txt_materia'])) {
-			echo '<script>location.href="index.php?page=actualizar_libros&id_libro='.$id_libro.'&error=true";</script>';
+		$autor 		 = $_POST['txt_autor_tesis'];
+		$titulo 	 = $_POST['txt_titulo'];
+		$fecha 		 = $_POST['txt_fecha'];
+		$mension	 = $_POST['txt_mension'];
+		$tabla 		 = 'tbl_tesis';
+		$set  		 = 'id_autor_tesis=\''.$autor.'\', id_materia=\''.$materia.'\', titulo=\''.$titulo.'\',';
+		$set  		.= 'fecha_publicacion=\''.$fecha.'\', mension=\''.$mension.'\'';
+		$where 		 = ' WHERE id_tesis=\''.$id_tesis.'\'';
+		if (empty($_POST['id_tesis_h']) || empty($_POST['txt_autor_tesis']) || empty($_POST['txt_titulo']) || empty($_POST['txt_materia']) || empty($_POST['txt_fecha']) || empty($_POST['txt_mension'])) {
+			echo '<script>location.href="index.php?page=actualizar_tesis&id_tesis='.$id_tesis.'&error=true";</script>';
 		} else {
 			$res = $consultasbd->update($tabla,$set,$where);
 			// auditoria
-			$auditar_mnsj = "Actualizó libro. datos: (descripcion=>".$descripcion.",id=>".$id_libro.")";
+			$auditar_mnsj = "Actualizó tesis. datos: (titulo=>".$titulo.",id=>".$id_tesis.")";
 			$auditar_user = $_SESSION['id_operador'];
 			$auditar_date = date('Y-m-d');
 			$auditar_hour = date('H:m');
 			$consultasbd->insert($tabla='tbl_auditoria',$campos='(id_operador,descripcion,hora,fecha_auditoria)',$values='\''.$auditar_user.'\',\''.$auditar_mnsj.'\',\''.$auditar_hour.'\',\''.$auditar_date.'\'');
 			// FIN auditoria
-			echo '<script>location.href="index.php?page=libros&up=true";</script>';
+			echo '<script>location.href="index.php?page=tesis&up=true";</script>';
 		}
 	} else {
-		echo '<script>location.href="index.php?page=libros";</script>';
+		echo '<script>location.href="index.php?page=tesis";</script>';
 	}
 
 ?>
 <div class="col-sm-9 col-md-10">
   <div class="panel panel-primary">
     <div class="panel-heading">
-      <h3 class="panel-title"><b>Actualizaci&oacute;n&nbsp;de&nbsp;libros<i class="glyphicon glyphicon-book" style="float:right;"></i></b></h3>
+      <h3 class="panel-title"><b>Actualizaci&oacute;n&nbsp;de&nbsp;tesis<i class="glyphicon glyphicon-book" style="float:right;"></i></b></h3>
     </div>
     <div class="panel-body">
     	<br/><br/>
-    	<form class="form" id="form-edit-libro" method="POST" action="index.php?page=actualizar_libros">
-    		<input type="hidden" name="id_libro_h" value="<?php echo $id_libro; ?>" />
+    	<form class="form" id="form-edit-tesis" method="POST" action="index.php?page=actualizar_tesis">
+    		<input type="hidden" name="id_tesis_h" value="<?php echo $id_tesis; ?>" />
       		<div class="row">
-			  	<div class="form-group col-lg-4">
-			    	<label for="txt_autor">Autor</label>
-			    	<select name="txt_autor" id="txt_autor" class="chosen-select form-control required" data-placeholder="Seleccione autor" title="Autor">
-			    	</select>
-			  	</div>
-			  	<div class="form-group col-lg-4">
-			    	<label for="txt_editorial">Editorial</label>
-			    	<select name="txt_editorial" id="txt_editorial" class="form-control required" data-placeholder="Seleccione editorial" title="Editorial">
-			    	</select>
-			  	</div>
-			  	<div class="form-group col-lg-4">
+			  	<div class="form-group col-lg-6">
 			    	<label for="txt_materia">Materia</label>
 			    	<select name="txt_materia" id="txt_materia" class="form-control required" data-placeholder="Seleccione materia" title="Materia">
 			    	</select>
 			  	</div>
+			  	<div class="form-group col-lg-6">
+			    	<label for="txt_autor_tesis">Autor tesis</label>
+			    	<select name="txt_autor_tesis" id="txt_autor_tesis" class="chosen-select form-control required" data-placeholder="Seleccione autor" title="Autor">
+			    	</select>
+			  	</div>
 			</div>
 			<div class="row">
 			  	<div class="form-group col-lg-6">
-			    	<label for="txt_edicion">Edici&oacute;n</label>
-			    	<input type="text" name="txt_edicion" id="txt_edicion" class="form-control required" title="Edici&oacute;n" value="<?php echo $libro['edicion']; ?>" />
+			    	<label for="txt_mension">Mensi&oacute;n</label>
+			    	<input type="text" name="txt_mension" id="txt_mension" class="form-control required" title="Mensi&oacute;n" value="<?php echo $tesi['mension']; ?>" />
 			  	</div>
 			  	<div class="form-group col-lg-6">
 			    	<label for="txt_fecha">Fecha Publicaci&oacute;n</label>
-			    	<input type="text" name="txt_fecha" id="txt_fecha" class="form-control required" title="Fecha Publicaci&oacute;n" value="<?php echo $libro['fecha_publicacion']; ?>" />
+			    	<input type="text" name="txt_fecha" id="txt_fecha" class="form-control required" title="Fecha Publicaci&oacute;n" value="<?php echo $tesi['fecha_publicacion']; ?>" />
 			  	</div>
 			</div>
 			<div class="row">
 				<div class="form-group col-lg-12">
-			    	<label for="txt_descripcion">Descripci&oacute;n</label>
-			    	<textarea name="txt_descripcion" maxlength="60" id="txt_descripcion" class="form-control required" title="Descripci&oacute;n"><?php echo $libro["descripcion"]; ?></textarea>
+			    	<label for="txt_titulo">Titulo</label>
+			    	<textarea name="txt_titulo" maxlength="30" id="txt_titulo" class="form-control required" title="Titulo"><?php echo $tesi["titulo"]; ?></textarea>
 			  	</div>
 			</div>
 			<div class="row">
@@ -128,17 +117,6 @@
 		</div>
 		<button class="btn btn-danger pull-right" id="btn-new-autor">Guardar&nbsp;&nbsp;<i class="glyphicon glyphicon-save"></i></button>
 	</div>
-	<div id="capa_editorial" style="display:none;">
-		<div class="form-group">
-			<label for="txt_nombre_editorial">Nombre editorial:</label>
-			<input type="text" class="form-control" id="txt_nombre_editorial" name="txt_nombre_editorial" placeholder="Ingrese nombre editorial">
-		</div>
-		<div class="form-group">
-			<label for="txt_ciudad_editorial">Ciudad editorial</label>
-			<input type="text" class="form-control" id="txt_ciudad_editorial" name="txt_ciudad_editorial" placeholder="Ingrese ciudad editorial">
-		</div>
-		<button class="btn btn-danger pull-right" id="btn-new-editorial">Guardar&nbsp;&nbsp;<i class="glyphicon glyphicon-save"></i></button>
-	</div>
 	<div id="capa_materia" style="display:none;">
 		<div class="form-group">
 			<label for="txt_nombre_materia">Nombre materia:</label>
@@ -146,7 +124,7 @@
 		</div>
 		<button class="btn btn-danger pull-right" id="btn-new-materia">Guardar&nbsp;&nbsp;<i class="glyphicon glyphicon-save"></i></button>
 	</div>
-		<button class="btn btn-muted pull-right" id="btn-new-cancel">Cancelar&nbsp;&nbsp;<i class="glyphicon glyphicon-remove"></i></button>
+	<button class="btn btn-muted pull-right" id="btn-new-cancel">Cancelar&nbsp;&nbsp;<i class="glyphicon glyphicon-remove"></i></button>
   </p>
 </div>
 
@@ -167,51 +145,26 @@
 	var select_editorial = function () {};
 	var select_materia   = function () {};
 	$(document).on('ready',function(){
-		console.log('<?php echo $libro["id_autor"]; ?>');
 		select_autor = function () {
 			$.ajax({
 				url: 'modulos/response_ajax.php',
 				method: 'POST',
-				data: {'function':'get_data','tabla':'tbl_autor'},
+				data: {'function':'get_data','tabla':'tbl_autor_tesis'},
 				success: function (resp) {
 					if (resp != '') {
 						var data = JSON.parse(resp);
 						var html = '<option value=""></option>';
 						var selected = '';
 						for (var i = 0; i < data.length; i++) {
-							if ('<?php echo $libro["id_autor"]; ?>'.toUpperCase() == data[i].nombre.toUpperCase()+' '+data[i].apellido.toUpperCase()){
+							if ('<?php echo $tesi["id_autor_tesis"] ?>'.toUpperCase() == data[i].nombre.toUpperCase()+' '+data[i].apellido.toUpperCase()) {
 								selected = 'selected="selected"';
 							} else {
 								selected = '';
 							}
-							html += '<option value="'+data[i].id_autor+'" '+selected+'>'+data[i].nombre.toUpperCase()+' '+data[i].apellido.toUpperCase()+'</option>';
+							html += '<option value="'+data[i].id_autor_tesis+'" '+selected+'>'+data[i].nombre.toUpperCase()+' '+data[i].apellido.toUpperCase()+'</option>';
 						};
-						$('#txt_autor').html(html);
-						$('#txt_autor').trigger("chosen:updated");
-					}
-				}
-			});
-		};
-		select_editorial = function () {
-			$.ajax({
-				url: 'modulos/response_ajax.php',
-				method: 'POST',
-				data: {'function':'get_data','tabla':'tbl_editorial'},
-				success: function (resp) {
-					if (resp != '') {
-						var data = JSON.parse(resp);
-						var html = '<option value=""></option>';
-						var selected = '';
-						for (var i = 0; i < data.length; i++) {
-							if ('<?php echo $libro["id_editorial"]; ?>'.toUpperCase() == data[i].nombre.toUpperCase()+' '+data[i].ciudad.toUpperCase()){
-								selected = 'selected="selected"';
-							} else {
-								selected = '';
-							}
-							html += '<option value="'+data[i].id_editorial+'" '+selected+'>'+data[i].nombre.toUpperCase()+' '+data[i].ciudad.toUpperCase()+'</option>';
-						};
-						$('#txt_editorial').html(html);
-						$('#txt_editorial').trigger("chosen:updated");
+						$('#txt_autor_tesis').html(html);
+						$('#txt_autor_tesis').trigger("chosen:updated");
 					}
 				}
 			});
@@ -227,7 +180,7 @@
 						var html = '<option value=""></option>';
 						var selected = '';
 						for (var i = 0; i < data.length; i++) {
-							if ('<?php echo $libro["id_materia"]; ?>'.toUpperCase() == data[i].nombre_materia.toUpperCase()) {
+							if ('<?php echo $tesi["id_materia"] ?>'.toUpperCase() == data[i].nombre_materia.toUpperCase()) {
 								selected = 'selected="selected"';
 							} else {
 								selected = '';
@@ -268,7 +221,7 @@
 		$.datepicker.setDefaults($.datepicker.regional['es']);
 	    $('#liRecursos').addClass('active');
 	    // title page
-		$('title').html('..:: Actualizaci&oacute;n de Libros ::..&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
+		$('title').html('..:: Actualizaci&oacute;n de tesis ::..&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
 		valuesTitle();
 		// creacion de la ventana de dialogo
 		$( "#dialog" ).dialog();
@@ -282,48 +235,27 @@
     	select_editorial();
     	select_materia();
 	    // convertir selects a chosen
-	    $('#txt_autor').chosen({no_results_text:'<a class="crear_recurso_autor" title="Registrar nuevo autor" >Crear!</a>',width:"100%"});
-	    $('#txt_editorial').chosen({no_results_text:'<a class="crear_recurso_editorial" title="Registrar nueva editorial" >Crear!</a>',width:"100%"});
+	    $('#txt_autor_tesis').chosen({no_results_text:'<a class="crear_recurso_autor" title="Registrar nuevo autor" >Crear!</a>',width:"100%"});
 	    $('#txt_materia').chosen({no_results_text:'<a class="crear_recurso_materia" title="Registrar nueva materia" >Crear!</a>',width:"100%"});
 	    // crear recurso
 	    $(document).on( "click",".crear_recurso_autor",function() {
-	    	$('#txt_autor').trigger("chosen:updated");
-	    	valor = $("#txt_autor_chosen .chosen-search input").val();
+	    	valor = $("#txt_autor_tesis_chosen .chosen-search input").val();
+	    	$('#txt_autor_tesis').trigger("chosen:updated");
 	    	$('.ui-dialog').fadeIn();
-	    	$('#capa_editorial').hide();
 	    	$('#capa_materia').hide();
 	    	$('#capa_autor').show();
 	    	$("#txt_nombre").val(valor);
 	    	$('#txt_apellido').val('');
-	    });
-	    $(document).on( "click",".crear_recurso_editorial",function() {
-	    	$('#txt_ciudad_editorial').val('');
-	    	$('#txt_editorial').trigger("chosen:updated");
-	    	valor = $("#txt_editorial_chosen .chosen-search input").val();
-	    	$('.ui-dialog').fadeIn();
-	    	$('#capa_materia').hide();
-	    	$('#capa_autor').hide();
-	    	$('#capa_editorial').show();
-	    	$("#txt_nombre_editorial").val(valor);
+	    	$('#modalwindow').modal('hide');
 	    });
 	    $(document).on( "click",".crear_recurso_materia",function() {
-	    	$('#txt_materia').trigger("chosen:updated");
 	    	valor = $("#txt_materia_chosen .chosen-search input").val();
+	    	$('#txt_materia').trigger("chosen:updated");
 	    	$('.ui-dialog').fadeIn();
 	    	$('#capa_autor').hide();
-	    	$('#capa_editorial').hide();
 	    	$('#capa_materia').show();
 	    	$("#txt_nombre_materia").val(valor);
-	    });
-	    // mostrar ventana modal para registro de libro
-	    $('#add-libro').click(function(e){
-	    	select_autor();
-	    	select_editorial();
-	    	select_materia();
-	    	$('#txt_edicion').val('');
-	    	$('#txt_fecha').val('');
-	    	$('#txt_descripcion').val('');
-	    	$('.ui-dialog').fadeOut();
+	    	$('#modalwindow').modal('hide');
 	    });
 
 	    // validacion de nuevo autor
@@ -337,39 +269,16 @@
 	    		alertify.error('<b>Apellido autor es obligatorios</b>');
 	    		return false;
 	    	} else {
-	    		$.post('modulos/response_ajax.php',{'nombre':$('#txt_nombre').val(), 'apellido':$('#txt_apellido').val(), 'function':'insertar_autor_libro'}, function(data){
+	    		$.post('modulos/response_ajax.php',{'nombre':$('#txt_nombre').val(), 'apellido':$('#txt_apellido').val(), 'function':'insertar_autor_tesis'}, function(data){
 					if (data != '') {
 						html = '<option value="'+data+'">'+$('#txt_nombre').val().toUpperCase()+' '+$('#txt_apellido').val().toUpperCase()+'</option>';
-						$('#txt_autor option:eq(0)').after(html);
-						$('#txt_autor option[value='+data+']').attr('selected','selected');
-						$('#txt_autor').trigger("chosen:updated");
+						$('#txt_autor_tesis option:eq(0)').after(html);
+						$('#txt_autor_tesis option[value='+data+']').attr('selected','selected');
+						$('#txt_autor_tesis').trigger("chosen:updated");
 					}
 	    		});
 	    		$('.ui-dialog').fadeOut();
 	    		$('#capa_editorial').hide();
-	    	}
-	    });
-	    // validacion de nueva editorial
-	    $('#btn-new-editorial').click(function(){
-	    	if ($('#txt_nombre_editorial').val() == '') {
-	    		$('#txt_nombre_editorial').focus();
-	    		alertify.error('<b>Nombre editorial es obligatorios</b>');
-	    		return false;
-	    	} else if ($('#txt_ciudad_editorial').val() == '') {
-	    		$('#txt_ciudad_editorial').focus();
-	    		alertify.error('<b>Ciudad editorial es obligatorios</b>');
-	    		return false;
-	    	} else {
-	    		$.post('modulos/response_ajax.php',{'nombre_editorial':$('#txt_nombre_editorial').val(), 'ciudad_editorial':$('#txt_ciudad_editorial').val(), 'function':'insertar_editorial'}, function(data){
-					if (data != '') {
-						html = '<option value="'+data+'">'+$('#txt_nombre_editorial').val().toUpperCase()+' '+$('#txt_ciudad_editorial').val().toUpperCase()+'</option>';
-						$('#txt_editorial option:eq(0)').after(html);
-						$('#txt_editorial option[value='+data+']').attr('selected','selected');
-						$('#txt_editorial').trigger("chosen:updated");
-					}
-	    		});
-	    		$('.ui-dialog').fadeOut();
-	    		$('#capa_autor').hide();
 	    		$('#modalwindow').modal('show');
 	    	}
 	    });
@@ -393,8 +302,7 @@
 	    		$('#modalwindow').modal('show');
 	    	}
 	    });
-	    // validacion de formulaio de nuevo libro
-
+	    // validacion de formulaio de nueva tesis
 	    $(document).on('click','#btn-send-form',function(e){
 	    	var band = true;
 	    	$.each($('.required'),band = function(index,val){
@@ -407,13 +315,13 @@
 	    		}
 	    	});
 	    	if (band) { 
-	    		$('#form-edit-libro').submit();
+	    		$('#form-edit-tesis').submit();
 	    	}
 	    });
 
 	    $(document).on('click','#btn-cancel-form',function(e){
 	    	e.preventDefault();
-	    	location.href = 'index.php?page=libros';
+	    	location.href = 'index.php?page=tesis';
 	    });
 	});
 </script>
