@@ -199,6 +199,29 @@
 			}
 		}
 
+		public function insertar_material () {
+			$nombre 	   = $_POST['txt_nombre'];
+			$tipo_material = $_POST['txt_tipo_material'];
+			$tabla 		 = 'tbl_material';
+			$campos		 = '(id_tipo,nombre)';
+			$values	 	 = '\''.$tipo_material.'\',\''.$nombre.'\'';
+			$res = $this->consultasbd->insert($tabla,$campos,$values,$type='insert');
+			if ($res) {
+				$res = $this->consultasbd->max_id($tabla,$id='id_material');
+				$dat = $this->consultasbd->fetch_array($res);
+				// auditoria
+				$auditar_mnsj = "Registró nuevo material. datos: (nombre=>".$nombre.",id=>".$dat['id'].")";
+				$auditar_user = $_SESSION['id_operador'];
+				$auditar_date = date('Y-m-d');
+				$auditar_hour = date('H:m');
+				$this->consultasbd->insert($tabla='tbl_auditoria',$campos='(id_operador,descripcion,hora,fecha_auditoria)',$values='\''.$auditar_user.'\',\''.$auditar_mnsj.'\',\''.$auditar_hour.'\',\''.$auditar_date.'\'');
+				// FIN auditoria
+				echo $dat['id'];
+			} else {
+				echo 0;
+			}
+		}
+
 		public function insertar_autor_tesis() {
 			$nombre   = (isset($_POST['nombre']))?$_POST['nombre']:'';
 			$apellido = (isset($_POST['apellido']))?$_POST['apellido']:'';
@@ -208,6 +231,25 @@
 				$dat = $this->consultasbd->fetch_array($res);
 				// auditoria
 				$auditar_mnsj = "Registró nuevo autor de tesis. datos: (nombre=>".$nombre.",apellido=>".$apellido.",id=>".$dat['id'].")";
+				$auditar_user = $_SESSION['id_operador'];
+				$auditar_date = date('Y-m-d');
+				$auditar_hour = date('H:m');
+				$this->consultasbd->insert($tabla='tbl_auditoria',$campos='(id_operador,descripcion,hora,fecha_auditoria)',$values='\''.$auditar_user.'\',\''.$auditar_mnsj.'\',\''.$auditar_hour.'\',\''.$auditar_date.'\'');
+				// FIN auditoria
+				echo $dat['id'];
+			} else {
+				echo '';
+			}
+		}
+
+		public function insertar_tipo_material() {
+			$tipo_material = (isset($_POST['tipo_material']))?$_POST['tipo_material']:'';
+			$res = $this->consultasbd->insert($tabla='tbl_tipo_material',$campos='(descripcion_tipo)',$values='\''.$tipo_material.'\'');
+			if ($res) {
+				$res = $this->consultasbd->max_id($tabla='tbl_tipo_material',$id='id_tipo_material');
+				$dat = $this->consultasbd->fetch_array($res);
+				// auditoria
+				$auditar_mnsj = "Registró nuevo tipo de material. datos: (descripcion tipo=>".$tipo_material.")";
 				$auditar_user = $_SESSION['id_operador'];
 				$auditar_date = date('Y-m-d');
 				$auditar_hour = date('H:m');
@@ -267,7 +309,7 @@
 				echo 0;
 			}
 		} else {
-			echo json_encode(1);
+			echo json_encode(0);
 		}
 	} else {
 		header('location: ../index.php?page=404');
