@@ -1,7 +1,7 @@
 # Ignore compiled docs
 _gh_pages
 _site
-
+modulos.php
 # Numerous always-ignore extensions
 *.diff
 *.err

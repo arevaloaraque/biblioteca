@@ -1,8 +1,7 @@
 <?php 
     $title = "Login";
     // si envio datos via POST/Form
-    if (isset($_POST['txt_cedula'])):
-      
+    if (isset($_POST['txt_cedula'])):      
       $cedula = $_POST['txt_cedula'];
       $passwd = md5($_POST['txt_password']);
 
@@ -25,7 +24,19 @@
           $_SESSION['cedula']         = $datos['cedula'];
           $_SESSION['session']        = true;
 
-          header('location: index.php');
+          // auditoria
+          $auditar_mnsj = "Inicio sesión";
+          $auditar_user = $_SESSION['id_operador'];
+          $auditar_date = date('Y-m-d');
+          $auditar_hour = date('H:m');
+          $consultasbd->insert($tabla='tbl_auditoria',$campos='(id_operador,descripcion,hora,fecha_auditoria)',$values='\''.$auditar_user.'\',\''.$auditar_mnsj.'\',\''.$auditar_hour.'\',\''.$auditar_date.'\'');
+          // FIN auditoria
+
+          if (isset($_POST['page_ant'])) {
+            header('location: index.php?page='.$_POST['page_ant']);
+          } else {
+            header('location: index.php');
+          }
 
         else:
           echo '<script>alertify.error("<b>Usuario/Contrase&ntilde;a incorrecto(s)</b>");</script>';
@@ -34,6 +45,14 @@
     endif;
 
     if(isset($_GET['exit']) && isset($_SESSION['session'])):
+      include_once('modulos/modelo.php');
+      // auditoria
+      $auditar_mnsj = "Cierre sesión";
+      $auditar_user = $_SESSION['id_operador'];
+      $auditar_date = date('Y-m-d');
+      $auditar_hour = date('H:m');
+      $consultasbd->insert($tabla='tbl_auditoria',$campos='(id_operador,descripcion,hora,fecha_auditoria)',$values='\''.$auditar_user.'\',\''.$auditar_mnsj.'\',\''.$auditar_hour.'\',\''.$auditar_date.'\'');
+      // FIN auditoria
       session_unset();
       session_destroy();
       echo '<script>location.href = "index.php?page=login";</script>';
@@ -59,6 +78,9 @@
                     <div class="input-group">
                       <div class="input-group-addon">Cedula&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
                       <input type="text" class="form-control requerido" id="txt_cedula" name="txt_cedula" maxlength="10" placeholder="Ej: 12345678" title="Cedula" />
+                      <?php if (isset($_GET['page'])): ?>
+                        <input type="hidden" name="page_ant" value="<?php echo $_GET['page']; ?>" />
+                      <?php endif; ?>
                     </div>
                     <br/>
                     <div class="input-group">

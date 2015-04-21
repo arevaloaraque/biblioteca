@@ -47,7 +47,7 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="index.php">BilioWeb v1.0</a>
+        <a class="navbar-brand" href="">BilioWeb v1.0</a>
         
       </div>
       <ul class="nav navbar-nav navbar-right">
@@ -73,34 +73,34 @@
           </div>
           <div class="navbar-collapse collapse sidebar-navbar-collapse">
             <ul class="nav navbar-nav" id="menu-item">
-              <li id="liHome"><a href="index.php"><i class="glyphicon glyphicon-home"></i>&nbsp;&nbsp;Inicio</a></li>
+              <li id="liHome"><a href="?page=inicio"><i class="glyphicon glyphicon-home"></i>&nbsp;&nbsp;Inicio</a></li>
               <li id="liPrestamos">
                 <a data-toggle="collapse" data-parent="#accordion" href="#ulPrestamos"><i class="glyphicon glyphicon-folder-open"></i>&nbsp;&nbsp;Prestamo(s)&nbsp;<b class="caret"></b></a>
                 <ul id="ulPrestamos" class="ul-collapse collapse nav nav-stacked sub-nav">
-                  <li><a href="index.php?page=prestamos"><i class="glyphicon glyphicon-plus"></i>&nbsp;&nbsp;Nuevo</a></li>
+                  <li><a href="?page=prestamos"><i class="glyphicon glyphicon-plus"></i>&nbsp;&nbsp;Nuevo</a></li>
                   <li><a href="#"><i class="glyphicon glyphicon-th-list"></i>&nbsp;&nbsp;Listado</a></li>
                 </ul>
               </li>
               <li id="liRecursos">
                 <a data-toggle="collapse" data-parent="#accordion" href="#ulRecursos"><i class="glyphicon glyphicon-book"></i>&nbsp;&nbsp;Recursos&nbsp;<b class="caret"></b></a>
                 <ul id="ulRecursos" class="ul-collapse collapse nav nav-stacked sub-nav">
-                  <li><a href="index.php?page=libros"><i class="glyphicon glyphicon-book"></i>&nbsp;&nbsp;Libros</a></li>
-                  <li><a href="index.php?page=tesis"><i class="glyphicon glyphicon-tags"></i>&nbsp;&nbsp;Tesis</abbr></a></li>
-                  <li><a href="index.php?page=materiales"><i class="glyphicon glyphicon-floppy-disk"></i>&nbsp;&nbsp;Material</abbr></a></li>
+                  <li><a href="?page=libros"><i class="glyphicon glyphicon-book"></i>&nbsp;&nbsp;Libros</a></li>
+                  <li><a href="?page=tesis"><i class="glyphicon glyphicon-tags"></i>&nbsp;&nbsp;Tesis</abbr></a></li>
+                  <li><a href="?page=materiales"><i class="glyphicon glyphicon-floppy-disk"></i>&nbsp;&nbsp;Material</abbr></a></li>
                 </ul>
               </li>
               <?php if (isset($_SESSION['privilegio']) && (trim($_SESSION['privilegio']) == 'ADMINISTRADOR')):?>
                 <li id="liUsuarios">
                   <a data-toggle="collapse" data-parent="#accordion" href="#ulUsuarios"><i class="glyphicon glyphicon-user"></i>&nbsp;&nbsp;Usuarios&nbsp;<b class="caret"></b></a>
                   <ul id="ulUsuarios" class="ul-collapse collapse nav nav-stacked sub-nav">
-                    <li><a href="#"><i class="glyphicon glyphicon-star"></i>&nbsp;&nbsp;Operador(es)</a></li>
-                    <li><a href="#"><i class="glyphicon glyphicon-star-empty"></i>&nbsp;&nbsp;Usuario(s) Biblioteca</abbr></a></li>
+                    <li><a href="?page=list_operadores"><i class="glyphicon glyphicon-star"></i>&nbsp;&nbsp;Operador(es)</a></li>
+                    <li><a href="?page=list_usuarios"><i class="glyphicon glyphicon-star-empty"></i>&nbsp;&nbsp;Usuario(s) Biblioteca</abbr></a></li>
                   </ul>
                 </li>
               <?php else: ?>
-                <li><a href="#"><i class="glyphicon glyphicon-user"></i>&nbsp;&nbsp;Usuario(s)</abbr></a></li>
+                <li><a href="?page=list_usuarios"><i class="glyphicon glyphicon-user"></i>&nbsp;&nbsp;Usuario(s)</abbr></a></li>
               <?php endif; ?>
-              <li><a href="index.php?page=login&exit"><i class="glyphicon glyphicon-off"></i>&nbsp;&nbsp;Cerrar Sesión</a></li>
+              <li><a href="?page=login&exit"><i class="glyphicon glyphicon-off"></i>&nbsp;&nbsp;Cerrar Sesión</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
