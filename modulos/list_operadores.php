@@ -68,7 +68,7 @@
 <script type="text/javascript" charset="utf-8">
 	$(document).on('ready',function(){
 		$('#menu-item li.active').removeClass('active');
-	    $('#liRecursos').addClass('active');
+	    $('#liUsuarios').addClass('active');
 	    // title page
 		$('title').html('..:: Listado General de Operadores ::..&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
 		valuesTitle();
