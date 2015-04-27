@@ -2345,7 +2345,7 @@ ALTER TABLE ONLY tbl_usuario
 
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
 REVOKE ALL ON SCHEMA public FROM postgres;
-GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO biblioteca;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 
 

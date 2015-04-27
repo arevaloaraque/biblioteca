@@ -1,25 +1,22 @@
 <?php 
 	include_once('modulos/modelo.php');
-	if ($_SESSION['id_operador'] == '2'):
-		echo '<script>location.href="?page=404";</script>';
-	endif;
-	$operadores = $consultasbd->select($tabla='tbl_operador');
+	$operadores = $consultasbd->select($tabla='tbl_usuarios');
 ?>
 <div class="col-sm-9 col-md-10">
   <div class="panel panel-primary">
     <div class="panel-heading">
-      <h3 class="panel-title"><b>Listado&nbsp;general&nbsp;de&nbsp;operadores<i class="glyphicon glyphicon-star" style="float:right;"></i></b></h3>
+      <h3 class="panel-title"><b>Listado&nbsp;general&nbsp;de&nbsp;usuarios<i class="glyphicon glyphicon-star-empty" style="float:right;"></i></b></h3>
     </div>
     <div class="panel-body">
     	<button class='pull-right btn btn-primary' id='add-operador' onclick="location.href='?page=nuevo_operador';">Agregar&nbsp;&nbsp;<i class="glyphicon glyphicon-plus"></i></button>
     	<button data-toggle="tooltip" data-placement="top" title="Actualizar tabla" onClick="location.href='?page=list_operadores';" class='btn btn-info'><i class="glyphicon glyphicon-refresh"></i></button>
     	<br/><br/>
-    	<?php //if ($consultasbd->num_rows($libros) > 0): ?>
       	<div class="table-responsive">
 			<table class='table table-bordered table-striped table-hover datatable dataTable' id="datatable" style='border-radius:5px;'>
 			  <thead>
 			  		<tr class="danger">
-			  			<th class='col-lg-1 text-center'>Id Operador</th>
+			  			<th class='col-lg-1 text-center'>Id Usuario</th>
+			  			<th class='col-lg-1 text-center'>Id Denominaci&oacute;n</th>
 			  			<th class='col-lg-2 text-center'>Nombre</th>
 			  			<th class='col-lg-2 text-center'>Apellido</th>
 			  			<th class='col-lg-1 text-center'>Cedula</th>

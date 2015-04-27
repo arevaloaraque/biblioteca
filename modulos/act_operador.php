@@ -3,6 +3,7 @@
 	if (isset($_GET['id_operador'])) {
 		$id_operador = $_GET['id_operador'];
 		$operador = $consultasbd->select($tabla='tbl_operador',$campos='*',$where=' WHERE id_operador=\''.$id_operador.'\'');
+		if (!$consultasbd->num_rows($operador)>0) { echo '<script>location.href = "?page=list_operadores";</script>'; }
 		$operador = $consultasbd->fetch_array($operador);
 		// consulta privilegios
 		$sql_priv = $consultasbd->select($table='tbl_privilegios',$campos='*',$where='WHERE id_privilegio=\''.$operador['id_privilegio'].'\'');
@@ -19,7 +20,23 @@
 		$sql_priv = $consultasbd->select($table='tbl_privilegios',$campos='*',$where='WHERE id_privilegio=\''.$operador['id_privilegio'].'\'');
 		$res_priv = $consultasbd->fetch_array($sql_priv);
 		if ($cedula == '' || $nombre == '' || $apellido == '') { echo '<script>alertify.error("<b>Cedula, Nombre o Apellido son obligatorios </b>");</script>'; }
-		else { var_dump($_POST);exit(); }
+		else { 
+			$tabla = 'tbl_operador';
+			$set   = 'cedula=\''.$cedula.'\', nombre=\''.$nombre.'\',apellido=\''.$apellido.'\', fecha_modifica=\''.date('Y-m-d').'\'';
+			$set  .= (!empty($clave))?', clave=\''.$clave.'\'':'';
+			$where = ' WHERE id_operador=\''.$id_operador.'\'';
+			$res   = $consultasbd->update($tabla,$set,$where);
+			// auditoria
+			$auditar_mnsj = "Actualizó operador. datos: (Nombre=>".$nombre.",id=>".$id_operador.")";
+			$auditar_user = $_SESSION['id_operador'];
+			$auditar_date = date('Y-m-d');
+			$auditar_hour = date('H:m');
+			$consultasbd->insert($tabla='tbl_auditoria',$campos='(id_operador,descripcion,hora,fecha_auditoria)',$values='\''.$auditar_user.'\',\''.$auditar_mnsj.'\',\''.$auditar_hour.'\',\''.$auditar_date.'\'');
+			// FIN auditoria
+			echo '<script>location.href="index.php?page=list_operadores&up=true";</script>';
+		}
+	} else {
+		echo '<script>location.href = "?page=list_operadores";</script>';
 	}
 ?>
 <div class="col-sm-9 col-md-10">
@@ -40,18 +57,18 @@
 	    	<div class="row">
 	    		<div class="col-lg-6">
 	    			<label for="txt_nombre">Nombre&nbsp;&nbsp;<i class="glyphicon glyphicon-user"></i></label>
-	    			<input type="text" name="txt_nombre" id="txt_nombre" class="form-control required" title="Nombre" value="<?php echo $operador['nombre']; ?>" />
+	    			<input type="text" name="txt_nombre" id="txt_nombre" class="form-control required" title="Nombre" value="<?php echo strtoupper($operador['nombre']); ?>" />
 	    		</div>
 	    		<div class="col-lg-6">
 	    			<label for="txt_apellido">Apellido&nbsp;&nbsp;<i class="glyphicon glyphicon-user"></i></label>
-	    			<input type="text" name="txt_apellido" id="txt_apellido" class="form-control required" title="Apellido" value="<?php echo $operador['apellido']; ?>" />
+	    			<input type="text" name="txt_apellido" id="txt_apellido" class="form-control required" title="Apellido" value="<?php echo strtoupper($operador['apellido']); ?>" />
 	    		</div>
 	    	</div>
 	    	<br/>
 	    	<div class="row">
 	    		<div class="col-lg-6">
 	    			<label for="txt_privilegio">Privilegio&nbsp;&nbsp;<i class="glyphicon glyphicon-star"></i></label>
-	    			<input type="text" name="txt_privilegio" id="txt_privilegio" class="form-control" title="Privilegio" disabled="disabled" value="<?php echo $res_priv['privilegio']; ?>" />
+	    			<input type="text" name="txt_privilegio" id="txt_privilegio" class="form-control" title="Privilegio" disabled="disabled" value="<?php echo strtoupper($res_priv['privilegio']); ?>" />
 	    		</div>
 	    		<div class="col-lg-6">
 	    			<label for="txt_password">Contrase&ntilde;a&nbsp;&nbsp;<i class="glyphicon glyphicon-lock"></i>&nbsp;&nbsp;<i class="text-info pull-right"><small>Omitir&nbsp;si&nbsp;no&nbsp;desea&nbsp;actualizar</small>&nbsp;<i class="glyphicon glyphicon-info-sign"></i></i></label>
