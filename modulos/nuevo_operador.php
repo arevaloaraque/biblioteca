@@ -4,7 +4,7 @@
 	$nombre = '';
 	$apellido = '';
 	$error_ced = 0;
-	$Clave = '';
+	$clave = '';
 	if (isset($_POST) && count($_POST)) {
 		$cedula = (!empty($_POST['txt_cedula']))?$_POST['txt_cedula']:'';
 		$nombre = (!empty($_POST['txt_nombre']))?$_POST['txt_nombre']:'';
@@ -24,8 +24,9 @@
 				$campos= '(id_privilegio,nombre,apellido,cedula,password,fecha_creacion)';
 				$values= '\''.$res_priv['id_privilegio'].'\',\''.$nombre.'\',\''.$apellido.'\',\''.$cedula.'\',\''.$clave.'\',\''.date('Y-m-d').'\'';
 				$res   = $consultasbd->insert($tabla,$campos,$values);
+				$id = $consultasbd->fetch_array($consultasbd->max_id($tabla='tbl_operador',$id='id_operador'));
 				// auditoria
-				$auditar_mnsj = "Registro Operador. datos: (Nombre=>".$nombre.",id=>".$id_operador.")";
+				$auditar_mnsj = "Registro Operador. datos: (Nombre=>".$nombre.",id=>".$id['id_operador'].")";
 				$auditar_user = $_SESSION['id_operador'];
 				$auditar_date = date('Y-m-d');
 				$auditar_hour = date('H:m');
@@ -110,6 +111,9 @@
 			if (validForm) {
 				$("#frm-new-oper").submit();
 			}
+		});
+		$('#btn-cancel').on('click',function(){
+			location.href = '?page=list_operadores';
 		});
 	});
 </script>

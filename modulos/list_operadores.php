@@ -98,7 +98,7 @@
 	                $.ajax({
 	                    type: 'POST',
 	                    dataType: 'json',
-	                    data: {'campo':'id_libro','val':id,'function':'eliminar','tabla':'tbl_libros'},
+	                    data: {'campo':'id_operador','val':id,'function':'eliminar','tabla':'tbl_operador'},
 	                    url: 'modulos/response_ajax.php',
 	                    success: function (resp) {
 	                        if (resp == 0) { alertify.error('<b>Error al eliminar libro!</b>'); }

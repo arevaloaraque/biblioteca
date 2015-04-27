@@ -1,6 +1,6 @@
 <?php 
 	include_once('modulos/modelo.php');
-	$operadores = $consultasbd->select($tabla='tbl_usuarios');
+	$usuarios = $consultasbd->select($tabla='tbl_usuario');
 ?>
 <div class="col-sm-9 col-md-10">
   <div class="panel panel-primary">
@@ -8,52 +8,47 @@
       <h3 class="panel-title"><b>Listado&nbsp;general&nbsp;de&nbsp;usuarios<i class="glyphicon glyphicon-star-empty" style="float:right;"></i></b></h3>
     </div>
     <div class="panel-body">
-    	<button class='pull-right btn btn-primary' id='add-operador' onclick="location.href='?page=nuevo_operador';">Agregar&nbsp;&nbsp;<i class="glyphicon glyphicon-plus"></i></button>
-    	<button data-toggle="tooltip" data-placement="top" title="Actualizar tabla" onClick="location.href='?page=list_operadores';" class='btn btn-info'><i class="glyphicon glyphicon-refresh"></i></button>
+    	<button class='pull-right btn btn-primary' id='add-operador' onclick="location.href='?page=nuevo_usuario';">Agregar&nbsp;&nbsp;<i class="glyphicon glyphicon-plus"></i></button>
+    	<button data-toggle="tooltip" data-placement="top" title="Actualizar tabla" onClick="location.href='?page=list_usuarios';" class='btn btn-info'><i class="glyphicon glyphicon-refresh"></i></button>
     	<br/><br/>
       	<div class="table-responsive">
 			<table class='table table-bordered table-striped table-hover datatable dataTable' id="datatable" style='border-radius:5px;'>
 			  <thead>
 			  		<tr class="danger">
 			  			<th class='col-lg-1 text-center'>Id Usuario</th>
-			  			<th class='col-lg-1 text-center'>Id Denominaci&oacute;n</th>
+			  			<th class='col-lg-1 text-center'>Denominaci&oacute;n</th>
+			  			<th class='col-lg-1 text-center'>Cedula</th>
 			  			<th class='col-lg-2 text-center'>Nombre</th>
 			  			<th class='col-lg-2 text-center'>Apellido</th>
-			  			<th class='col-lg-1 text-center'>Cedula</th>
 			  			<th class='col-lg-2 text-center'>Fecha Creaci&oacute;n</th>
 			  			<th class='col-lg-2 text-center'>Fecha Ult. Modificaci&oacute;n</th>
-			  			<th class='col-lg-1 text-center'>Privilegio</th>
 			  			<th class='text-center col-lg-1'>Acci&oacute;nes</th>
 			  		</tr>
 			  </thead>
 			  <tbody>
-			  	<?php while ($datos = $consultasbd->fetch_array($operadores)) { ?>
+			  	<?php while ($datos = $consultasbd->fetch_array($usuarios)) { ?>
 			  	<?php
-			  		// consulta privilegios
-					$sql_priv = $consultasbd->select($table='tbl_privilegios',$campos='*',$where='WHERE id_privilegio=\''.$datos['id_privilegio'].'\'');
-					$res_priv = $consultasbd->fetch_array($sql_priv);
-					if (trim($res_priv['privilegio']) != "ADMINISTRADOR"){
+			  		// consulta denominacion
+					$sql_den = $consultasbd->select($table='tbl_denominacion',$campos='*',$where='WHERE id_denominacion=\''.$datos['id_denominacion'].'\'');
+					$res_den = $consultasbd->fetch_array($sql_den);
 			  	?>
-			  		<tr id="<?php echo $datos['id_operador']; ?>">
-			  			<td class='text-center'><?php echo $datos['id_operador']; ?></td>
-			  			<td class='text-center nombre_oper'><?php echo strtoupper($datos['nombre']); ?></td>
-			  			<td class='text-center apellido_oper'><?php echo strtoupper($datos['apellido']); ?></td>
-			  			<td class='text-center'><?php echo strtoupper($datos['cedula']); ?></td>
+			  		<tr id="<?php echo $datos['id_usuario']; ?>">
+			  			<td class='text-center'><?php echo $datos['id_usuario']; ?></td>
+			  			<td class='text-center'><?php echo $res_den['denominacion']; ?></td>
+			  			<td class='text-center'><?php echo $datos['cedula']; ?></td>
+			  			<td class='text-center nombre_user'><?php echo strtoupper($datos['nombre']); ?></td>
+			  			<td class='text-center apellido_user'><?php echo strtoupper($datos['apellido']); ?></td>
 			  			<td class='text-center'><?php echo (!empty($datos['fecha_creacion'])?date('d-m-Y',strtotime($datos['fecha_creacion'])):'<i>NO DISPONIBLE</i>'); ?></td>
 			  			<td class='text-center'><?php echo (!empty($datos['fecha_modifica'])?date('d-m-Y',strtotime($datos['fecha_modifica'])):'<i>NO DISPONIBLE</i>'); ?></td>
-			  			<td class='text-center'><?php echo $res_priv['privilegio']; ?></td>
 			  			<td class='text-center'>
-			  				<button id="edit-<?php echo $datos['id_operador']; ?>" class="edit-oper text-info btn" data-toggle="tooltip" data-placement="top" title="Actualizar datos del operador"><i class="glyphicon glyphicon-edit"></i></button>
-			  				<button id="del-<?php echo $datos['id_operador']; ?>" class="del-oper text-danger btn" data-toggle="tooltip" data-placement="top" title="Eliminar operador"><i class="glyphicon glyphicon-trash"></i></button>
+			  				<button id="edit-<?php echo $datos['id_usuario']; ?>" class="edit-user text-info btn" data-toggle="tooltip" data-placement="top" title="Actualizar datos del usuario"><i class="glyphicon glyphicon-edit"></i></button>
+			  				<button id="del-<?php echo $datos['id_usuario']; ?>" class="del-user text-danger btn" data-toggle="tooltip" data-placement="top" title="Eliminar usuario"><i class="glyphicon glyphicon-trash"></i></button>
 			  			</td>
 			  		</tr>
-			  	<?php }} ?>
+			  	<?php } ?>
 			  </tbody>
 			</table>
 		</div>
-		<?php //else: ?>
-
-		<?php //endif; ?>
     </div>
     <div class="panel-footer text-center">
       <div class="btn-group">
@@ -76,7 +71,7 @@
 	      var datatable = $(this);
 	      // SEARCH - Add the placeholder for Search and Turn this into in-line form control
 	      var search_input = datatable.closest('.dataTables_wrapper').find('div[id$=_filter] input');
-	      search_input.attr({'placeholder':'Buscar Operador','id':'btn_search_table'});
+	      search_input.attr({'placeholder':'Buscar Usuario','id':'btn_search_table'});
 	      search_input.addClass('form-control input-sm');
 	      // LENGTH - Inline-Form control
 	      var length_sel = datatable.closest('.dataTables_wrapper').find('div[id$=_length] select');
@@ -85,21 +80,21 @@
 		$('#menu-item li.active').removeClass('active');
 	    $('#liUsuarios').addClass('active');
 	    // title page
-		$('title').html('..:: Listado General de Operadores ::..&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
+		$('title').html('..:: Listado General de Usuarios ::..&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
 		valuesTitle();
-		$(document).on('click','.del-oper',function(){
+		$(document).on('click','.del-user',function(){
 			var id = $(this).attr('id').substring(4,$(this).attr('id').length);
-			var mensaje = "¿Realmente desea eliminar al operador \""+$('#'+id+' .nombre_oper').text()+" "+$('#'+id+' .apellido_oper').text()+"\"?<br/>&nbsp;Este proceso es irreversible";
+			var mensaje = "¿Realmente desea eliminar al usuario \""+$('#'+id+' .nombre_user').text()+" "+$('#'+id+' .apellido_user').text()+"\"?<br/>&nbsp;Este proceso es irreversible";
 	        alertify.confirm(mensaje, function (e) {
 	            if (e) {
 	                $.ajax({
 	                    type: 'POST',
 	                    dataType: 'json',
-	                    data: {'campo':'id_libro','val':id,'function':'eliminar','tabla':'tbl_libros'},
+	                    data: {'campo':'id_usuario','val':id,'function':'eliminar','tabla':'tbl_usuario'},
 	                    url: 'modulos/response_ajax.php',
 	                    success: function (resp) {
-	                        if (resp == 0) { alertify.error('<b>Error al eliminar libro!</b>'); }
-	                        else if(resp == 1){ $("#"+id).fadeOut(); alertify.success('<b>Libro eliminado con exito!</b>'); }
+	                        if (resp == 0) { alertify.error('<b>Error al eliminar usuario!</b>'); }
+	                        else if(resp == 1){ $("#"+id).fadeOut(); alertify.success('<b>Usuario eliminado con exito!</b>'); }
 	                    },
 	                    error: function (xhr, ajaxOptions, thrownError) {
 	                        //console.log(xhr.status);
@@ -109,9 +104,9 @@
 	            }
 	        });
 		});
-		$(document).on('click','.edit-oper',function(){
+		$(document).on('click','.edit-user',function(){
 			var id = $(this).attr('id').substring(5,$(this).attr('id').length);
-			location.href = '?page=act_operador&id_operador='+id;
+			location.href = '?page=act_usuario&id_usuario='+id;
 		})
 	});
 </script>

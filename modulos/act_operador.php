@@ -20,20 +20,26 @@
 		$sql_priv = $consultasbd->select($table='tbl_privilegios',$campos='*',$where='WHERE id_privilegio=\''.$operador['id_privilegio'].'\'');
 		$res_priv = $consultasbd->fetch_array($sql_priv);
 		if ($cedula == '' || $nombre == '' || $apellido == '') { echo '<script>alertify.error("<b>Cedula, Nombre o Apellido son obligatorios </b>");</script>'; }
-		else { 
-			$tabla = 'tbl_operador';
-			$set   = 'cedula=\''.$cedula.'\', nombre=\''.$nombre.'\',apellido=\''.$apellido.'\', fecha_modifica=\''.date('Y-m-d').'\'';
-			$set  .= (!empty($clave))?', clave=\''.$clave.'\'':'';
-			$where = ' WHERE id_operador=\''.$id_operador.'\'';
-			$res   = $consultasbd->update($tabla,$set,$where);
-			// auditoria
-			$auditar_mnsj = "Actualizó operador. datos: (Nombre=>".$nombre.",id=>".$id_operador.")";
-			$auditar_user = $_SESSION['id_operador'];
-			$auditar_date = date('Y-m-d');
-			$auditar_hour = date('H:m');
-			$consultasbd->insert($tabla='tbl_auditoria',$campos='(id_operador,descripcion,hora,fecha_auditoria)',$values='\''.$auditar_user.'\',\''.$auditar_mnsj.'\',\''.$auditar_hour.'\',\''.$auditar_date.'\'');
-			// FIN auditoria
-			echo '<script>location.href="index.php?page=list_operadores&up=true";</script>';
+		else {
+			// validacion de cedula existente
+			$sql_ced = $consultasbd->select($tabla='tbl_operador',$campos='cedula',$where='WHERE cedula<>\''.$operador['cedula'].'\'');
+			if ($consultasbd->num_rows($sql_ced)>0){
+				$tabla = 'tbl_operador';
+				$set   = 'cedula=\''.$cedula.'\', nombre=\''.$nombre.'\',apellido=\''.$apellido.'\', fecha_modifica=\''.date('Y-m-d').'\'';
+				$set  .= (!empty($clave))?', clave=\''.$clave.'\'':'';
+				$where = ' WHERE id_operador=\''.$id_operador.'\'';
+				$res   = $consultasbd->update($tabla,$set,$where);
+				// auditoria
+				$auditar_mnsj = "Actualizó operador. datos: (Nombre=>".$nombre.",id=>".$id_operador.")";
+				$auditar_user = $_SESSION['id_operador'];
+				$auditar_date = date('Y-m-d');
+				$auditar_hour = date('H:m');
+				$consultasbd->insert($tabla='tbl_auditoria',$campos='(id_operador,descripcion,hora,fecha_auditoria)',$values='\''.$auditar_user.'\',\''.$auditar_mnsj.'\',\''.$auditar_hour.'\',\''.$auditar_date.'\'');
+				// FIN auditoria
+				echo '<script>location.href="index.php?page=list_operadores&up=true";</script>';
+			} else {
+				echo '<script>alertify.error("<b>Cedula duplicada </b>");</script>';
+			}
 		}
 	} else {
 		echo '<script>location.href = "?page=list_operadores";</script>';
@@ -113,6 +119,9 @@
 			if (validForm) {
 				$("#frm-act-oper").submit();
 			}
+		});
+		$('#btn-cancel').on('click',function(){
+			location.href = '?page=list_operadores';
 		});
 	});
 </script>
