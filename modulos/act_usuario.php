@@ -25,9 +25,27 @@
 				$res_den = $consultasbd->fetch_array($sql_den);
 				if ($cedula == '' || $nombre == '' || $apellido == '') { echo '<script>alertify.error("<b>Todos los campos son obligatorios </b>");</script>'; }
 				else { 
-					// validacion de cedula existente
-					$sql_ced = $consultasbd->select($tabla='tbl_usuario',$campos='cedula',$where='WHERE cedula<>\''.$cedula.'\'');
-					if ($consultasbd->num_rows($sql_ced)>0){
+					if ($cedula != $usuario['cedula']){
+						// validacion de cedula existente
+						$sql_ced = $consultasbd->select($tabla='tbl_usuario',$campos='cedula',$where='WHERE cedula=\''.$cedula.'\'');
+						//var_dump($consultasbd->fetch_array($sql_ced));exit();
+						if ($consultasbd->num_rows($sql_ced)>0){
+							echo '<script>alertify.error("<b>Cedula duplicada </b>");</script>';
+						} else {
+							$tabla = 'tbl_usuario';
+							$set   = 'cedula=\''.$cedula.'\', nombre=\''.$nombre.'\',apellido=\''.$apellido.'\', fecha_modifica=\''.date('Y-m-d').'\',id_denominacion=\''.$denominacion.'\'';
+							$where = ' WHERE id_usuario=\''.$id_usuario.'\'';
+							$res   = $consultasbd->update($tabla,$set,$where);
+							// auditoria
+							$auditar_mnsj = "Actualizó usuario. datos: (Nombre=>".$nombre.",id=>".$id_usuario.")";
+							$auditar_user = $_SESSION['id_operador'];
+							$auditar_date = date('Y-m-d');
+							$auditar_hour = date('H:m');
+							$consultasbd->insert($tabla='tbl_auditoria',$campos='(id_operador,descripcion,hora,fecha_auditoria)',$values='\''.$auditar_user.'\',\''.$auditar_mnsj.'\',\''.$auditar_hour.'\',\''.$auditar_date.'\'');
+							// FIN auditoria
+							echo '<script>location.href="index.php?page=list_usuarios&up=true";</script>';
+						}
+					} else {
 						$tabla = 'tbl_usuario';
 						$set   = 'cedula=\''.$cedula.'\', nombre=\''.$nombre.'\',apellido=\''.$apellido.'\', fecha_modifica=\''.date('Y-m-d').'\',id_denominacion=\''.$denominacion.'\'';
 						$where = ' WHERE id_usuario=\''.$id_usuario.'\'';
@@ -40,8 +58,6 @@
 						$consultasbd->insert($tabla='tbl_auditoria',$campos='(id_operador,descripcion,hora,fecha_auditoria)',$values='\''.$auditar_user.'\',\''.$auditar_mnsj.'\',\''.$auditar_hour.'\',\''.$auditar_date.'\'');
 						// FIN auditoria
 						echo '<script>location.href="index.php?page=list_usuarios&up=true";</script>';
-					} else {
-						echo '<script>alertify.error("<b>Cedula duplicada </b>");</script>';
 					}
 				}
 			}
