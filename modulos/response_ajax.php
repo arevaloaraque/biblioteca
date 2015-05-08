@@ -292,6 +292,19 @@
 			}
 		}
 
+		public function status_user_prestamo () {
+			$id_usuario = $_POST['id_usuario'];
+			$tipo_recurso = $_POST['recurso'];
+			$user = $this->consultasbd->select('tbl_usuario',$campos='*',$where=' WHERE id_usuario=\''.$id_usuario.'\'');
+			if ($this->consultasbd->num_rows($user)>0) {
+				$data = ['mensj'=>'','type'=>'alert-success'];
+				$data = ['mensj'=>'<b><i class="glyphicon glyphicon-thumbs-up"></i>&nbsp;Busqueda exitosa</b>&nbsp;<span id="mensj">Verifique los datos y presione GUARDAR. Este proceso es irreversible</span>','type'=>'alert-success'];
+			} else {
+				$data = ['mensj'=>'<b><i class="glyphicon glyphicon-thumbs-down"></i>&nbsp;Error</b>&nbsp;<span id="mensj">No existe el usuario</span>','type'=>'alert-danger'];
+			}
+			echo json_encode($data);
+		}
+
 	}
 	
 	include_once('modelo.php');
