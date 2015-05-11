@@ -293,12 +293,36 @@
 		}
 
 		public function status_user_prestamo () {
+			sleep(1.5);
 			$id_usuario = $_POST['id_usuario'];
+			$id_recurso 	= $_POST['id_recurso'];
 			$tipo_recurso = $_POST['recurso'];
 			$user = $this->consultasbd->select('tbl_usuario',$campos='*',$where=' WHERE id_usuario=\''.$id_usuario.'\'');
+			// verificacion de usuario
 			if ($this->consultasbd->num_rows($user)>0) {
-				$data = ['mensj'=>'','type'=>'alert-success'];
-				$data = ['mensj'=>'<b><i class="glyphicon glyphicon-thumbs-up"></i>&nbsp;Busqueda exitosa</b>&nbsp;<span id="mensj">Verifique los datos y presione GUARDAR. Este proceso es irreversible</span>','type'=>'alert-success'];
+				$recurso = $this->consultasbd->select('tbl_'.$tipo_recurso.'s',$campos='*',$where=' WHERE id_'.$tipo_recurso.'=\''.$id_recurso.'\' AND status=true');
+				// verificacion de recurso. disponibilidad
+				if ($this->consultasbd->num_rows($recurso)>0) {
+					$prestamos_user = $this->consultasbd->select('tbl_prestamo_'.$tipo_recurso,$campos='*',$where=' WHERE id_usuario=\''.$id_usuario.'\'');
+					// verificacion de prestamos actuales del usuario. limite 2
+					if ($this->consultasbd->num_rows($prestamos_user)<2) {
+						// verificacion de novedades
+						if ($this->consultasbd->num_rows($prestamos_user)==1){
+							$prestamos_user = $this->consultasbd->fetch_array($prestamos_user);
+							$novedades = $this->consultasbd->select($tabla='tbl_novedad_'.$tipo_recurso,$campos='*',$where='WHERE id_prestamo=\''.$prestamos_user['id_prestamo'].'\'');
+							if ($this->consultasbd->fetch_array($novedades)>0) {
+								$data = ['mensj'=>'<b><i class="glyphicon glyphicon-thumbs-down"></i>&nbsp;Error</b>&nbsp;<span id="mensj">No se puede realizar el prestamo. El usuario posee novedades</span>','type'=>'alert-danger'];
+							}
+						} else {
+							$data = ['mensj'=>'','type'=>'alert-success'];
+							$data = ['mensj'=>'<b><i class="glyphicon glyphicon-thumbs-up"></i>&nbsp;Busqueda exitosa</b>&nbsp;<span id="mensj">Verifique los datos y presione <b>PROCESAR PRESTAMO</b>. Este proceso es irreversible</span>','type'=>'alert-success'];
+						}
+					} else {
+						$data = ['mensj'=>'<b><i class="glyphicon glyphicon-thumbs-down"></i>&nbsp;Error</b>&nbsp;<span id="mensj">Limite de prestamos alcanzados. Solo se permiten 2 prestamos por categoria</span>','type'=>'alert-danger'];
+					}
+				} else {
+					$data = ['mensj'=>'<b><i class="glyphicon glyphicon-thumbs-down"></i>&nbsp;Error</b>&nbsp;<span id="mensj">'.ucfirst($tipo_recurso).' no disponible</span>','type'=>'alert-danger'];
+				}
 			} else {
 				$data = ['mensj'=>'<b><i class="glyphicon glyphicon-thumbs-down"></i>&nbsp;Error</b>&nbsp;<span id="mensj">No existe el usuario</span>','type'=>'alert-danger'];
 			}

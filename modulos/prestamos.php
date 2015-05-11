@@ -82,6 +82,11 @@
   var control_datatable = 0;
   $(document).ready(function() {
     $('#menu-item li.active').removeClass('active');
+        $('#liPrestamos').addClass('active');
+        // title page
+      $('title').html('..:: Prestamos ::..&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
+      valuesTitle();
+    $('#menu-item li.active').removeClass('active');
     $('#liPrestamos').addClass('active');
     // click sobre pestañas
     $('#navegacion-busqueda li').click(function(){
