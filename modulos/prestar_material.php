@@ -1,47 +1,34 @@
 <?php 
 	include_once('modulos/modelo.php');
-	if (isset($_GET['id_libro'])) {
-		$id_libro = $_GET['id_libro'];
-		$sql_libro = $consultasbd->select($tabla='tbl_libros',$campos='*',$where=' WHERE status=true AND id_libro=\''.$id_libro.'\'');
-		$datos_libro = $consultasbd->fetch_array($sql_libro);
+	if (isset($_GET['id_material'])) {
+		$id_material = $_GET['id_material'];
+		$sql_material = $consultasbd->select($tabla='tbl_material',$campos='*',$where=' WHERE status=true AND id_material=\''.$id_material.'\'');
+		$datos_material = $consultasbd->fetch_array($sql_material);
     $user = $consultasbd->select('tbl_usuario',$campos='*');
-    // validar si el libro existe
-    if ($consultasbd->num_rows($sql_libro) == 0){
+    // validar si el tesis existe
+    if ($consultasbd->num_rows($sql_material) == 0){
       echo '<script>location.href="?page=prestamos&rec_not=true";</script>';
     }
-    // datos de autor
-    $res_autor = $consultasbd->select($tabla='tbl_autor',$campos='*',$where = ((!empty($datos_libro['id_autor']))?'WHERE id_autor=\''.$datos_libro['id_autor'].'\'':''));
-    $fetch_autor = $consultasbd->fetch_array($res_autor);
-    $autor = $fetch_autor['nombre'].' '.$fetch_autor['apellido'];
-    // datos de editorial
-    $res_editorial = $consultasbd->select($tabla='tbl_editorial',$campos='*',$where = ((!empty($datos_libro['id_editorial']))?'WHERE id_editorial=\''.$datos_libro['id_editorial'].'\'':''));
-    $fetch_editorial = $consultasbd->fetch_array($res_editorial);
-    $editorial = $fetch_editorial['nombre'].' '.$fetch_editorial['ciudad'];
-    // datos de materia
-    $res_materia = $consultasbd->select($tabla='tbl_materia',$campos='*',$where = ((!empty($datos_libro['id_materia']))?'WHERE id_materia=\''.$datos_libro['id_materia'].'\'':''));
-    $fetch_materia = $consultasbd->fetch_array($res_materia);
-    $materia = $fetch_materia['nombre_materia'];
-
-    $datos_libro['id_autor'] = $autor;
-    $datos_libro['id_editorial'] = $editorial;
-    $datos_libro['id_materia'] = $materia;
-    $datos_libro['fecha_publicacion'] = date('d-m-Y',strtotime($datos_libro['fecha_publicacion']));
+    // datos de tipo
+    $res_tipo = $consultasbd->select($tabla='tbl_tipo_material',$campos='*',$where='WHERE id_tipo_material=\''.$datos_material['id_tipo'].'\'');
+    $row_tipo = $consultasbd->fetch_array($res_tipo);
+    $datos_material['id_tipo'] = $row_tipo['descripcion_tipo'];
 	} else if (isset($_POST) && count($_POST)>0) {
-    $id_libro = $_POST['codigo_libro'];
+    $id_material = $_POST['codigo_material'];
     $id_usuario = $_POST['txt_id_user'];
     $fecha_devolucion = $_POST['txt_fecha_devolucion'];
-    $tabla = 'tbl_prestamo_libro';
-    $campos = '(id_libro,id_operador,id_usuario,fecha_prestamo,fecha_devolucion)';
-    $values = '\''.$id_libro.'\',\''.$_SESSION['id_operador'].'\',\''.$id_usuario.'\',\''.date('Y-m-d').'\',\''.$fecha_devolucion.'\'';
+    $tabla = 'tbl_prestamo_material';
+    $campos = '(id_material,id_operador,id_usuario,fecha_prestamo,fecha_devolucion)';
+    $values = '\''.$id_material.'\',\''.$_SESSION['id_operador'].'\',\''.$id_usuario.'\',\''.date('Y-m-d').'\',\''.$fecha_devolucion.'\'';
     // registro de prestamo
     $consultasbd->insert($tabla,$campos,$values);
     // actualizacion de status de disponibilidad de libro
-    $tabla = 'tbl_libros';
+    $tabla = 'tbl_material';
     $set   = 'status=false';
-    $where = ' WHERE id_libro=\''.$id_libro.'\'';
+    $where = ' WHERE id_material=\''.$id_material.'\'';
     $consultasbd->update($tabla,$set,$where);
     // auditoria
-    $auditar_mnsj = "Realizo prestamo de libro. datos: (id_libro=>".$id_libro.",id_usuario=>".$id_usuario.")";
+    $auditar_mnsj = "Realizo prestamo de material. datos: (id_material=>".$id_material.",id_usuario=>".$id_usuario.")";
     $auditar_user = $_SESSION['id_operador'];
     $auditar_date = date('Y-m-d');
     $auditar_hour = date('H:m');
@@ -56,36 +43,36 @@
 <div class="col-sm-9 col-md-10">
   <div class="panel panel-primary">
     <div class="panel-heading">
-      <h3 class="panel-title"><b>Registro&nbsp;Prestamo&nbsp;de&nbsp;Libro<i class="glyphicon glyphicon-transfer" style="float:right;"></i></b></h3>
+      <h3 class="panel-title"><b>Registro&nbsp;Prestamo&nbsp;de&nbsp;Material<i class="glyphicon glyphicon-floppy-disk" style="float:right;"></i></b></h3>
     </div>
     <div class="panel-body">
-    	<form action="?page=prestar_libro" id="frm-prestar" method="POST" class="well" accept-charset="utf-8">
+    	<form action="?page=prestar_material" id="frm-prestar" method="POST" class="well" accept-charset="utf-8">
     		<div class="row">
     			<div class="col-lg-2">
-    				<label for="txt_codigo_libro">Cod&iacute;go&nbsp;Libro&nbsp;&nbsp;<i class="glyphicon glyphicon-credit-card"></i></label>
-	    			<input type="text" name="txt_codigo_libro" id="txt_codigo_libro" class="form-control required" title="Cod&iacute;go Libro" disabled="disabled" value="<?php echo $datos_libro['id_libro']; ?>" />	
-            <input type="hidden" name="codigo_libro" id="codigo_libro" value="<?php echo $datos_libro['id_libro']; ?>" />
+    				<label for="txt_codigo_material">Cod&iacute;go&nbsp;Material&nbsp;&nbsp;<i class="glyphicon glyphicon-credit-card"></i></label>
+	    			<input type="text" name="txt_codigo_material" id="txt_codigo_material" class="form-control required" title="Cod&iacute;go Material" disabled="disabled" value="<?php echo $datos_material['id_material']; ?>" />	
+            <input type="hidden" name="codigo_material" id="codigo_material" value="<?php echo $datos_material['id_material']; ?>" />
     			</div>
     		</div>
     		<br/>
 	    	<div class="row">
 	    		<div class="col-lg-12">
-	    			<label for="txt_descripcion">Descripci&oacute;n&nbsp;Libro&nbsp;&nbsp;<i class="glyphicon glyphicon-book"></i></label>
-	    			<input type="text" name="txt_descripcion" id="txt_descripcion" class="form-control required" title="Descripcion Libro" readOnly="readOnly" value="<?php echo strtoupper($datos_libro['descripcion']); ?>" />
+	    			<label for="txt_descripcion_material">Descripci&oacute;n&nbsp;Material&nbsp;&nbsp;<i class="glyphicon glyphicon-tag"></i></label>
+	    			<input type="text" name="txt_descripcion_material" id="txt_descripcion_material" class="form-control required" title="Descripci&oacute;n Material" readOnly="readOnly" value="<?php echo strtoupper($datos_material['id_tipo']); ?>" />
 	    		</div>
 	    	</div>
+        <br/>
+        <div class="row">
+          <div class="col-lg-12">
+            <label for="txt_nombre">Nombre&nbsp;Material&nbsp;&nbsp;<i class="glyphicon glyphicon-tag"></i></label>
+            <input type="text" name="txt_nombre" id="txt_nombre" class="form-control required" title="Nombre Material" readOnly="readOnly" value="<?php echo strtoupper($datos_material['nombre']); ?>" />
+          </div>
+        </div>
         <br/>
         <div class="row">
           <div class="col-lg-3">
             <label for="txt_fecha_devolucion">Fecha&nbsp;devoluci&oacute;n&nbsp;&nbsp;<img src="images/calendar.png" /></label>
             <input type="text" name="txt_fecha_devolucion" id="txt_fecha_devolucion" min="<?php echo date('d-m-Y'); ?>" class="form-control required" title="Fecha devoluci&oacute;n" readOnly="readOnly" />
-          </div>
-        </div>
-        <br/>
-        <div class="row">
-          <div class="col-lg-12">
-            <label for="txt_autor">Autor&nbsp;&nbsp;<i class="glyphicon glyphicon-user"></i></label>
-            <input type="text" name="txt_autor" id="txt_autor" class="form-control required" title="Autor Libro" readOnly="readOnly" value="<?php echo strtoupper($datos_libro['id_autor']); ?>" />
           </div>
         </div>
         <br/>
@@ -179,7 +166,7 @@
         $('#load-l').show();
         $('#text-resp').hide();
         $('#btn-prestamo').hide();
-        $.post('modulos/response_ajax.php',{'id_usuario':id_usuario,'function':'status_user_prestamo','recurso':'libro','id_recurso':$('#codigo_libro').val()},function(resp){
+        $.post('modulos/response_ajax.php',{'id_usuario':id_usuario,'function':'status_user_prestamo','recurso':'material','id_recurso':$('#codigo_material').val()},function(resp){
             $('#load-l').hide();
             resp = JSON.parse(resp);
             $('#text-resp').fadeIn();

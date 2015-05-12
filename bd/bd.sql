@@ -968,7 +968,8 @@ CREATE TABLE tbl_prestamo_libro (
     id_operador integer,
     id_usuario integer,
     fecha_prestamo date,
-    fecha_devolucion date
+    fecha_devolucion date,
+    status boolean DEFAULT true
 );
 
 
@@ -1015,6 +1016,13 @@ COMMENT ON COLUMN tbl_prestamo_libro.fecha_devolucion IS 'Fecha devolucion';
 
 
 --
+-- Name: COLUMN tbl_prestamo_libro.status; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN tbl_prestamo_libro.status IS 'Condicion del prestamo';
+
+
+--
 -- Name: tbl_prestamo_libro_id_prestamo_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -1039,11 +1047,12 @@ ALTER SEQUENCE tbl_prestamo_libro_id_prestamo_seq OWNED BY tbl_prestamo_libro.id
 
 CREATE TABLE tbl_prestamo_material (
     id_prestamo_material integer NOT NULL,
-    id_materia integer,
+    id_material integer,
     id_operador integer,
     id_usuario integer,
     fecha_prestamo date,
-    fecha_devolucion date
+    fecha_devolucion date,
+    status boolean DEFAULT true
 );
 
 
@@ -1055,10 +1064,10 @@ COMMENT ON COLUMN tbl_prestamo_material.id_prestamo_material IS 'Identificador d
 
 
 --
--- Name: COLUMN tbl_prestamo_material.id_materia; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN tbl_prestamo_material.id_material; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN tbl_prestamo_material.id_materia IS 'Identificador de materia';
+COMMENT ON COLUMN tbl_prestamo_material.id_material IS 'Identificador de material';
 
 
 --
@@ -1087,6 +1096,13 @@ COMMENT ON COLUMN tbl_prestamo_material.fecha_prestamo IS 'Fecha de prestamo';
 --
 
 COMMENT ON COLUMN tbl_prestamo_material.fecha_devolucion IS 'Fecha devolucion';
+
+
+--
+-- Name: COLUMN tbl_prestamo_material.status; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN tbl_prestamo_material.status IS 'Condicion del prestamo';
 
 
 --
@@ -1678,6 +1694,16 @@ COPY tbl_auditoria (id_auditoria, id_operador, descripcion, hora, fecha_auditori
 125	1	Inicio sesión	15:05:00	2015-05-05
 126	1	Inicio sesión	07:05:00	2015-05-08
 127	1	Inicio sesión	12:05:00	2015-05-08
+128	1	Inicio sesión	18:05:00	2015-05-11
+129	1	Registró nuevo material. datos: (nombre=>Ana Rafaela Vizcaya,id=>4)	19:05:00	2015-05-11
+130	1	Realizo prestamo de libro. datos: (id_libro=>28,id_usuario=>1)	19:05:00	2015-05-11
+131	1	Realizo prestamo de libro. datos: (id_libro=>29,id_usuario=>1)	20:05:00	2015-05-11
+132	1	Inicio sesión	20:05:00	2015-05-11
+133	1	Realizo prestamo de libro. datos: (id_libro=>30,id_usuario=>1)	21:05:00	2015-05-11
+134	1	Realizo prestamo de libro. datos: (id_libro=>30,id_usuario=>1)	21:05:00	2015-05-11
+135	1	Realizo prestamo de libro. datos: (id_libro=>30,id_usuario=>3)	22:05:00	2015-05-11
+136	1	Realizo prestamo de tesis. datos: (id_tesis=>1,id_usuario=>1)	22:05:00	2015-05-11
+137	1	Realizo prestamo de material. datos: (id_material=>1,id_usuario=>1)	23:05:00	2015-05-11
 \.
 
 
@@ -1685,7 +1711,7 @@ COPY tbl_auditoria (id_auditoria, id_operador, descripcion, hora, fecha_auditori
 -- Name: tbl_auditoria_id_auditoria_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('tbl_auditoria_id_auditoria_seq', 127, true);
+SELECT pg_catalog.setval('tbl_auditoria_id_auditoria_seq', 137, true);
 
 
 --
@@ -1803,8 +1829,8 @@ SELECT pg_catalog.setval('tbl_falta_id_falta_seq', 1, false);
 --
 
 COPY tbl_libros (id_libro, id_autor, id_editorial, id_materia, edicion, fecha_publicacion, descripcion, status) FROM stdin;
-28	10	4	5	1era	2015-03-11	conexiones a bases de datos con php	t
-29	11	5	1	1era	2015-03-10	codificalo	t
+28	10	4	5	1era	2015-03-11	conexiones a bases de datos con php	f
+29	11	5	1	1era	2015-03-10	codificalo	f
 30	9	5	9	3era	2011-04-01	Bases de datos maria db	t
 \.
 
@@ -1845,7 +1871,8 @@ SELECT pg_catalog.setval('tbl_materia_id_materia_seq', 9, true);
 --
 
 COPY tbl_material (id_material, id_tipo, nombre, status) FROM stdin;
-1	1	AREVALO CESAR ANTONIO ARAQUE	t
+4	4	Ana Rafaela Vizcaya	t
+1	1	AREVALO CESAR ANTONIO ARAQUE	f
 \.
 
 
@@ -1853,7 +1880,7 @@ COPY tbl_material (id_material, id_tipo, nombre, status) FROM stdin;
 -- Name: tbl_material_id_material_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('tbl_material_id_material_seq', 3, true);
+SELECT pg_catalog.setval('tbl_material_id_material_seq', 4, true);
 
 
 --
@@ -1931,7 +1958,9 @@ SELECT pg_catalog.setval('tbl_penalizacion_id_penalizacion_seq', 1, false);
 -- Data for Name: tbl_prestamo_libro; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY tbl_prestamo_libro (id_prestamo, id_libro, id_operador, id_usuario, fecha_prestamo, fecha_devolucion) FROM stdin;
+COPY tbl_prestamo_libro (id_prestamo, id_libro, id_operador, id_usuario, fecha_prestamo, fecha_devolucion, status) FROM stdin;
+1	28	1	1	2015-05-11	2015-05-11	t
+2	29	1	1	2015-05-11	2015-05-12	t
 \.
 
 
@@ -1939,14 +1968,15 @@ COPY tbl_prestamo_libro (id_prestamo, id_libro, id_operador, id_usuario, fecha_p
 -- Name: tbl_prestamo_libro_id_prestamo_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('tbl_prestamo_libro_id_prestamo_seq', 1, false);
+SELECT pg_catalog.setval('tbl_prestamo_libro_id_prestamo_seq', 5, true);
 
 
 --
 -- Data for Name: tbl_prestamo_material; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY tbl_prestamo_material (id_prestamo_material, id_materia, id_operador, id_usuario, fecha_prestamo, fecha_devolucion) FROM stdin;
+COPY tbl_prestamo_material (id_prestamo_material, id_material, id_operador, id_usuario, fecha_prestamo, fecha_devolucion, status) FROM stdin;
+1	1	1	1	2015-05-11	2015-05-18	t
 \.
 
 
@@ -1954,7 +1984,7 @@ COPY tbl_prestamo_material (id_prestamo_material, id_materia, id_operador, id_us
 -- Name: tbl_prestamo_material_id_prestamo_material_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('tbl_prestamo_material_id_prestamo_material_seq', 1, false);
+SELECT pg_catalog.setval('tbl_prestamo_material_id_prestamo_material_seq', 1, true);
 
 
 --
@@ -1962,6 +1992,7 @@ SELECT pg_catalog.setval('tbl_prestamo_material_id_prestamo_material_seq', 1, fa
 --
 
 COPY tbl_prestamo_tesis (id_prestamo_tesis, id_tesis, id_operador, id_usuario, fecha_prestamo, fecha_devolucion) FROM stdin;
+1	1	1	1	2015-05-11	2015-05-15
 \.
 
 
@@ -1969,7 +2000,7 @@ COPY tbl_prestamo_tesis (id_prestamo_tesis, id_tesis, id_operador, id_usuario, f
 -- Name: tbl_prestamo_tesis_id_prestamo_tesis_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('tbl_prestamo_tesis_id_prestamo_tesis_seq', 1, false);
+SELECT pg_catalog.setval('tbl_prestamo_tesis_id_prestamo_tesis_seq', 1, true);
 
 
 --
@@ -1994,7 +2025,7 @@ SELECT pg_catalog.setval('tbl_privilegios_id_privilegio_seq', 2, true);
 --
 
 COPY tbl_tesis (id_tesis, id_materia, id_autor_tesis, titulo, fecha_publicacion, mension, status) FROM stdin;
-1	1	1	Firmas Espectrales Agricolas  	2015-03-17	Publicacion	t
+1	1	1	Firmas Espectrales Agricolas  	2015-03-17	Publicacion	f
 \.
 
 
@@ -2382,7 +2413,7 @@ ALTER TABLE ONLY tbl_prestamo_libro
 --
 
 ALTER TABLE ONLY tbl_prestamo_material
-    ADD CONSTRAINT tbl_prestamo_material_id_materia_fkey FOREIGN KEY (id_materia) REFERENCES tbl_materia(id_materia);
+    ADD CONSTRAINT tbl_prestamo_material_id_materia_fkey FOREIGN KEY (id_material) REFERENCES tbl_materia(id_materia);
 
 
 --
