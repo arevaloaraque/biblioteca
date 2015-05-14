@@ -334,6 +334,22 @@
 			echo json_encode($data);
 		}
 
+		public function verificar_novedades () {
+			$tablas = ['libro'=>'tbl_novedad_libro','tesis'=>'tbl_novedad_tesis','material'=>'tbl_novedad_material'];
+			$ids = ['libro'=>'id_novedad','tesis'=>'id_novedad_tesis','material'=>'id_novedad_material'];
+			$id_prestamo = $_POST['id_prestamo'];
+			$prestamo = $this->consultasbd->select($tabla=$tablas[$_POST['recurso']],$campos='*',$where='WHERE '.$ids[$_POST['recurso']].'=\''.$id_prestamo.'\'');
+			if ($this->consultasbd->num_rows($prestamo)>0) {
+				echo json_encode(false);
+			} else {
+				echo json_encode(true);
+			}
+		}
+
+		public function entrega_prestamo () {
+			echo "Entrega";
+		}
+
 	}
 	
 	include_once('modelo.php');

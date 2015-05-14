@@ -116,7 +116,7 @@
 								  			<td class='text-center'><?php echo date('d-m-Y',strtotime($libro['fecha_prestamo'])); ?></td>
 								  			<td class='text-center'><?php echo date('d-m-Y',strtotime($libro['fecha_devolucion'])); ?></td>
 								  			<td class='text-center'>
-								  				<button class="btn-pres-libro btn btn-danger">Recibir&nbsp;&nbsp;<i class="glyphicon glyphicon-minus-sign"></i></button>
+								  				<button class="btn-pres-libro btn btn-danger" id="<?php echo $libro['id_prestamo']; ?>">Recibir&nbsp;&nbsp;<i class="glyphicon glyphicon-minus-sign"></i></button>
 								  			</td>
 								  		</tr>
 								  	<?php } ?>
@@ -179,7 +179,7 @@
 							  			<td class='text-center'><?php echo date('d-m-Y',strtotime($tesi['fecha_prestamo'])); ?></td>
 							  			<td class='text-center'><?php echo date('d-m-Y',strtotime($tesi['fecha_devolucion'])); ?></td>
 							  			<td class='text-center'>
-							  				<button class="btn-pres-tesis btn btn-danger">Recibir&nbsp;&nbsp;<i class="glyphicon glyphicon-minus-sign"></i></button>
+							  				<button class="btn-pres-tesis btn btn-danger" id="<?php echo $tesi['id_prestamo_tesis']; ?>">Recibir&nbsp;&nbsp;<i class="glyphicon glyphicon-minus-sign"></i></button>
 							  			</td>
 							  		</tr>
 							  	<?php } ?>
@@ -229,7 +229,7 @@
 								  			<td class='text-center'><?php echo date('d-m-Y',strtotime($mat['fecha_prestamo'])); ?></td>
 								  			<td class='text-center'><?php echo date('d-m-Y',strtotime($mat['fecha_devolucion'])); ?></td>
 								  			<td class='text-center'>
-								  				<button class="btn-pres-tesis btn btn-danger">Recibir&nbsp;&nbsp;<i class="glyphicon glyphicon-minus-sign"></i></button>
+								  				<button class="btn-pres-mat btn btn-danger" id="<?php echo $mat['id_prestamo_material']; ?>">Recibir&nbsp;&nbsp;<i class="glyphicon glyphicon-minus-sign"></i></button>
 								  			</td>
 								  		</tr>
 								  	<?php } ?>
@@ -270,5 +270,26 @@
 	    $('#txt_ced_user').on('change',function(){
 	    	if ($('#txt_ced_user').val() == '') { return false; } else { $('#frm-buscar-ced').submit(); }
 	    });
+	    // devolucion de libro
+	    $('.btn-pres-libro').on('click',function(){
+	    	var id_prestamo = $(this).attr('id');
+	    	$.post('modulos/response_ajax.php',{'id_prestamo':id_prestamo,'function':'verificar_novedades','recurso':'libro'},function(resp){
+	    		if (resp == 'true') {
+	    			alertify.confirm('<b>¿Desea registrar alguna novedad en este prestamo?</b>',function(e){
+	    				alertify.success("cesar");
+	    			}).set({'closable':false,'oncancel':function(){
+						alertify.alert()
+						.setting({
+							'label':'Agree',
+							'message': 'This dialog is : ' + (' not ') + 'closable.' ,
+							'onok': function(){ alertify.success('Great');}
+						}).show();
+	    			}});
+	    		} else {
+	    			alertify.alert('<b>Este&nbsp;prestamo&nbsp;posee&nbsp;novedades.<br/><br/>Vaya&nbsp;al&nbsp;men&uacute;&nbsp;&nbsp;<a href="?page=novedades"><i class=\"glyphicon glyphicon-edit\"></i>&nbsp;Novedades</a>&nbsp;para&nbsp;verificar.</b>').set({'label':'OK, GRACIAS!'});
+	    		}
+	    	});
+	    });
+//$.post('modulos/response_ajax.php',{'id_prestamo':id_prestamo,'function':'entrega_prestamo','recurso':'libro'});
 	});
 </script>
