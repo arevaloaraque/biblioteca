@@ -4,9 +4,9 @@
 	$user = $consultasbd->select($tabla='tbl_usuario');
 	if (isset($_POST) && count($_POST)>0) {
 		$id_usuario = $_POST['txt_ced_user'];
-		$libros = $consultasbd->select($tabla='tbl_prestamo_libro',$campos='*',$where='WHERE id_usuario=\''.$id_usuario.'\'');
-		$tesis = $consultasbd->select($tabla='tbl_prestamo_tesis',$campos='*',$where='WHERE id_usuario=\''.$id_usuario.'\'');
-		$material = $consultasbd->select($tabla='tbl_prestamo_material',$campos='*',$where='WHERE id_usuario=\''.$id_usuario.'\'');
+		$libros = $consultasbd->select($tabla='tbl_prestamo_libro',$campos='*',$where='WHERE id_usuario=\''.$id_usuario.'\' AND status=true');
+		$tesis = $consultasbd->select($tabla='tbl_prestamo_tesis',$campos='*',$where='WHERE id_usuario=\''.$id_usuario.'\' AND status=true');
+		$material = $consultasbd->select($tabla='tbl_prestamo_material',$campos='*',$where='WHERE id_usuario=\''.$id_usuario.'\' AND status=true');
 	}
 ?>
 <div class="col-sm-9 col-md-10">
@@ -56,7 +56,7 @@
 			</div>
 		</div>
 		<div class="row">
-				<div class="col-lg-12">
+				<div class="col-lg-12" id="tbl-libros">
 					<div class="table-responsive">
 					<?php if ($consultasbd->num_rows($libros)) { ?>
 					<div class="panel panel-default">
@@ -67,10 +67,10 @@
 										<th class="col-lg-1 text-center">Cod.&nbsp;Prestamo</th>
 										<th class="col-lg-2 text-center">Autor&nbsp;Libro</th>
 										<th class="col-lg-2 text-center">Editorial</th>
-										<th class="col-lg-5">Descripci&oacute;n&nbsp;</th>
+										<th class="col-lg-4">Descripci&oacute;n&nbsp;</th>
 										<th class="col-lg-1 text-center">Fecha&nbsp;Prestamo</th>
 										<th class="col-lg-1 text-center">Fecha&nbsp;Devoluci&oacute;n</th>
-										<th class="col-lg-2 text-center">Acci&oacute;n</th>
+										<th class="col-lg-3 text-center">Acci&oacute;n</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -116,7 +116,8 @@
 								  			<td class='text-center'><?php echo date('d-m-Y',strtotime($libro['fecha_prestamo'])); ?></td>
 								  			<td class='text-center'><?php echo date('d-m-Y',strtotime($libro['fecha_devolucion'])); ?></td>
 								  			<td class='text-center'>
-								  				<button class="btn-pres-libro btn btn-danger" id="<?php echo $libro['id_prestamo']; ?>">Recibir&nbsp;&nbsp;<i class="glyphicon glyphicon-minus-sign"></i></button>
+								  				<button class="btn-pres-libro btn btn-danger" id="<?php echo $libro['id_prestamo']; ?>">Devolver&nbsp;&nbsp;<i class="glyphicon glyphicon-ok-circle"></i></button>&nbsp;
+								  				<button class="btn-nov-libro btn btn-danger" id="<?php echo $libro['id_prestamo']; ?>">Novedad&nbsp;&nbsp;<i class="glyphicon glyphicon-remove-circle"></i></button>
 								  			</td>
 								  		</tr>
 								  	<?php } ?>
@@ -128,7 +129,7 @@
 				</div>
 				<!--Tesis-->
 				<?php if ($consultasbd->num_rows($tesis)) { ?>
-				<div class="col-lg-12">
+				<div class="col-lg-12" id="tbl-tesis">
 					<div class="panel panel-default">
 						<div class="panel-heading"><strong>Tesis</strong></div>
 						<table class="table table-bordered table-striped table-hover">
@@ -140,7 +141,7 @@
 									<th class="col-lg-5">Titulo&nbsp;</th>
 									<th class="col-lg-1 text-center">Fecha&nbsp;Prestamo</th>
 									<th class="col-lg-1 text-center">Fecha&nbsp;Devoluci&oacute;n</th>
-									<th class="col-lg-2 text-center">Acci&oacute;n</th>
+									<th class="col-lg-1 text-center">Acci&oacute;n</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -179,7 +180,8 @@
 							  			<td class='text-center'><?php echo date('d-m-Y',strtotime($tesi['fecha_prestamo'])); ?></td>
 							  			<td class='text-center'><?php echo date('d-m-Y',strtotime($tesi['fecha_devolucion'])); ?></td>
 							  			<td class='text-center'>
-							  				<button class="btn-pres-tesis btn btn-danger" id="<?php echo $tesi['id_prestamo_tesis']; ?>">Recibir&nbsp;&nbsp;<i class="glyphicon glyphicon-minus-sign"></i></button>
+							  				<button class="btn-pres-tesis btn btn-danger" id="<?php echo $tesi['id_prestamo_tesis']; ?>">Devolver&nbsp;&nbsp;<i class="glyphicon glyphicon-ok-sign"></i></button>&nbsp;
+							  				<button class="btn-nov-tesis btn btn-danger" id="<?php echo $tesi['id_prestamo_tesis']; ?>">Novedad&nbsp;&nbsp;<i class="glyphicon glyphicon-remove-circle"></i></button>
 							  			</td>
 							  		</tr>
 							  	<?php } ?>
@@ -190,7 +192,7 @@
 				<?php } ?>
 				<!--Materiales-->
 				<?php if ($consultasbd->num_rows($material)) { ?>
-				<div class="col-lg-12">
+				<div class="col-lg-12" id="tbl-mat">
 					<div class="panel panel-default">
 						<div class="panel-heading"><strong>Materiales</strong></div>
 							<table class="table table-bordered table-striped table-hover">
@@ -198,7 +200,7 @@
 									<tr class="active">
 										<th class="col-lg-1 text-center">Cod.&nbsp;Prestamo</th>
 										<th class="col-lg-3 text-center">Tipo</th>
-										<th class="col-lg-3 text-center">Nombre</th>
+										<th class="col-lg-4 text-center">Nombre</th>
 										<th class="col-lg-1 text-center">Fecha&nbsp;Prestamo</th>
 										<th class="col-lg-1 text-center">Fecha&nbsp;Devoluci&oacute;n</th>
 										<th class="col-lg-1 text-center">Acci&oacute;n</th>
@@ -229,7 +231,8 @@
 								  			<td class='text-center'><?php echo date('d-m-Y',strtotime($mat['fecha_prestamo'])); ?></td>
 								  			<td class='text-center'><?php echo date('d-m-Y',strtotime($mat['fecha_devolucion'])); ?></td>
 								  			<td class='text-center'>
-								  				<button class="btn-pres-mat btn btn-danger" id="<?php echo $mat['id_prestamo_material']; ?>">Recibir&nbsp;&nbsp;<i class="glyphicon glyphicon-minus-sign"></i></button>
+								  				<button class="btn-pres-mat btn btn-danger" id="<?php echo $mat['id_prestamo_material']; ?>">Devolver&nbsp;&nbsp;<i class="glyphicon glyphicon-ok-circle"></i></button>&nbsp;
+								  				<button class="btn-nov-mat btn btn-danger" id="<?php echo $mat['id_prestamo_material']; ?>">Novedad&nbsp;&nbsp;<i class="glyphicon glyphicon-remove-circle"></i></button>
 								  			</td>
 								  		</tr>
 								  	<?php } ?>
@@ -254,6 +257,10 @@
 <link rel="stylesheet" type="text/css" href="plugins/chosen_v1.4.0/chosen.css">
 <script src="plugins/chosen_v1.4.0/chosen.jquery.js" type="text/javascript"></script>
 <script type="text/javascript">
+	function test () {
+		alertify.confirm('test',function(e){ if (e) {alert("ssss");} });
+		
+	}
 	$(document).on('ready',function(){
 		$(".only_num").keypress(function(evt){
 	        evt = (evt) ? evt : event
@@ -275,21 +282,60 @@
 	    	var id_prestamo = $(this).attr('id');
 	    	$.post('modulos/response_ajax.php',{'id_prestamo':id_prestamo,'function':'verificar_novedades','recurso':'libro'},function(resp){
 	    		if (resp == 'true') {
-	    			alertify.confirm('<b>¿Desea registrar alguna novedad en este prestamo?</b>',function(e){
-	    				alertify.success("cesar");
-	    			}).set({'closable':false,'oncancel':function(){
-						alertify.alert()
-						.setting({
-							'label':'Agree',
-							'message': 'This dialog is : ' + (' not ') + 'closable.' ,
-							'onok': function(){ alertify.success('Great');}
-						}).show();
-	    			}});
+	    			alertify.confirm('<b>¿Esta seguro de realizar la devoluci&oacute;n del Libro?</b>',function(e){
+    					if (e) {
+	    					$.post('modulos/response_ajax.php',{'id_prestamo':id_prestamo,'function':'entrega_prestamo','recurso':'libro'},function(resp){
+		    					if (resp == "true") {
+		    						$("tr#"+id_prestamo).remove();
+		    						if ($("#tbl-libros>tbody>tr").length == 0) { $("#tbl-libros").fadeOut(); } 
+		    					}
+		    				});
+    					}
+	    			});
 	    		} else {
 	    			alertify.alert('<b>Este&nbsp;prestamo&nbsp;posee&nbsp;novedades.<br/><br/>Vaya&nbsp;al&nbsp;men&uacute;&nbsp;&nbsp;<a href="?page=novedades"><i class=\"glyphicon glyphicon-edit\"></i>&nbsp;Novedades</a>&nbsp;para&nbsp;verificar.</b>').set({'label':'OK, GRACIAS!'});
 	    		}
 	    	});
 	    });
-//$.post('modulos/response_ajax.php',{'id_prestamo':id_prestamo,'function':'entrega_prestamo','recurso':'libro'});
+		// devolucion de tesis
+	    $('.btn-pres-tesis').on('click',function(){
+	    	var id_prestamo = $(this).attr('id');
+	    	$.post('modulos/response_ajax.php',{'id_prestamo':id_prestamo,'function':'verificar_novedades','recurso':'tesis'},function(resp){
+	    		if (resp == 'true') {
+	    			alertify.confirm('<b>¿Esta seguro de realizar la devoluci&oacute;n de la Tesis?</b>',function(e){
+    					if (e) {
+	    					$.post('modulos/response_ajax.php',{'id_prestamo':id_prestamo,'function':'entrega_prestamo','recurso':'tesis'},function(resp){
+		    					if (resp == "true") {
+		    						$("tr#"+id_prestamo).remove();
+		    						if ($("#tbl-tesis>tbody>tr").length == 0) { $("#tbl-tesis").fadeOut(); } 
+		    					}
+		    				});
+    					}
+	    			});
+	    		} else {
+	    			alertify.alert('<b>Este&nbsp;prestamo&nbsp;posee&nbsp;novedades.<br/><br/>Vaya&nbsp;al&nbsp;men&uacute;&nbsp;&nbsp;<a href="?page=novedades"><i class=\"glyphicon glyphicon-edit\"></i>&nbsp;Novedades</a>&nbsp;para&nbsp;verificar.</b>').set({'label':'OK, GRACIAS!'});
+	    		}
+	    	});
+	    });
+		// devolucion de material
+	    $('.btn-pres-mat').on('click',function(){
+	    	var id_prestamo = $(this).attr('id');
+	    	$.post('modulos/response_ajax.php',{'id_prestamo':id_prestamo,'function':'verificar_novedades','recurso':'material'},function(resp){
+	    		if (resp == 'true') {
+	    			alertify.confirm('<b>¿Esta seguro de realizar la devoluci&oacute;n del Material?</b>',function(e){
+    					if (e) {
+	    					$.post('modulos/response_ajax.php',{'id_prestamo':id_prestamo,'function':'entrega_prestamo','recurso':'material'},function(resp){
+		    					if (resp == "true") {
+		    						$("tr#"+id_prestamo).remove();
+		    						if ($("#tbl-mat>tbody>tr").length == 0) { $("#tbl-mat").fadeOut(); } 
+		    					}
+		    				});
+    					}
+	    			});
+	    		} else {
+	    			alertify.alert('<b>Este&nbsp;prestamo&nbsp;posee&nbsp;novedades.<br/><br/>Vaya&nbsp;al&nbsp;men&uacute;&nbsp;&nbsp;<a href="?page=novedades"><i class=\"glyphicon glyphicon-edit\"></i>&nbsp;Novedades</a>&nbsp;para&nbsp;verificar.</b>').set({'label':'OK, GRACIAS!'});
+	    		}
+	    	});
+	    });
 	});
 </script>

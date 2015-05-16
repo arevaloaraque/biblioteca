@@ -2,7 +2,7 @@
 	class Consultasbd {
 		
 		// metodo de conexion a base de datos
-		public function __construct($host='localhost',$user='desarrollo',$pass='aarevalo',$db='bd_biblioteca') {
+		public function __construct($host='localhost',$user='biblioteca',$pass='123',$db='bd_biblioteca') {
 			$this->idconx = pg_connect('host='.$host.' user='.$user.' password='.$pass.'  dbname='.$db) or die ('Error al conectar con la base de datos, ');
 		}
 

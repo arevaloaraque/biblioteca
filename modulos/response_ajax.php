@@ -305,7 +305,7 @@
 				$recurso = $this->consultasbd->select($tabla_tmp,$campos='*',$where=' WHERE id_'.$tipo_recurso.'=\''.$id_recurso.'\' AND status=true');
 				// verificacion de recurso. disponibilidad
 				if ($this->consultasbd->num_rows($recurso)>0) {
-					$prestamos_user = $this->consultasbd->select('tbl_prestamo_'.$tipo_recurso,$campos='*',$where=' WHERE id_usuario=\''.$id_usuario.'\'');
+					$prestamos_user = $this->consultasbd->select('tbl_prestamo_'.$tipo_recurso,$campos='*',$where=' WHERE id_usuario=\''.$id_usuario.'\' AND status=true');
 					// verificacion de prestamos actuales del usuario. limite 2
 					if ($this->consultasbd->num_rows($prestamos_user)<2) {
 						// verificacion de novedades
@@ -347,7 +347,27 @@
 		}
 
 		public function entrega_prestamo () {
-			echo "Entrega";
+			$tablas = ['libro'=>'tbl_prestamo_libro','tesis'=>'tbl_prestamo_tesis','material'=>'tbl_prestamo_material'];
+			$recurso = ['libro'=>'tbl_libros','tesis'=>'tbl_tesis','material'=>'tbl_material'];
+			$ids = ['libro'=>'id_prestamo','tesis'=>'id_prestamo_tesis','material'=>'id_prestamo_material'];
+			$id_prestamo = $_POST['id_prestamo'];
+			$prestamo = $this->consultasbd->select($tabla=$tablas[$_POST['recurso']],$campos='*',$where=' WHERE '.$ids[$_POST['recurso']].'=\''.$id_prestamo.'\' AND status=true');
+			if (is_resource($prestamo)){ 
+				$this->consultasbd->update($tabla=$tablas[$_POST['recurso']],$set='status=false',$where=' WHERE '.$ids[$_POST['recurso']].'=\''.$id_prestamo.'\'');
+				// auditoria
+				$auditar_mnsj = "Realizo devolucion de ".$_POST['recurso'].". datos: (Id prestamo=>".$id_prestamo.")";
+				$auditar_user = $_SESSION['id_operador'];
+				$auditar_date = date('Y-m-d');
+				$auditar_hour = date('H:m');
+				$this->consultasbd->insert($tabla='tbl_auditoria',$campos='(id_operador,descripcion,hora,fecha_auditoria)',$values='\''.$auditar_user.'\',\''.$auditar_mnsj.'\',\''.$auditar_hour.'\',\''.$auditar_date.'\'');
+				// FIN auditoria
+				// cambiar status del recurso
+				$datos_prestamo = $this->consultasbd->fetch_array($prestamo);
+				$this->consultasbd->update($tabla=$recurso[$_POST['recurso']],$set='status=true',$where=' WHERE id_'.$_POST['recurso'].'=\''.$datos_prestamo['id_'.$_POST['recurso']].'\'');
+				echo json_encode(true);
+			} else {
+
+			}
 		}
 
 	}
