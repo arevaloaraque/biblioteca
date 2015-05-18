@@ -29,7 +29,7 @@
 				} else {
 					$tabla = 'tbl_operador';
 					$set   = 'cedula=\''.$cedula.'\', nombre=\''.$nombre.'\',apellido=\''.$apellido.'\', fecha_modifica=\''.date('Y-m-d').'\'';
-					$set  .= (!empty($clave))?', clave=\''.$clave.'\'':'';
+					$set  .= (!empty($clave))?', password=\''.$clave.'\'':'';
 					$where = ' WHERE id_operador=\''.$id_operador.'\'';
 					$res   = $consultasbd->update($tabla,$set,$where);
 					// auditoria
@@ -44,7 +44,7 @@
 			} else {
 				$tabla = 'tbl_operador';
 				$set   = 'cedula=\''.$cedula.'\', nombre=\''.$nombre.'\',apellido=\''.$apellido.'\', fecha_modifica=\''.date('Y-m-d').'\'';
-				$set  .= (!empty($clave))?', clave=\''.$clave.'\'':'';
+				$set  .= (!empty($clave))?', password=\''.md5($clave).'\'':'';
 				$where = ' WHERE id_operador=\''.$id_operador.'\'';
 				$res   = $consultasbd->update($tabla,$set,$where);
 				// auditoria

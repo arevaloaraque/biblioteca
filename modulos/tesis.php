@@ -90,7 +90,7 @@
       		<div class="row">
 			  	<div class="form-group col-lg-6">
 			    	<label for="txt_materia">Materia</label>
-			    	<select name="txt_materia" id="txt_materia" class="chosen-select form-control required" data-placeholder="Seleccione autor" title="Materia">
+			    	<select name="txt_materia" id="txt_materia" class="chosen-select form-control required" data-placeholder="Seleccione materia" title="Materia">
 			    	</select>
 			  	</div>
 			  	<div class="form-group col-lg-6">

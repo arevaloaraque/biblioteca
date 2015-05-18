@@ -1134,7 +1134,8 @@ CREATE TABLE tbl_prestamo_tesis (
     id_operador integer,
     id_usuario integer,
     fecha_prestamo date,
-    fecha_devolucion date
+    fecha_devolucion date,
+    status boolean DEFAULT true
 );
 
 
@@ -1178,6 +1179,13 @@ COMMENT ON COLUMN tbl_prestamo_tesis.fecha_prestamo IS 'Fecha de prestamo';
 --
 
 COMMENT ON COLUMN tbl_prestamo_tesis.fecha_devolucion IS 'Fecha dev';
+
+
+--
+-- Name: COLUMN tbl_prestamo_tesis.status; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN tbl_prestamo_tesis.status IS 'Condicion del prestamo';
 
 
 --
@@ -1595,7 +1603,7 @@ ALTER TABLE ONLY tbl_tipo_material ALTER COLUMN id_tipo_material SET DEFAULT nex
 -- Name: id_operador_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('id_operador_seq', 4, true);
+SELECT pg_catalog.setval('id_operador_seq', 6, true);
 
 
 --
@@ -1704,6 +1712,84 @@ COPY tbl_auditoria (id_auditoria, id_operador, descripcion, hora, fecha_auditori
 135	1	Realizo prestamo de libro. datos: (id_libro=>30,id_usuario=>3)	22:05:00	2015-05-11
 136	1	Realizo prestamo de tesis. datos: (id_tesis=>1,id_usuario=>1)	22:05:00	2015-05-11
 137	1	Realizo prestamo de material. datos: (id_material=>1,id_usuario=>1)	23:05:00	2015-05-11
+138	1	Inicio sesión	19:05:00	2015-05-12
+139	1	Cierre sesión	19:05:00	2015-05-12
+140	1	Inicio sesión	19:05:00	2015-05-12
+141	1	Inicio sesión	00:05:00	2015-05-13
+142	1	Inicio sesión	09:05:00	2015-05-13
+143	1	Inicio sesión	22:05:00	2015-05-15
+144	1	Inicio sesión	22:05:00	2015-05-15
+145	1	Realizo prestamo de material. datos: (id_material=>1,id_usuario=>1)	23:05:00	2015-05-15
+146	1	Realizo devolucion de libro. datos: (Id prestamo=>1)	00:05:00	2015-05-16
+147	1	Realizo devolucion de libro. datos: (Id prestamo=>2)	00:05:00	2015-05-16
+148	1	Realizo devolucion de libro. datos: (Id prestamo=>1)	00:05:00	2015-05-16
+149	1	Realizo devolucion de libro. datos: (Id prestamo=>2)	00:05:00	2015-05-16
+150	1	Realizo devolucion de libro. datos: (Id prestamo=>1)	00:05:00	2015-05-16
+151	1	Realizo devolucion de libro. datos: (Id prestamo=>2)	00:05:00	2015-05-16
+152	1	Realizo prestamo de libro. datos: (id_libro=>28,id_usuario=>1)	00:05:00	2015-05-16
+153	1	Realizo devolucion de libro. datos: (Id prestamo=>6)	00:05:00	2015-05-16
+154	1	Realizo prestamo de libro. datos: (id_libro=>28,id_usuario=>1)	00:05:00	2015-05-16
+155	1	Realizo devolucion de libro. datos: (Id prestamo=>7)	00:05:00	2015-05-16
+156	1	Realizo prestamo de libro. datos: (id_libro=>28,id_usuario=>1)	00:05:00	2015-05-16
+157	1	Realizo devolucion de libro. datos: (Id prestamo=>8)	00:05:00	2015-05-16
+158	1	Realizo prestamo de libro. datos: (id_libro=>28,id_usuario=>1)	00:05:00	2015-05-16
+159	1	Realizo devolucion de libro. datos: (Id prestamo=>9)	00:05:00	2015-05-16
+160	1	Realizo prestamo de libro. datos: (id_libro=>28,id_usuario=>1)	00:05:00	2015-05-16
+161	1	Realizo devolucion de libro. datos: (Id prestamo=>10)	00:05:00	2015-05-16
+162	1	Realizo prestamo de libro. datos: (id_libro=>28,id_usuario=>1)	00:05:00	2015-05-16
+163	1	Realizo devolucion de libro. datos: (Id prestamo=>11)	00:05:00	2015-05-16
+164	1	Realizo prestamo de libro. datos: (id_libro=>28,id_usuario=>1)	00:05:00	2015-05-16
+165	1	Realizo devolucion de libro. datos: (Id prestamo=>12)	00:05:00	2015-05-16
+166	1	Realizo prestamo de libro. datos: (id_libro=>28,id_usuario=>1)	00:05:00	2015-05-16
+167	1	Realizo devolucion de libro. datos: (Id prestamo=>13)	00:05:00	2015-05-16
+168	1	Realizo prestamo de libro. datos: (id_libro=>28,id_usuario=>1)	00:05:00	2015-05-16
+169	1	Realizo devolucion de libro. datos: (Id prestamo=>14)	00:05:00	2015-05-16
+170	1	Realizo prestamo de libro. datos: (id_libro=>30,id_usuario=>1)	00:05:00	2015-05-16
+171	1	Realizo devolucion de tesis. datos: (Id prestamo=>1)	00:05:00	2015-05-16
+172	1	Realizo devolucion de libro. datos: (Id prestamo=>15)	00:05:00	2015-05-16
+173	1	Realizo devolucion de material. datos: (Id prestamo=>2)	00:05:00	2015-05-16
+174	1	Cierre sesión	00:05:00	2015-05-16
+175	1	Inicio sesión	00:05:00	2015-05-16
+176	1	Realizo prestamo de libro. datos: (id_libro=>28,id_usuario=>1)	00:05:00	2015-05-16
+177	1	Realizo prestamo de tesis. datos: (id_tesis=>1,id_usuario=>1)	00:05:00	2015-05-16
+178	1	Realizo prestamo de libro. datos: (id_libro=>29,id_usuario=>1)	00:05:00	2015-05-16
+179	1	Realizo prestamo de material. datos: (id_material=>1,id_usuario=>1)	00:05:00	2015-05-16
+180	1	Realizo devolucion de libro. datos: (Id prestamo=>16)	00:05:00	2015-05-16
+181	1	Realizo devolucion de tesis. datos: (Id prestamo=>2)	00:05:00	2015-05-16
+182	1	Realizo devolucion de libro. datos: (Id prestamo=>17)	00:05:00	2015-05-16
+183	1	Inicio sesión	21:05:00	2015-05-17
+184	1	Realizo prestamo de libro. datos: (id_libro=>28,id_usuario=>1)	21:05:00	2015-05-17
+185	1	Realizo prestamo de libro. datos: (id_libro=>29,id_usuario=>1)	21:05:00	2015-05-17
+186	1	Realizo devolucion de libro. datos: (Id prestamo=>18)	21:05:00	2015-05-17
+187	1	Realizo prestamo de libro. datos: (id_libro=>28,id_usuario=>1)	21:05:00	2015-05-17
+188	1	Realizo devolucion de libro. datos: (Id prestamo=>20)	21:05:00	2015-05-17
+189	1	Realizo prestamo de libro. datos: (id_libro=>28,id_usuario=>1)	21:05:00	2015-05-17
+190	1	Realizo devolucion de libro. datos: (Id prestamo=>21)	22:05:00	2015-05-17
+191	1	Realizo prestamo de libro. datos: (id_libro=>30,id_usuario=>1)	22:05:00	2015-05-17
+192	1	Realizo devolucion de libro. datos: (Id prestamo=>22)	22:05:00	2015-05-17
+193	1	Realizo prestamo de libro. datos: (id_libro=>30,id_usuario=>1)	22:05:00	2015-05-17
+194	1	Realizo devolucion de libro. datos: (Id prestamo=>23)	22:05:00	2015-05-17
+195	1	Realizo prestamo de libro. datos: (id_libro=>28,id_usuario=>1)	22:05:00	2015-05-17
+196	1	Realizo devolucion de libro. datos: (Id prestamo=>19)	22:05:00	2015-05-17
+197	1	Realizo devolucion de libro. datos: (Id prestamo=>24)	22:05:00	2015-05-17
+198	1	Cierre sesión	23:05:00	2015-05-17
+199	1	Inicio sesión	23:05:00	2015-05-17
+200	1	Cierre sesión	23:05:00	2015-05-17
+201	2	Inicio sesión	23:05:00	2015-05-17
+202	2	Cierre sesión	23:05:00	2015-05-17
+203	1	Inicio sesión	23:05:00	2015-05-17
+204	1	Actualizó operador. datos: (Nombre=>LUIS                          ,id=>4)	23:05:00	2015-05-17
+205	1	Actualizó operador. datos: (Nombre=>LUIS                          ,id=>4)	23:05:00	2015-05-17
+206	1	Registro Operador. datos: (Nombre=>pedro,id=>)	23:05:00	2015-05-17
+207	1	Eliminó registro. datos: (tabla=>tbl_operador,campo=>id_operador,valor=>5)	23:05:00	2015-05-17
+208	1	Registro Operador. datos: (Nombre=>pedro,id=>)	23:05:00	2015-05-17
+209	1	Inicio sesión	23:05:00	2015-05-17
+210	1	Realizo prestamo de libro. datos: (id_libro=>28,id_usuario=>1)	00:05:00	2015-05-18
+211	1	Realizo prestamo de libro. datos: (id_libro=>29,id_usuario=>1)	00:05:00	2015-05-18
+212	1	Realizo prestamo de tesis. datos: (id_tesis=>1,id_usuario=>1)	00:05:00	2015-05-18
+213	1	Registró nuevo autor de tesis. datos: (nombre=>jean,apellido=>mendoza,id=>2)	00:05:00	2015-05-18
+214	1	Registró nueva tesis. datos: (titulo=>Prueba de sistema\r\n,id=>2)	00:05:00	2015-05-18
+215	1	Realizo prestamo de tesis. datos: (id_tesis=>2,id_usuario=>1)	00:05:00	2015-05-18
 \.
 
 
@@ -1711,7 +1797,7 @@ COPY tbl_auditoria (id_auditoria, id_operador, descripcion, hora, fecha_auditori
 -- Name: tbl_auditoria_id_auditoria_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('tbl_auditoria_id_auditoria_seq', 137, true);
+SELECT pg_catalog.setval('tbl_auditoria_id_auditoria_seq', 215, true);
 
 
 --
@@ -1746,6 +1832,7 @@ SELECT pg_catalog.setval('tbl_autor_id_autor_seq', 12, true);
 
 COPY tbl_autor_tesis (id_autor_tesis, mension, nombre, apellido) FROM stdin;
 1	PUBLICACION	CESAR	ARAQUE
+2	\N	jean	mendoza
 \.
 
 
@@ -1753,7 +1840,7 @@ COPY tbl_autor_tesis (id_autor_tesis, mension, nombre, apellido) FROM stdin;
 -- Name: tbl_autor_tesis_id_autor_tesis_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('tbl_autor_tesis_id_autor_tesis_seq', 1, true);
+SELECT pg_catalog.setval('tbl_autor_tesis_id_autor_tesis_seq', 2, true);
 
 
 --
@@ -1829,9 +1916,9 @@ SELECT pg_catalog.setval('tbl_falta_id_falta_seq', 1, false);
 --
 
 COPY tbl_libros (id_libro, id_autor, id_editorial, id_materia, edicion, fecha_publicacion, descripcion, status) FROM stdin;
+30	9	5	9	3era	2011-04-01	Bases de datos maria db	t
 28	10	4	5	1era	2015-03-11	conexiones a bases de datos con php	f
 29	11	5	1	1era	2015-03-10	codificalo	f
-30	9	5	9	3era	2011-04-01	Bases de datos maria db	t
 \.
 
 
@@ -1934,8 +2021,9 @@ SELECT pg_catalog.setval('tbl_novedad_tesis_id_novedad_tesis_seq', 1, false);
 
 COPY tbl_operador (id_operador, id_privilegio, nombre, apellido, cedula, password, fecha_creacion, fecha_modifica) FROM stdin;
 1	1	AREVALO                       	ARAQUE                        	21005501	202cb962ac59075b964b07152d234b70                  	\N	\N
-4	2	luis                          	diaz                          	6938094	123                                               	2015-04-27	\N
 2	2	CESAR ANTONIO                 	VIZCAYA                       	20724884	202cb962ac59075b964b07152d234b70                  	2015-03-08	2015-05-05
+4	2	LUIS                          	DIAZ                          	6938094	202cb962ac59075b964b07152d234b70                  	2015-04-27	2015-05-17
+6	2	pedro                         	perez                         	21005502	202cb962ac59075b964b07152d234b70                  	2015-05-17	\N
 \.
 
 
@@ -1959,8 +2047,29 @@ SELECT pg_catalog.setval('tbl_penalizacion_id_penalizacion_seq', 1, false);
 --
 
 COPY tbl_prestamo_libro (id_prestamo, id_libro, id_operador, id_usuario, fecha_prestamo, fecha_devolucion, status) FROM stdin;
-1	28	1	1	2015-05-11	2015-05-11	t
-2	29	1	1	2015-05-11	2015-05-12	t
+1	28	1	1	2015-05-11	2015-05-11	f
+2	29	1	1	2015-05-11	2015-05-12	f
+6	28	1	1	2015-05-16	2015-05-16	f
+7	28	1	1	2015-05-16	2015-05-23	f
+8	28	1	1	2015-05-16	2015-05-23	f
+9	28	1	1	2015-05-16	2015-05-17	f
+10	28	1	1	2015-05-16	2015-05-16	f
+11	28	1	1	2015-05-16	2015-05-23	f
+12	28	1	1	2015-05-16	2015-05-23	f
+13	28	1	1	2015-05-16	2015-05-22	f
+14	28	1	1	2015-05-16	2015-05-23	f
+15	30	1	1	2015-05-16	2015-05-23	f
+16	28	1	1	2015-05-16	2015-05-17	f
+17	29	1	1	2015-05-16	2015-05-21	f
+18	28	1	1	2015-05-17	2015-05-24	f
+20	28	1	1	2015-05-17	2015-05-23	f
+21	28	1	1	2015-05-17	2015-05-23	f
+22	30	1	1	2015-05-17	2015-05-17	f
+23	30	1	1	2015-05-17	2015-05-24	f
+19	29	1	1	2015-05-17	2015-05-20	f
+24	28	1	1	2015-05-17	2015-05-22	f
+25	28	1	1	2015-05-18	2015-05-20	t
+26	29	1	1	2015-05-18	2015-05-23	t
 \.
 
 
@@ -1968,7 +2077,7 @@ COPY tbl_prestamo_libro (id_prestamo, id_libro, id_operador, id_usuario, fecha_p
 -- Name: tbl_prestamo_libro_id_prestamo_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('tbl_prestamo_libro_id_prestamo_seq', 5, true);
+SELECT pg_catalog.setval('tbl_prestamo_libro_id_prestamo_seq', 26, true);
 
 
 --
@@ -1976,7 +2085,8 @@ SELECT pg_catalog.setval('tbl_prestamo_libro_id_prestamo_seq', 5, true);
 --
 
 COPY tbl_prestamo_material (id_prestamo_material, id_material, id_operador, id_usuario, fecha_prestamo, fecha_devolucion, status) FROM stdin;
-1	1	1	1	2015-05-11	2015-05-18	t
+2	1	1	1	2015-05-15	2015-05-19	f
+3	1	1	1	2015-05-16	2015-05-23	t
 \.
 
 
@@ -1984,15 +2094,18 @@ COPY tbl_prestamo_material (id_prestamo_material, id_material, id_operador, id_u
 -- Name: tbl_prestamo_material_id_prestamo_material_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('tbl_prestamo_material_id_prestamo_material_seq', 1, true);
+SELECT pg_catalog.setval('tbl_prestamo_material_id_prestamo_material_seq', 3, true);
 
 
 --
 -- Data for Name: tbl_prestamo_tesis; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY tbl_prestamo_tesis (id_prestamo_tesis, id_tesis, id_operador, id_usuario, fecha_prestamo, fecha_devolucion) FROM stdin;
-1	1	1	1	2015-05-11	2015-05-15
+COPY tbl_prestamo_tesis (id_prestamo_tesis, id_tesis, id_operador, id_usuario, fecha_prestamo, fecha_devolucion, status) FROM stdin;
+1	1	1	1	2015-05-11	2015-05-15	f
+2	1	1	1	2015-05-16	2015-05-23	f
+3	1	1	1	2015-05-18	2015-05-22	t
+4	2	1	1	2015-05-18	2015-05-22	t
 \.
 
 
@@ -2000,7 +2113,7 @@ COPY tbl_prestamo_tesis (id_prestamo_tesis, id_tesis, id_operador, id_usuario, f
 -- Name: tbl_prestamo_tesis_id_prestamo_tesis_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('tbl_prestamo_tesis_id_prestamo_tesis_seq', 1, true);
+SELECT pg_catalog.setval('tbl_prestamo_tesis_id_prestamo_tesis_seq', 4, true);
 
 
 --
@@ -2026,6 +2139,7 @@ SELECT pg_catalog.setval('tbl_privilegios_id_privilegio_seq', 2, true);
 
 COPY tbl_tesis (id_tesis, id_materia, id_autor_tesis, titulo, fecha_publicacion, mension, status) FROM stdin;
 1	1	1	Firmas Espectrales Agricolas  	2015-03-17	Publicacion	f
+2	2	2	Prueba de sistema\r\n           	2014-05-01	honor	f
 \.
 
 
@@ -2033,7 +2147,7 @@ COPY tbl_tesis (id_tesis, id_materia, id_autor_tesis, titulo, fecha_publicacion,
 -- Name: tbl_tesis_id_tesis_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('tbl_tesis_id_tesis_seq', 1, true);
+SELECT pg_catalog.setval('tbl_tesis_id_tesis_seq', 2, true);
 
 
 --
@@ -2409,11 +2523,11 @@ ALTER TABLE ONLY tbl_prestamo_libro
 
 
 --
--- Name: tbl_prestamo_material_id_materia_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: tbl_prestamo_material_id_material_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tbl_prestamo_material
-    ADD CONSTRAINT tbl_prestamo_material_id_materia_fkey FOREIGN KEY (id_material) REFERENCES tbl_materia(id_materia);
+    ADD CONSTRAINT tbl_prestamo_material_id_material_fkey FOREIGN KEY (id_material) REFERENCES tbl_material(id_material) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --

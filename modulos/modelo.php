@@ -1,5 +1,7 @@
 <?php 
 	class Consultasbd {
+
+		public $last_query = "";
 		
 		// metodo de conexion a base de datos
 		public function __construct($host='localhost',$user='biblioteca',$pass='123',$db='bd_biblioteca') {
@@ -8,30 +10,35 @@
 
 		public function select($tabla,$campos="*",$where="") {
 			$sql = "SELECT ".$campos." FROM ".$tabla." ".(($where != '')?$where:'');
+			$this->last_query = $sql;
 			$res = pg_query($this->idconx,$sql) or die ('Error al ejecutar la consulta'.pg_result_error());
 			return $res;
 		}
 
 		public function insert($tabla,$campos,$values) {
 			$sql = "INSERT INTO ".$tabla.$campos." VALUES(".$values.")";
+			$this->last_query = $sql;
 			$res = pg_query($this->idconx,$sql) or die ('Error al ejecutar la consulta'.pg_result_error());
 			return $res;
 		}
 
 		public function delete($tabla,$campo,$valor) {
 			$sql = "DELETE FROM ".$tabla." WHERE ".$campo."=".$valor."";
+			$this->last_query = $sql;
 			$res = pg_query($this->idconx,$sql) or die ('Error al ejecutar la consulta'.pg_result_error());
 			return $res;
 		}
 
 		public function update($tabla,$set,$where) {
 			$sql = "UPDATE ".$tabla." SET ".$set." ".$where."";
+			$this->last_query = $sql;
 			$res = pg_query($this->idconx,$sql) or die ('Error al ejecutar la consulta'.pg_result_error());
 			return $res;
 		}
 
 		public function query($sql) {
 			$res = pg_query($this->idconx,$sql) or die ('Error al ejecutar la consulta'.pg_result_error());
+			$this->last_query = $sql;
 			return $res;
 		}
 
@@ -45,6 +52,7 @@
 
 		public function max_id($tabla,$id) {
 			$sql = "SELECT MAX(".$id.") AS id FROM ".$tabla."";
+			$this->last_query = $sql;
 			$res = pg_query($this->idconx,$sql) or die ('Error al ejecutar la consulta'.pg_result_error());
 			return $res;
 		}

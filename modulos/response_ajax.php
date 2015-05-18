@@ -298,6 +298,8 @@
 			$id_recurso 	= $_POST['id_recurso'];
 			$tipo_recurso = $_POST['recurso'];
 			$tabla_tmp = '';
+			$id_nov = ['libro'=>'id_novedad','tesis'=>'id_novedad_tesis','material'=>'id_novedad_material'];
+			$prefix = ['libro'=>'','tesis'=>'_tesis','material'=>'_material'];
 			if ($tipo_recurso=='libro'){$tabla_tmp='tbl_libros';}elseif($tipo_recurso=='tesis'){$tabla_tmp='tbl_tesis';}else{$tabla_tmp='tbl_material';}
 			$user = $this->consultasbd->select('tbl_usuario',$campos='*',$where=' WHERE id_usuario=\''.$id_usuario.'\'');
 			// verificacion de usuario
@@ -311,7 +313,7 @@
 						// verificacion de novedades
 						if ($this->consultasbd->num_rows($prestamos_user)==1){
 							$prestamos_user = $this->consultasbd->fetch_array($prestamos_user);
-							$novedades = $this->consultasbd->select($tabla='tbl_novedad_'.$tipo_recurso,$campos='*',$where='WHERE id_prestamo=\''.$prestamos_user['id_prestamo'].'\'');
+							$novedades = $this->consultasbd->select($tabla='tbl_novedad_'.$tipo_recurso,$campos='*',$where='WHERE '.$id_nov[$_POST['recurso']].'=\''.$prestamos_user['id_prestamo'.$prefix[$tipo_recurso]].'\'');
 							if ($this->consultasbd->fetch_array($novedades)>0) {
 								$data = ['mensj'=>'<b><i class="glyphicon glyphicon-thumbs-down"></i>&nbsp;Error</b>&nbsp;<span id="mensj">No se puede realizar el prestamo. El usuario posee novedades</span>','type'=>'alert-danger'];
 							} else {

@@ -22,7 +22,7 @@
 			else { 
 				$tabla = 'tbl_operador';
 				$campos= '(id_privilegio,nombre,apellido,cedula,password,fecha_creacion)';
-				$values= '\''.$res_priv['id_privilegio'].'\',\''.$nombre.'\',\''.$apellido.'\',\''.$cedula.'\',\''.$clave.'\',\''.date('Y-m-d').'\'';
+				$values= '\''.$res_priv['id_privilegio'].'\',\''.$nombre.'\',\''.$apellido.'\',\''.$cedula.'\',\''.md5($clave).'\',\''.date('Y-m-d').'\'';
 				$res   = $consultasbd->insert($tabla,$campos,$values);
 				$id = $consultasbd->fetch_array($consultasbd->max_id($tabla='tbl_operador',$id='id_operador'));
 				// auditoria

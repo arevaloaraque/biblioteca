@@ -1,43 +1,45 @@
 <?php
 	include_once('modulos/modelo.php');
 	$class_alert = array('warning','danger');
-	$user = $consultasbd->select($tabla='tbl_usuario');
-	if (isset($_POST) && count($_POST)>0) {
-		$id_usuario = $_POST['txt_ced_user'];
-		$libros = $consultasbd->select($tabla='tbl_prestamo_libro',$campos='*',$where='WHERE id_usuario=\''.$id_usuario.'\' AND status=true');
-		$tesis = $consultasbd->select($tabla='tbl_prestamo_tesis',$campos='*',$where='WHERE id_usuario=\''.$id_usuario.'\' AND status=true');
-		$material = $consultasbd->select($tabla='tbl_prestamo_material',$campos='*',$where='WHERE id_usuario=\''.$id_usuario.'\' AND status=true');
+	if (count($_GET)==1 && count($_POST)==0) {
+		$libros = $consultasbd->select($tabla='tbl_prestamo_libro',$campos='*',$where='');
+		$tesis = $consultasbd->select($tabla='tbl_prestamo_tesis',$campos='*',$where='');
+		$material = $consultasbd->select($tabla='tbl_prestamo_material',$campos='*',$where='');
+	} else if (count($_POST)>0) {
+		$from_date = $_POST['from-date'];
+		$to_date = $_POST['to-date'];
+		$libros = $consultasbd->select($tabla='tbl_prestamo_libro',$campos='*',$where=' WHERE fecha_prestamo>=\''.$from_date.'\' AND fecha_prestamo<=\''.$to_date.'\'');
+		$tesis = $consultasbd->select($tabla='tbl_prestamo_tesis',$campos='*',$where=' WHERE fecha_prestamo>=\''.$from_date.'\' AND fecha_prestamo<=\''.$to_date.'\'');
+		$material = $consultasbd->select($tabla='tbl_prestamo_material',$campos='*',$where=' WHERE fecha_prestamo>=\''.$from_date.'\' AND fecha_prestamo<=\''.$to_date.'\'');
 	}
 ?>
 <div class="col-sm-9 col-md-10">
   <div class="panel panel-primary">
     <div class="panel-heading">
-      <h3 class="panel-title"><b>Devoluci&oacute;n Libro(s), Tesis, Material(es)<i class="glyphicon glyphicon-book" style="float:right;"></i></b></h3>
+      <h3 class="panel-title"><b>Reporte de Prestamos: Libro(s), Tesis, Material(es)<i class="glyphicon glyphicon-book" style="float:right;"></i></b></h3>
     </div>
     <div class="panel-body">
-    	<div class="row">
-    		<div class="col-lg-12">
-    			<form class="form" action="?page=devolucion" id="frm-buscar-ced" method="POST">
-	    			<div class="col-lg-5">
-			            <label for="txt_ced_user">Usuario&nbsp;&nbsp;<i class="glyphicon glyphicon-user"></i></label>
-			            <input type="hidden" name="send" id="send" class="required" value="" title="Seleccione usuario valido." />
-			            <select name="txt_ced_user" id="txt_ced_user" class="chosen-select form-control required" data-placeholder="Seleccione Usuario" title="Usuario Solicitante">
-			                <option value=""></option>
-			                <?php 
-			                  $id_usuario = (isset($id_usuario))?$id_usuario:false;
-			                  while ($user_det = $consultasbd->fetch_array($user)) {
-			                  	$selected = ($id_usuario == $user_det['id_usuario'])?'selected=selected':'';
-			                    echo '<option value="'.$user_det['id_usuario'].'" '.$selected.'>'.$user_det['cedula'].' - '.$user_det['nombre'].' '.$user_det['apellido'].'</option>';
-			                  }
-			                ?>
-			            </select>
-			        	<img src="images/cargando.gif" id="load-l" class="img-circle load-l" />
-			        </div>
-    			</form>
-    		</div>	
-    	</div>	
     	<br/>
-    	<?php if (isset($_POST) && count($_POST)) { ?>
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="well">
+					<p><b>Filtro&nbsp;de&nbsp;Busqueda</b><i class="glyphicon glyphicon-filter"></i></p>
+					<div class="radio-inline">
+					    <label>
+					      <input type="radio" name="filter" onclick="location.href = ('?page=reporte_prestamos');" <?php echo (count($_GET)==1 && count($_POST)==0)?'checked="checked"':''; ?> />&nbsp;Historial&nbsp;Completo
+					    </label>
+					</div>
+					<div class="radio-inline">
+					    <label>
+					      <input type="radio" name="filter" id="filter-date" <?php echo (count($_POST)>0)?'checked="checked"':''; ?> />&nbsp;Rango&nbsp;de&nbsp;Fecha&nbsp;<img src="images/calendar.png" class="img img-circle">
+					    </label>
+					</div>
+					<form id="show-calendars" <?php echo (count($_POST)>0)?'':'style="display:none;"' ?> class="form-inline" action="?page=reporte_prestamos" method="POST">
+						Desde:&nbsp;<input type="text" name="from-date" id="from-date" class="form-control" readonly="readOnly" value="<?php echo (isset($_POST['from-date']))?$_POST['from-date']:''; ?>" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hasta&nbsp;<input type="text" name="to-date" id="to-date" class="form-control" readonly="readOnly" value="<?php echo (isset($_POST['to-date']))?$_POST['to-date']:''; ?>" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button id="btn-filter-date" class="btn btn-danger">Ver!</button>
+					</form>
+				</div>
+			</div>
+		</div>
 		<?php if ($consultasbd->num_rows($libros) || $consultasbd->num_rows($tesis) || $consultasbd->num_rows($material)){ ?>
 		<div class="row">
 			<div class="col-lg-12">
@@ -46,9 +48,10 @@
 					<table class="table table-bordered table-striped table-hover">
 						<tbody>
 							<tr>
-								<td class="danger text-center col-lg-4">Prestamo Vencido&nbsp;<img src="images/calendar.png" class="img img-circle"></td>
-								<td class="warning text-center col-lg-4">Prestamo Cerca a Vencer&nbsp;<img src="images/calendar.png" class="img img-circle"></td>
-								<td class="text-center col-lg-4">Prestamo Activo&nbsp;<img src="images/calendar.png" class="img img-circle"></td>
+								<td class="success text-center col-lg-3">Prestamo Entregado&nbsp;<img src="images/calendar.png" class="img img-circle"></td>
+								<td class="danger text-center col-lg-3">Prestamo Vencido&nbsp;<img src="images/calendar.png" class="img img-circle"></td>
+								<td class="warning text-center col-lg-3">Prestamo Cerca a Vencer&nbsp;<img src="images/calendar.png" class="img img-circle"></td>
+								<td class="text-center col-lg-3">Prestamo Activo&nbsp;<img src="images/calendar.png" class="img img-circle"></td>
 							</tr>
 						</tbody>
 					</table>
@@ -70,7 +73,7 @@
 										<th class="col-lg-4">Descripci&oacute;n&nbsp;</th>
 										<th class="col-lg-1 text-center">Fecha&nbsp;Prestamo</th>
 										<th class="col-lg-1 text-center">Fecha&nbsp;Devoluci&oacute;n</th>
-										<th class="col-lg-3 text-center">Acci&oacute;n</th>
+										<th class="col-lg-3 text-center">Estatus</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -108,7 +111,7 @@
 											else { $alert = '';}
 										}
 									?>
-								  		<tr id="row_lib_<?php echo $libro['id_prestamo']; ?>" class="<?php echo $alert; ?>">
+								  		<tr id="row_lib_<?php echo $libro['id_prestamo']; ?>" class="<?php echo ($libro['status'] == 'f')?'success':$alert; ?>">
 								  			<td class='text-center'><?php echo $libro['id_prestamo']; ?></td>
 								  			<td class='text-center'><?php echo strtoupper($datos_libro['id_autor']) ?></td>
 								  			<td class='text-center'><?php echo strtoupper($datos_libro['id_editorial']) ?></td>
@@ -116,8 +119,7 @@
 								  			<td class='text-center'><?php echo date('d-m-Y',strtotime($libro['fecha_prestamo'])); ?></td>
 								  			<td class='text-center'><?php echo date('d-m-Y',strtotime($libro['fecha_devolucion'])); ?></td>
 								  			<td class='text-center'>
-								  				<button class="btn-pres-libro btn btn-danger" id="<?php echo $libro['id_prestamo']; ?>">Devolver&nbsp;&nbsp;<i class="glyphicon glyphicon-ok-circle"></i></button>&nbsp;
-								  				<button class="btn-nov-libro btn btn-danger" id="<?php echo $libro['id_prestamo']; ?>">Novedad&nbsp;&nbsp;<i class="glyphicon glyphicon-remove-circle"></i></button>
+								  				<?php echo ($libro['status'] == 'f')?'ENTREGADO':'PENDIENTE'; ?>
 								  			</td>
 								  		</tr>
 								  	<?php } ?>
@@ -180,8 +182,7 @@
 							  			<td class='text-center'><?php echo date('d-m-Y',strtotime($tesi['fecha_prestamo'])); ?></td>
 							  			<td class='text-center'><?php echo date('d-m-Y',strtotime($tesi['fecha_devolucion'])); ?></td>
 							  			<td class='text-center'>
-							  				<button class="btn-pres-tesis btn btn-danger" id="<?php echo $tesi['id_prestamo_tesis']; ?>">Devolver&nbsp;&nbsp;<i class="glyphicon glyphicon-ok-sign"></i></button>&nbsp;
-							  				<button class="btn-nov-tesis btn btn-danger" id="<?php echo $tesi['id_prestamo_tesis']; ?>">Novedad&nbsp;&nbsp;<i class="glyphicon glyphicon-remove-circle"></i></button>
+							  				<?php echo ($libro['status'] == 'f')?'ENTREGADO':'PENDIENTE'; ?>
 							  			</td>
 							  		</tr>
 							  	<?php } ?>
@@ -231,8 +232,7 @@
 								  			<td class='text-center'><?php echo date('d-m-Y',strtotime($mat['fecha_prestamo'])); ?></td>
 								  			<td class='text-center'><?php echo date('d-m-Y',strtotime($mat['fecha_devolucion'])); ?></td>
 								  			<td class='text-center'>
-								  				<button class="btn-pres-mat btn btn-danger" id="<?php echo $mat['id_prestamo_material']; ?>">Devolver&nbsp;&nbsp;<i class="glyphicon glyphicon-ok-circle"></i></button>&nbsp;
-								  				<button class="btn-nov-mat btn btn-danger" id="<?php echo $mat['id_prestamo_material']; ?>">Novedad&nbsp;&nbsp;<i class="glyphicon glyphicon-remove-circle"></i></button>
+								  				<?php echo ($libro['status'] == 'f')?'ENTREGADO':'PENDIENTE'; ?>
 								  			</td>
 								  		</tr>
 								  	<?php } ?>
@@ -244,8 +244,7 @@
 				<?php } ?>
 			</div>
 		</div>
-		<?php } else { echo '<script>alertify.error("<b>Este Usuario no posee Prestamos Activos</b>");</script>'; } ?>
-		<?php } ?>
+		<?php } else { echo '<div class="alert alert-danger" role="alert" id="alert"><b><i class="glyphicon glyphicon-thumbs-down"></i>&nbsp;Error</b>&nbsp;<span id="mensj">No hay datos para mostrar</span></div>'; } ?>
     </div>
     <div class="panel-footer text-center">
       <div class="btn-group">
@@ -254,8 +253,8 @@
     </div>
   </div>
 </div>
-<link rel="stylesheet" type="text/css" href="plugins/chosen_v1.4.0/chosen.css">
-<script src="plugins/chosen_v1.4.0/chosen.jquery.js" type="text/javascript"></script>
+<script src="librerias/jquery-ui/jquery-ui.min.js" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="librerias/jquery-ui/jquery-ui.min.css">
 <script type="text/javascript">
 	function test () {
 		alertify.confirm('test',function(e){ if (e) {alert("ssss");} });
@@ -271,72 +270,35 @@
 	    $('#menu-item li.active').removeClass('active');
         $('#liPrestamos').addClass('active');
         // title page
-      	$('title').html('..:: Devolucion - Prestamo ::..&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
+      	$('title').html('..:: Reporte - Prestamos ::..&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
       	valuesTitle();
-      	$('#txt_ced_user').chosen({no_results_text:'Sin Resultados',width:"100%"});
-	    $('#txt_ced_user').on('change',function(){
-	    	if ($('#txt_ced_user').val() == '') { return false; } else { $('#frm-buscar-ced').submit(); }
-	    });
-	    // devolucion de libro
-	    $('.btn-pres-libro').on('click',function(){
-	    	var id_prestamo = $(this).attr('id');
-	    	$.post('modulos/response_ajax.php',{'id_prestamo':id_prestamo,'function':'verificar_novedades','recurso':'libro'},function(resp){
-	    		if (resp == 'true') {
-	    			alertify.confirm('<b>¿Esta seguro de realizar la devoluci&oacute;n del Libro?</b>',function(e){
-    					if (e) {
-	    					$.post('modulos/response_ajax.php',{'id_prestamo':id_prestamo,'function':'entrega_prestamo','recurso':'libro'},function(resp){
-		    					if (resp == "true") {
-		    						console.log("#row_lib_"+id_prestamo);
-		    						$("#row_lib_"+id_prestamo).remove();
-		    						if ($("#tbl-libros tbody tr").length == 0) { $("#tbl-libros").fadeOut(); } 
-		    					}
-		    				});
-    					}
-	    			});
-	    		} else {
-	    			alertify.alert('<b>Este&nbsp;prestamo&nbsp;posee&nbsp;novedades.<br/><br/>Vaya&nbsp;al&nbsp;men&uacute;&nbsp;&nbsp;<a href="?page=novedades"><i class=\"glyphicon glyphicon-edit\"></i>&nbsp;Novedades</a>&nbsp;para&nbsp;verificar.</b>').set({'label':'OK, GRACIAS!'});
-	    		}
-	    	});
-	    });
-		// devolucion de tesis
-	    $('.btn-pres-tesis').on('click',function(){
-	    	var id_prestamo = $(this).attr('id');
-	    	$.post('modulos/response_ajax.php',{'id_prestamo':id_prestamo,'function':'verificar_novedades','recurso':'tesis'},function(resp){
-	    		if (resp == 'true') {
-	    			alertify.confirm('<b>¿Esta seguro de realizar la devoluci&oacute;n de la Tesis?</b>',function(e){
-    					if (e) {
-	    					$.post('modulos/response_ajax.php',{'id_prestamo':id_prestamo,'function':'entrega_prestamo','recurso':'tesis'},function(resp){
-		    					if (resp == "true") {
-		    						$("#row_tes_"+id_prestamo).remove();
-		    						if ($("#tbl-tesis tbody tr").length == 0) { $("#tbl-tesis").fadeOut(); } 
-		    					}
-		    				});
-    					}
-	    			});
-	    		} else {
-	    			alertify.alert('<b>Este&nbsp;prestamo&nbsp;posee&nbsp;novedades.<br/><br/>Vaya&nbsp;al&nbsp;men&uacute;&nbsp;&nbsp;<a href="?page=novedades"><i class=\"glyphicon glyphicon-edit\"></i>&nbsp;Novedades</a>&nbsp;para&nbsp;verificar.</b>').set({'label':'OK, GRACIAS!'});
-	    		}
-	    	});
-	    });
-		// devolucion de material
-	    $('.btn-pres-mat').on('click',function(){
-	    	var id_prestamo = $(this).attr('id');
-	    	$.post('modulos/response_ajax.php',{'id_prestamo':id_prestamo,'function':'verificar_novedades','recurso':'material'},function(resp){
-	    		if (resp == 'true') {
-	    			alertify.confirm('<b>¿Esta seguro de realizar la devoluci&oacute;n del Material?</b>',function(e){
-    					if (e) {
-	    					$.post('modulos/response_ajax.php',{'id_prestamo':id_prestamo,'function':'entrega_prestamo','recurso':'material'},function(resp){
-		    					if (resp == "true") {
-		    						$("#row_mat_"+id_prestamo).remove();
-		    						if ($("#tbl-mat tbody tr").length == 0) { $("#tbl-mat").fadeOut(); } 
-		    					}
-		    				});
-    					}
-	    			});
-	    		} else {
-	    			alertify.alert('<b>Este&nbsp;prestamo&nbsp;posee&nbsp;novedades.<br/><br/>Vaya&nbsp;al&nbsp;men&uacute;&nbsp;&nbsp;<a href="?page=novedades"><i class=\"glyphicon glyphicon-edit\"></i>&nbsp;Novedades</a>&nbsp;para&nbsp;verificar.</b>').set({'label':'OK, GRACIAS!'});
-	    		}
-	    	});
-	    });
+	    $.datepicker.regional['es'] = {
+            closeText: 'Cerrar',
+            prevText: '<<',
+            nextText: '>>',
+            currentText: 'Hoy',
+            monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+            monthNamesShort: ['Ene','Feb','Mar','Abr', 'May','Jun','Jul','Ago','Sep', 'Oct','Nov','Dic'],
+            dayNames: ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'],
+            dayNamesShort: ['Dom','Lun','Mar','Mie','Juv','Vie','Sab'],
+            dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','Sab'],
+            weekHeader: 'Sm',
+            dateFormat: 'yy-mm-dd',
+            firstDay: 1,
+            isRTL: false,
+            showMonthAfterYear: false,
+            buttonImage: "images/calendar.png",
+            yearSuffix: ''
+      };
+      $.datepicker.setDefaults($.datepicker.regional['es']);
+      $("#from-date,#to-date").datepicker();
+      $("#filter-date").on('click',function(){
+      	$("#show-calendars").fadeIn();
+      });
+      $("#btn-filter-date").on('click',function(e){
+      	e.preventDefault();
+      	if($("#from-date").val() == '' || $("#to-date").val() == '') { alertify.error("<b>Debe indicar ambos limites de fecha</b>");  ($("#from-date").val() == '')?$("#from-date").focus():$("#to-date").focus(); return false; }
+      	else if($("#from-date").val() != '' && $("#to-date").val() != '') { $("#show-calendars").submit(); }
+      });
 	});
 </script>

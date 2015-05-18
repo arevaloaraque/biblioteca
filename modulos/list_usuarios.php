@@ -31,6 +31,9 @@
 			  		// consulta denominacion
 					$sql_den = $consultasbd->select($table='tbl_denominacion',$campos='*',$where='WHERE id_denominacion=\''.$datos['id_denominacion'].'\'');
 					$res_den = $consultasbd->fetch_array($sql_den);
+					// consultar prestamos del usuario
+					$sql_prestamos = $consultasbd->query("select * from tbl_prestamo_libro where id_usuario='".$datos['id_usuario']."' and status=true union all select * from tbl_prestamo_tesis where id_usuario='".$datos['id_usuario']."' and status=true union all select * from tbl_prestamo_material where id_usuario='".$datos['id_usuario']."' and status=true");
+					$res_prestamos = $consultasbd->num_rows($sql_prestamos);
 			  	?>
 			  		<tr id="<?php echo $datos['id_usuario']; ?>">
 			  			<td class='text-center'><?php echo $datos['id_usuario']; ?></td>
@@ -42,7 +45,7 @@
 			  			<td class='text-center'><?php echo (!empty($datos['fecha_modifica'])?date('d-m-Y',strtotime($datos['fecha_modifica'])):'<i>NO DISPONIBLE</i>'); ?></td>
 			  			<td class='text-center'>
 			  				<button id="edit-<?php echo $datos['id_usuario']; ?>" class="edit-user text-info btn" data-toggle="tooltip" data-placement="top" title="Actualizar datos del usuario"><i class="glyphicon glyphicon-edit"></i></button>
-			  				<button id="del-<?php echo $datos['id_usuario']; ?>" class="del-user text-danger btn" data-toggle="tooltip" data-placement="top" title="Eliminar usuario"><i class="glyphicon glyphicon-trash"></i></button>
+			  				<button id="del-<?php echo $datos['id_usuario']; ?>" class="del-user<?php echo ($res_prestamos > 0)?' none':''; ?> text-danger btn" data-toggle="tooltip" data-placement="top" title="Eliminar usuario"><i class="glyphicon glyphicon-trash"></i></button>
 			  			</td>
 			  		</tr>
 			  	<?php } ?>
@@ -85,24 +88,28 @@
 		$(document).on('click','.del-user',function(){
 			var id = $(this).attr('id').substring(4,$(this).attr('id').length);
 			var mensaje = "¿Realmente desea eliminar al usuario \""+$('#'+id+' .nombre_user').text()+" "+$('#'+id+' .apellido_user').text()+"\"?<br/>&nbsp;Este proceso es irreversible";
-	        alertify.confirm(mensaje, function (e) {
-	            if (e) {
-	                $.ajax({
-	                    type: 'POST',
-	                    dataType: 'json',
-	                    data: {'campo':'id_usuario','val':id,'function':'eliminar','tabla':'tbl_usuario'},
-	                    url: 'modulos/response_ajax.php',
-	                    success: function (resp) {
-	                        if (resp == 0) { alertify.error('<b>Error al eliminar usuario!</b>'); }
-	                        else if(resp == 1){ $("#"+id).fadeOut(); alertify.success('<b>Usuario eliminado con exito!</b>'); }
-	                    },
-	                    error: function (xhr, ajaxOptions, thrownError) {
-	                        //console.log(xhr.status);
-	                        //console.log(thrownError);
-	                    },
-	                });
-	            }
-	        });
+	        if ($(this).hasClass("none")) {
+		        alertify.alert("<b>\""+$('#'+id+' .nombre_user').text()+" "+$('#'+id+' .apellido_user').text()+"\" posee prestamos activos<br/>No puede ser eliminado</b>").set('label','Si, Entiendo!');
+		    } else {
+		    	alertify.confirm(mensaje, function (e) {
+		            if (e) {
+		                $.ajax({
+		                    type: 'POST',
+		                    dataType: 'json',
+		                    data: {'campo':'id_usuario','val':id,'function':'eliminar','tabla':'tbl_usuario'},
+		                    url: 'modulos/response_ajax.php',
+		                    success: function (resp) {
+		                        if (resp == 0) { alertify.error('<b>Error al eliminar usuario!</b>'); }
+		                        else if(resp == 1){ $("#"+id).fadeOut(); alertify.success('<b>Usuario eliminado con exito!</b>'); }
+		                    },
+		                    error: function (xhr, ajaxOptions, thrownError) {
+		                        //console.log(xhr.status);
+		                        //console.log(thrownError);
+		                    },
+		                });
+		            }
+		        });
+		    }
 		});
 		$(document).on('click','.edit-user',function(){
 			var id = $(this).attr('id').substring(5,$(this).attr('id').length);

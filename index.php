@@ -101,6 +101,16 @@
               <?php else: ?>
                 <li><a href="?page=list_usuarios"><i class="glyphicon glyphicon-user"></i>&nbsp;&nbsp;Usuario(s)</abbr></a></li>
               <?php endif; ?>
+              <li id="liReportes">
+                  <a data-toggle="collapse" data-parent="#accordion" href="#ulReportes"><i class="glyphicon glyphicon-print"></i>&nbsp;&nbsp;Reportes&nbsp;<b class="caret"></b></a>
+                  <ul id="ulReportes" class="ul-collapse collapse nav nav-stacked sub-nav">
+                    <li><a href="?page=reporte_prestamos"><i class="glyphicon glyphicon-folder-open"></i>&nbsp;&nbsp;Prestamos</a></li>
+                    <li><a href="?page=reportes_novedades"><i class="glyphicon glyphicon-edit"></i>&nbsp;&nbsp;Novedades</abbr></a></li>
+                    <?php if (isset($_SESSION['privilegio']) && (trim($_SESSION['privilegio']) == 'ADMINISTRADOR')):?>
+                    <li><a href="?page=reporte_auditoria"><i class="glyphicon glyphicon-list"></i>&nbsp;&nbsp;Auditoria</abbr></a></li>
+                    <?php endif; ?>
+                  </ul>
+              </li>
               <li><a href="?page=login&exit"><i class="glyphicon glyphicon-off"></i>&nbsp;&nbsp;Cerrar Sesión</a></li>
             </ul>
           </div><!--/.nav-collapse -->
