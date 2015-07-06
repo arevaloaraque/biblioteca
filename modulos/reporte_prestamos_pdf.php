@@ -150,20 +150,35 @@ $pdf->Cell(0,5,utf8_decode('Usuario: ').(isset($datos_usuario) && (count($datos_
 $pdf->Cell(0,5,((isset($from_date) && (isset($to_date))) && ($from_date != '' && $to_date != ''))?'Rango Fecha: '.date('d-m-Y',strtotime($from_date)).' - '.date('d-m-Y',strtotime($to_date)):'',0,1);
 $pdf->Ln(8);
 /**************************************/
-$pdf->SetFont('Arial','',9);
+$pdf->SetFillColor(255,255,255);
+$pdf->cell(237,8,'Leyenda de colores',1,1,'C',true);
+$pdf->SetFillColor(223,240,216);
+$pdf->cell(59.25,8,'Entregado',1,0,'C',true);
+$pdf->SetFillColor(242,222,222);
+$pdf->cell(59.25,8,'Vencido',1,0,'C',true);
+$pdf->SetFillColor(252,248,227);
+$pdf->cell(59.25,8,'Cerca a vencer',1,0,'C',true);
+$pdf->SetFillColor(221,221,221);
+$pdf->cell(59.25,8,'Activo',1,1,'C',true);
+$pdf->Ln(8);
+/**************************************/
+$pdf->SetFont('Arial','B',9);
 if ($consultasbd->num_rows($libros)) {
-    $pdf->Cell(237,8,'LISTA DE LIBROS',1,1,'C');
-    $pdf->cell(28,8,'Cod. Prestamo',1,0,'C');
-    $pdf->cell(28,8,'Autor Libro',1,0,'C');
-    $pdf->cell(36,8,'Editorial',1,0,'C');
-    $pdf->cell(48,8,utf8_decode('Descripción'),1,0,'C');
-    $pdf->cell(31,8,'Fecha Prestamo',1,0,'C');
-    $pdf->cell(36,8,utf8_decode('Fecha Devolución'),1,0,'C');
-    $pdf->cell(30,8,'Status',1,1,'C');
+    $pdf->SetTextColor(0,0,0);
+    $pdf->SetFillColor(221,221,221);
+    $pdf->Cell(237,8,'LISTA DE LIBROS',1,1,'C',true);
+    $pdf->cell(28,8,'Cod. Prestamo',1,0,'C',true);
+    $pdf->cell(28,8,'Autor Libro',1,0,'C',true);
+    $pdf->cell(36,8,'Editorial',1,0,'C',true);
+    $pdf->cell(48,8,utf8_decode('Descripción'),1,0,'C',true);
+    $pdf->cell(31,8,'Fecha Prestamo',1,0,'C',true);
+    $pdf->cell(36,8,utf8_decode('Fecha Devolución'),1,0,'C',true);
+    $pdf->cell(30,8,'Status',1,1,'C',true);
+    $pdf->SetFont('Arial','',9,true);
+    $pdf->SetFillColor(255,255,255);
     $pdf->SetWidths(array(28,28,36,48,31,36,30));
     $pdf->SetAligns(array('C','C','C','C','C','C','C'));
     $pdf->SetTextColor(0,0,0);
-    $pdf->SetFillColor(255,255,255);
     $pdf->SetDrawColor(0,0,0);
     while ($libro = $consultasbd->fetch_array($libros)) {
         // datos del libro
@@ -189,7 +204,66 @@ if ($consultasbd->num_rows($libros)) {
         // total dias prestamo
         $segundos=strtotime($libro['fecha_devolucion']) - strtotime($libro['fecha_prestamo']);
         $diferencia_dias=intval($segundos/60/60/24);
+        // total dias prestamo
+        $segundos=strtotime($libro['fecha_devolucion']) - strtotime($libro['fecha_prestamo']);
+        $diferencia_dias=intval($segundos/60/60/24);
+        $a='';$b='';$c='';
+        if (date('Y-m-d') > $libro['fecha_devolucion']) {
+            $a = 242; $b = 222; $c= 222;
+        } else {
+            if ($diferencia_dias > 0 && $diferencia_dias < 2) { $a = 252; $b = 248; $c= 227; } else
+            if ($diferencia_dias <= 0) { $a = 242; $b = 222; $c= 222; }
+            else { $a = 255; $b = 255; $c= 255; }
+        }
+        if (trim($libro['status']) == 'f') { $a = 223; $b = 240; $c= 216; $pdf->SetFillColor($a,$b,$c); } else { $pdf->SetFillColor($a,$b,$c); }
         $pdf->Row(array($libro['id_prestamo'],utf8_decode(strtoupper($datos_libro['id_autor'])),utf8_decode(strtoupper($datos_libro['id_editorial'])),utf8_decode(strtoupper($datos_libro['descripcion'])),date('d-m-Y',strtotime($libro['fecha_prestamo'])),date('d-m-Y',strtotime($libro['fecha_devolucion'])),(($libro['status'] == 'f')?'ENTREGADO':'PENDIENTE')));
+    }
+}
+$pdf->SetFont('Arial','B',9);
+if ($consultasbd->num_rows($tesis)) {
+    $pdf->SetTextColor(0,0,0);
+    $pdf->SetFillColor(221,221,221);
+    $pdf->Cell(237,8,'LISTA DE TESIS',1,1,'C',true);
+    $pdf->cell(28,8,'Cod. Prestamo',1,0,'C',true);
+    $pdf->cell(36,8,'Materia',1,0,'C',true);
+    $pdf->cell(28,8,'Autor Tesis',1,0,'C',true);
+    $pdf->cell(48,8,utf8_decode('Titulo'),1,0,'C',true);
+    $pdf->cell(31,8,'Fecha Prestamo',1,0,'C',true);
+    $pdf->cell(36,8,utf8_decode('Fecha Devolución'),1,0,'C',true);
+    $pdf->cell(30,8,'Status',1,1,'C',true);
+    $pdf->SetFont('Arial','',9,true);
+    $pdf->SetFillColor(255,255,255);
+    $pdf->SetWidths(array(28,28,36,48,31,36,30));
+    $pdf->SetAligns(array('C','C','C','C','C','C','C'));
+    $pdf->SetTextColor(0,0,0);
+    $pdf->SetDrawColor(0,0,0);
+    while ($tesi = $consultasbd->fetch_array($tesis)) {
+        $datos_tesis = $consultasbd->select($tabla='tbl_tesis',$campos='*',$where='WHERE id_tesis=\''.$tesi['id_tesis'].'\'');
+        $datos_tesis = $consultasbd->fetch_array($datos_tesis);
+        // datos de materia
+        $res_materia = $consultasbd->select($tabla='tbl_materia',$campos='*',$where = ((!empty($datos_tesis['id_materia']))?'WHERE id_materia=\''.$datos_tesis['id_materia'].'\'':''));
+        $fetch_materia = $consultasbd->fetch_array($res_materia);
+        $materia = $fetch_materia['nombre_materia'];
+        // datos de autor
+        $res_autor = $consultasbd->select($tabla='tbl_autor_tesis',$campos='*',$where = ((!empty($datos_tesis['id_autor_tesis']))?'WHERE id_autor_tesis=\''.$datos_tesis['id_autor_tesis'].'\'':''));
+        $fetch_autor = $consultasbd->fetch_array($res_autor);
+        $autor = $fetch_autor['nombre'].' '.$fetch_autor['apellido'];
+
+        $datos_tesis['id_autor_tesis'] = $autor;
+        $datos_tesis['id_materia'] = $materia;
+        // total dias prestamo
+        $segundos=strtotime($tesi['fecha_devolucion']) - strtotime($tesi['fecha_prestamo']);
+        $diferencia_dias=intval($segundos/60/60/24);
+        $a='';$b='';$c='';
+        if (date('Y-m-d') > $tesi['fecha_devolucion']) {
+            $a = 242; $b = 222; $c= 222;
+        } else {
+            if ($diferencia_dias > 0 && $diferencia_dias < 2) { $a = 252; $b = 248; $c= 227; } else
+            if ($diferencia_dias <= 0) { $a = 242; $b = 222; $c= 222; }
+            else { $a = 255; $b = 255; $c= 255; }
+        }
+        if (trim($tesi['status']) == 'f') { $a = 223; $b = 240; $c= 216; $pdf->SetFillColor($a,$b,$c); } else { $pdf->SetFillColor($a,$b,$c); }
+        $pdf->Row(array($tesi['id_prestamo_tesis'].$tesi['status'],utf8_decode(strtoupper($datos_tesis['id_materia'])),utf8_decode(strtoupper($datos_tesis['id_autor_tesis'])),utf8_decode(strtoupper($datos_tesis['titulo'])),date('d-m-Y',strtotime($tesi['fecha_prestamo'])),date('d-m-Y',strtotime($tesi['fecha_devolucion'])),(($tesi['status'] == 'f')?'ENTREGADO':'PENDIENTE')));
     }
 }
 /**************************************/

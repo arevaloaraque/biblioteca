@@ -11,7 +11,7 @@
 		$from_date = $_POST['from-date'];
 		$to_date = $_POST['to-date'];
 		$usuario = $_POST['txt_ced_user'];
-		$url_print = 'modulos/reporte_prestamos_pdf.php?from_date='.$from_date.'&to_date='.$to_date.'&usuario='.$usuario;
+		$url_print = 'modulos/reporte_prestamos_pdf.php?from_date='.$from_date.'&to_date='.$to_date.'&usuario='.$usuario.'&sts-entregado='.((isset($_POST['sts-entregado']))?$_POST['sts-entregado']:'').'&sts-vencido='.((isset($_POST['sts-vencido']))?$_POST['sts-vencido']:'').'&sts-cerca-vencer='.((isset($_POST['sts-cerca-vencer']))?$_POST['sts-cerca-vencer']:'').'&sts-activo='.((isset($_POST['sts-activo']))?$_POST['sts-activo']:'');
 		$where_user = ($usuario == '')?'':'WHERE id_usuario=\''.$usuario.'\'';
 		$and_user = ($usuario == '')?'':' AND id_usuario=\''.$usuario.'\'';
 		$where = ($from_date != '' && $to_date != '')?' WHERE fecha_prestamo>=\''.$from_date.'\' AND fecha_prestamo<=\''.$to_date.'\'':'';
@@ -19,6 +19,11 @@
 		$libros = $consultasbd->select($tabla='tbl_prestamo_libro',$campos='*',$where);
 		$tesis = $consultasbd->select($tabla='tbl_prestamo_tesis',$campos='*',$where);
 		$material = $consultasbd->select($tabla='tbl_prestamo_material',$campos='*',$where);
+		$filtro_status = array();
+		if (isset($_POST['sts-entregado'])) { array_push($filtro_status, 'entregado'); }
+		if (isset($_POST['sts-vencido'])) { array_push($filtro_status, 'vencido'); }
+		if (isset($_POST['sts-cerca-vencer'])) { array_push($filtro_status, 'cerca-vencer'); }
+		if (isset($_POST['sts-activo'])) { array_push($filtro_status, 'activo'); }
 	}
 ?>
 <div class="col-sm-9 col-md-10">
@@ -45,7 +50,7 @@
 					<?php if (count($_POST) == 0): ?>
 					<div class="radio-inline">
 					    <label>
-					      <button id="btn-filter-date" class="btn btn-danger" onclick='javascript:popup("<?php echo $url_print; ?>",700,500)'>Imprimir&nbsp;<i class="glyphicon glyphicon-print"></i></button>
+					      <button type="button" class="btn btn-danger" onclick='javascript:popup("<?php echo $url_print; ?>",700,500)'>Imprimir&nbsp;<i class="glyphicon glyphicon-print"></i></button>
 					    </label>
 					</div>
 					<?php endif; ?>
@@ -68,9 +73,51 @@
 						</div>
 						<br/>
 						<div class="row">
+							<div class="form-group col-lg-8">
+							    <table class="table table-bordered table-striped table-hover">
+							    	<thead>
+							    		<tr><td colspan="4" class=""><b>Filtrar por status</b></td></tr>
+							    	</thead>
+									<tbody>
+										<tr>
+											<td class="success">
+												<div class="checkbox">
+													<label>
+													  <input type="checkbox" name="sts-entregado" class="fil-status"> Entregado
+													</label>
+												</div>
+											</td>
+											<td class="danger">
+												<div class="checkbox danger">
+													<label>
+													  <input type="checkbox" name="sts-vencido" class="fil-status"> Vencido
+													</label>
+												</div>
+											</td>
+											<td class="warning">
+												<div class="checkbox">
+													<label>
+													  <input type="checkbox" name="sts-cerca-vencer" class="fil-status"> Cerca a Vencer
+													</label>
+												</div>
+											</td>
+											<td>
+												<div class="checkbox">
+													<label>
+													  <input type="checkbox" name="sts-activo" class="fil-status"> Activo
+													</label>
+												</div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<br/>
+						<div class="row">
 							<div class="form-group col-lg-6">
 							    <select name="txt_ced_user" id="txt_ced_user" class="form-control chosen-select form-control required" data-placeholder="Seleccione Usuario(omitir si no desea aplicar este filtro)" title="Usuario">
-					                <option value="">Todos</option>
+					                <option value="">Todos los usuarios</option>
 					                <?php 
 					                  $id_usuario = (isset($usuario))?$usuario:false;
 					                  while ($user_det = $consultasbd->fetch_array($user)) {
@@ -124,7 +171,7 @@
 										<th class="col-lg-4">Descripci&oacute;n&nbsp;</th>
 										<th class="col-lg-1 text-center">Fecha&nbsp;Prestamo</th>
 										<th class="col-lg-1 text-center">Fecha&nbsp;Devoluci&oacute;n</th>
-										<th class="col-lg-3 text-center">Estatus</th>
+										<th class="col-lg-3 text-center">Status</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -154,12 +201,14 @@
 										// total dias prestamo
 										$segundos=strtotime($libro['fecha_devolucion']) - strtotime($libro['fecha_prestamo']);
 										$diferencia_dias=intval($segundos/60/60/24);
+										$status = '';
 										if (date('Y-m-d') > $libro['fecha_devolucion']) {
 											$alert = $class_alert[1];
+											$status = 'vencido';
 										} else {
-											if ($diferencia_dias <= 0) { $alert = $class_alert[1]; } else
-											if ($diferencia_dias > 0 && $diferencia_dias < 2) { $alert = $class_alert[0]; }
-											else { $alert = '';}
+											if ($diferencia_dias <= 0) { $alert = $class_alert[1]; $status = 'vencido'; } else
+											if ($diferencia_dias > 0 && $diferencia_dias < 2) { $alert = $class_alert[0]; $status = 'cerca-vencer';}
+											else { $alert = ''; $status = 'activo'; }
 										}
 									?>
 								  		<tr id="row_lib_<?php echo $libro['id_prestamo']; ?>" class="<?php echo ($libro['status'] == 'f')?'success':$alert; ?>">
@@ -225,7 +274,7 @@
 										else { $alert = '';}
 									}
 								?>
-							  		<tr id="row_tes_<?php echo $tesi['id_prestamo_tesis']; ?>" class="<?php echo $alert; ?>">
+							  		<tr id="row_tes_<?php echo $tesi['id_prestamo_tesis']; ?>" class="<?php echo ($tesi['status'] == 'f')?'success':$alert; ?>">
 							  			<td class='text-center'><?php echo $tesi['id_prestamo_tesis']; ?></td>
 							  			<td class='text-center'><?php echo strtoupper($materia); ?></td>
 							  			<td class='text-center'><?php echo strtoupper($datos_tesis['id_autor_tesis']) ?></td>
@@ -233,7 +282,7 @@
 							  			<td class='text-center'><?php echo date('d-m-Y',strtotime($tesi['fecha_prestamo'])); ?></td>
 							  			<td class='text-center'><?php echo date('d-m-Y',strtotime($tesi['fecha_devolucion'])); ?></td>
 							  			<td class='text-center'>
-							  				<?php echo ($libro['status'] == 'f')?'ENTREGADO':'PENDIENTE'; ?>
+							  				<?php echo (trim($tesi['status']) == 'f')?'ENTREGADO':'PENDIENTE'; ?>
 							  			</td>
 							  		</tr>
 							  	<?php } ?>
@@ -276,14 +325,14 @@
 											echo $alert;
 										}
 									?>
-								  		<tr id="row_mat_<?php echo $mat['id_prestamo_material']; ?>" class="<?php echo $alert; ?>">
+								  		<tr id="row_mat_<?php echo $mat['id_prestamo_material']; ?>" class="<?php echo ($mat['status'] == 'f')?'success':$alert; ?>">
 								  			<td class='text-center'><?php echo $mat['id_prestamo_material']; ?></td>
 								  			<td class='text-center'><?php echo strtoupper($datos_materiales['descripcion_tipo']); ?></td>
 								  			<td class='text-center'><?php echo strtoupper($datos_materiales['nombre']) ?></td>
 								  			<td class='text-center'><?php echo date('d-m-Y',strtotime($mat['fecha_prestamo'])); ?></td>
 								  			<td class='text-center'><?php echo date('d-m-Y',strtotime($mat['fecha_devolucion'])); ?></td>
 								  			<td class='text-center'>
-								  				<?php echo ($libro['status'] == 'f')?'ENTREGADO':'PENDIENTE'; ?>
+								  				<?php echo ($mat['status'] == 'f')?'ENTREGADO':'PENDIENTE'; ?>
 								  			</td>
 								  		</tr>
 								  	<?php } ?>
@@ -355,8 +404,8 @@
       });
       $("#btn-filter-date").on('click',function(e){
       	e.preventDefault();
-      	if(($("#from-date").val() == '' || $("#to-date").val() == '') && $('#txt_ced_user').val() == '') { alertify.error("<b>Debe indicar al menos un filtro. Para fecha deben ser ambos campos</b>");  ($("#from-date").val() == '')?$("#from-date").focus():$("#to-date").focus(); return false; }
-      	else if(($("#from-date").val() != '' && $("#to-date").val() != '') || $('#txt_ced_user').val() != '') { $("#show-calendars").submit(); }
+      	if(($("#from-date").val() == '' || $("#to-date").val() == '') && $('#txt_ced_user').val() == '' && $(".fil-status:checked").length == 0) { alertify.error("<b>Debe indicar al menos un filtro. Para fecha deben ser ambos campos</b>");  ($("#from-date").val() == '')?$("#from-date").focus():$("#to-date").focus(); return false; }
+      	else if(($("#from-date").val() != '' && $("#to-date").val() != '') || $('#txt_ced_user').val() != '' || $(".fil-status:checked").length > 0) { $("#show-calendars").submit(); }
       });
 	});
 </script>
