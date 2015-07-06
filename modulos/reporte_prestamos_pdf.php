@@ -40,7 +40,7 @@ function Row($data)
 //
         $this->Rect($x,$y,$w,$h);
 //
-        $this->MultiCell($w,5,$data[$i],'LR',$a,'true');
+        $this->MultiCell($w,5,$data[$i],'LTR',$a,'true');
         //Put the position to the right of the cell
         $this->SetXY($x+$w,$y);
     }
