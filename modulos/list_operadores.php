@@ -35,7 +35,7 @@
 			  		// consulta privilegios
 					$sql_priv = $consultasbd->select($table='tbl_privilegios',$campos='*',$where='WHERE id_privilegio=\''.$datos['id_privilegio'].'\'');
 					$res_priv = $consultasbd->fetch_array($sql_priv);
-					if (trim($res_priv['privilegio']) != "ADMINISTRADOR"){
+					//if (trim($res_priv['privilegio']) != "ADMINISTRADOR"){
 			  	?>
 			  		<tr id="<?php echo $datos['id_operador']; ?>">
 			  			<td class='text-center'><?php echo $datos['id_operador']; ?></td>
@@ -50,7 +50,7 @@
 			  				<button id="del-<?php echo $datos['id_operador']; ?>" class="del-oper text-danger btn" data-toggle="tooltip" data-placement="top" title="Eliminar operador"><i class="glyphicon glyphicon-trash"></i></button>
 			  			</td>
 			  		</tr>
-			  	<?php }} ?>
+			  	<?php }//} ?>
 			  </tbody>
 			</table>
 		</div>

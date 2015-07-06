@@ -107,7 +107,10 @@
 											if ($diferencia_dias > 0 && $diferencia_dias < 2) { $alert = $class_alert[0]; }
 											else { $alert = '';}
 										}
-									?>
+										// consulta de novedad
+										$res_nov = $consultasbd->select($tabla='tbl_novedad_libro',$campos='status',$where='WHERE id_prestamo=\''.$libro['id_prestamo'].'\'');
+										$fetch_nov = $consultasbd->fetch_array($res_nov);
+									?>	
 								  		<tr id="row_lib_<?php echo $libro['id_prestamo']; ?>" class="<?php echo $alert; ?>">
 								  			<td class='text-center'><?php echo $libro['id_prestamo']; ?></td>
 								  			<td class='text-center'><?php echo strtoupper($datos_libro['id_autor']) ?></td>
@@ -116,8 +119,12 @@
 								  			<td class='text-center'><?php echo date('d-m-Y',strtotime($libro['fecha_prestamo'])); ?></td>
 								  			<td class='text-center'><?php echo date('d-m-Y',strtotime($libro['fecha_devolucion'])); ?></td>
 								  			<td class='text-center'>
+								  				<?php if ($fetch_nov['status'] == 't'): ?>
+								  				<button class="btn-nov-libro-del btn btn-danger" id="<?php echo $libro['id_prestamo']; ?>">Ver Novedad(es)&nbsp;&nbsp;<i class="glyphicon glyphicon-remove-circle"></i></button>
+								  				<?php else: ?>
 								  				<button class="btn-pres-libro btn btn-danger" id="<?php echo $libro['id_prestamo']; ?>">Devolver&nbsp;&nbsp;<i class="glyphicon glyphicon-ok-circle"></i></button>&nbsp;
 								  				<button class="btn-nov-libro btn btn-danger" id="<?php echo $libro['id_prestamo']; ?>">Novedad&nbsp;&nbsp;<i class="glyphicon glyphicon-remove-circle"></i></button>
+								  				<?php endif; ?>
 								  			</td>
 								  		</tr>
 								  	<?php } ?>
@@ -130,6 +137,7 @@
 				<!--Tesis-->
 				<?php if ($consultasbd->num_rows($tesis)) { ?>
 				<div class="col-lg-12" id="tbl-tesis">
+					<div class="table-responsive">
 					<div class="panel panel-default">
 						<div class="panel-heading"><strong>Tesis</strong></div>
 						<table class="table table-bordered table-striped table-hover">
@@ -171,6 +179,9 @@
 										if ($diferencia_dias > 0 && $diferencia_dias < 2) { $alert = $class_alert[0]; }
 										else { $alert = '';}
 									}
+									// consulta de novedad
+									$res_nov = $consultasbd->select($tabla='tbl_novedad_tesis',$campos='status',$where='WHERE id_prestamo_tesis=\''.$tesi['id_prestamo_tesis'].'\'');
+									$fetch_nov = $consultasbd->fetch_array($res_nov);
 								?>
 							  		<tr id="row_tes_<?php echo $tesi['id_prestamo_tesis']; ?>" class="<?php echo $alert; ?>">
 							  			<td class='text-center'><?php echo $tesi['id_prestamo_tesis']; ?></td>
@@ -180,19 +191,25 @@
 							  			<td class='text-center'><?php echo date('d-m-Y',strtotime($tesi['fecha_prestamo'])); ?></td>
 							  			<td class='text-center'><?php echo date('d-m-Y',strtotime($tesi['fecha_devolucion'])); ?></td>
 							  			<td class='text-center'>
+							  				<?php if ($fetch_nov['status'] == 't'): ?>
+							  				<button class="btn-nov-tesis-del btn btn-danger" id="<?php echo $tesi['id_prestamo_tesis']; ?>">Ver Novedad(es)&nbsp;&nbsp;<i class="glyphicon glyphicon-remove-circle"></i></button>
+							  				<?php else: ?>
 							  				<button class="btn-pres-tesis btn btn-danger" id="<?php echo $tesi['id_prestamo_tesis']; ?>">Devolver&nbsp;&nbsp;<i class="glyphicon glyphicon-ok-sign"></i></button>&nbsp;
 							  				<button class="btn-nov-tesis btn btn-danger" id="<?php echo $tesi['id_prestamo_tesis']; ?>">Novedad&nbsp;&nbsp;<i class="glyphicon glyphicon-remove-circle"></i></button>
+							  				<?php endif; ?>
 							  			</td>
 							  		</tr>
 							  	<?php } ?>
 							</tbody>
 						</table>
 					</div>
+					</div>
 				</div>
 				<?php } ?>
 				<!--Materiales-->
 				<?php if ($consultasbd->num_rows($material)) { ?>
 				<div class="col-lg-12" id="tbl-mat">
+					<div class="table-responsive">
 					<div class="panel panel-default">
 						<div class="panel-heading"><strong>Materiales</strong></div>
 							<table class="table table-bordered table-striped table-hover">
@@ -223,6 +240,10 @@
 											else { $alert = '';}
 											echo $alert;
 										}
+
+										// consulta de novedad
+										$res_nov = $consultasbd->select($tabla='tbl_novedad_material',$campos='status',$where='WHERE id_prestamo_material=\''.$mat['id_prestamo_material'].'\'');
+										$fetch_nov = $consultasbd->fetch_array($res_nov);
 									?>
 								  		<tr id="row_mat_<?php echo $mat['id_prestamo_material']; ?>" class="<?php echo $alert; ?>">
 								  			<td class='text-center'><?php echo $mat['id_prestamo_material']; ?></td>
@@ -231,14 +252,19 @@
 								  			<td class='text-center'><?php echo date('d-m-Y',strtotime($mat['fecha_prestamo'])); ?></td>
 								  			<td class='text-center'><?php echo date('d-m-Y',strtotime($mat['fecha_devolucion'])); ?></td>
 								  			<td class='text-center'>
+								  				<?php if ($fetch_nov['status'] == 't'): ?>
+								  				<button class="btn-nov-mat-del btn btn-danger" id="<?php echo $mat['id_prestamo_material']; ?>">Ver Novedad(es)&nbsp;&nbsp;<i class="glyphicon glyphicon-remove-circle"></i></button>
+								  				<?php else: ?>
 								  				<button class="btn-pres-mat btn btn-danger" id="<?php echo $mat['id_prestamo_material']; ?>">Devolver&nbsp;&nbsp;<i class="glyphicon glyphicon-ok-circle"></i></button>&nbsp;
 								  				<button class="btn-nov-mat btn btn-danger" id="<?php echo $mat['id_prestamo_material']; ?>">Novedad&nbsp;&nbsp;<i class="glyphicon glyphicon-remove-circle"></i></button>
+								  				<?php endif; ?>
 								  			</td>
 								  		</tr>
 								  	<?php } ?>
 								</tbody>
 							</table>
 						</div>
+					</div>
 					</div>
 				</div>
 				<?php } ?>
@@ -254,6 +280,39 @@
     </div>
   </div>
 </div>
+<!-- Ventana Modal, Agregar novedad -->
+<div class="modal fade" id="modalwindow">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true" class="text-danger"><small>[&times;]</small></span><span class="sr-only"></span></button>
+        <h4 class="modal-title"></h4>
+      </div>
+      <div class="modal-body">
+      	<form class="form" id="form-new-novedad">
+      		<div class="row">
+			  	<div class="form-group col-lg-12">
+			    	<label for="descripcion">Descripci&oacute;n Novedad</label>
+				    <textarea name="descripcion" id="descripcion" class="form-control require"></textarea>
+			    	</select>
+			    	<input type="hidden" name="id_recurso" id="id_recurso" />
+			  	</div>
+			</div>
+      		<div class="row" id="row-des-entrega" style="display:none;">
+			  	<div class="form-group col-lg-12">
+			    	<label for="descripcion_entrega">Descripci&oacute;n Entrega</label>
+				    <textarea name="descripcion_entrega" id="descripcion_entrega" class="form-control require"></textarea>
+			    	</select>
+			  	</div>
+			</div>
+		</form>
+      </div>
+      <div class="modal-footer"></div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script src="librerias/jquery-ui/jquery-ui.min.js" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="librerias/jquery-ui/jquery-ui.min.css">
 <link rel="stylesheet" type="text/css" href="plugins/chosen_v1.4.0/chosen.css">
 <script src="plugins/chosen_v1.4.0/chosen.jquery.js" type="text/javascript"></script>
 <script type="text/javascript">
@@ -262,6 +321,11 @@
 		
 	}
 	$(document).on('ready',function(){
+		// creacion de la ventana de dialogo
+		$( "#dialog" ).dialog();
+		$( ".ui-dialog" ).css({'border':'2px solid #000'});
+		$( ".ui-dialog" ).hide();
+
 		$(".only_num").keypress(function(evt){
 	        evt = (evt) ? evt : event
 	        var key = (evt.which) ? evt.which : evt.keyCode;
@@ -278,7 +342,7 @@
 	    	if ($('#txt_ced_user').val() == '') { return false; } else { $('#frm-buscar-ced').submit(); }
 	    });
 	    // devolucion de libro
-	    $('.btn-pres-libro').on('click',function(){
+	    $(document).on('click','.btn-pres-libro',function(){
 	    	var id_prestamo = $(this).attr('id');
 	    	$.post('modulos/response_ajax.php',{'id_prestamo':id_prestamo,'function':'verificar_novedades','recurso':'libro'},function(resp){
 	    		if (resp == 'true') {
@@ -286,7 +350,6 @@
     					if (e) {
 	    					$.post('modulos/response_ajax.php',{'id_prestamo':id_prestamo,'function':'entrega_prestamo','recurso':'libro'},function(resp){
 		    					if (resp == "true") {
-		    						console.log("#row_lib_"+id_prestamo);
 		    						$("#row_lib_"+id_prestamo).remove();
 		    						if ($("#tbl-libros tbody tr").length == 0) { $("#tbl-libros").fadeOut(); } 
 		    					}
@@ -299,7 +362,7 @@
 	    	});
 	    });
 		// devolucion de tesis
-	    $('.btn-pres-tesis').on('click',function(){
+	    $(document).on('click','.btn-pres-tesis',function(){
 	    	var id_prestamo = $(this).attr('id');
 	    	$.post('modulos/response_ajax.php',{'id_prestamo':id_prestamo,'function':'verificar_novedades','recurso':'tesis'},function(resp){
 	    		if (resp == 'true') {
@@ -319,7 +382,7 @@
 	    	});
 	    });
 		// devolucion de material
-	    $('.btn-pres-mat').on('click',function(){
+	    $(document).on('click','.btn-pres-mat',function(){
 	    	var id_prestamo = $(this).attr('id');
 	    	$.post('modulos/response_ajax.php',{'id_prestamo':id_prestamo,'function':'verificar_novedades','recurso':'material'},function(resp){
 	    		if (resp == 'true') {
@@ -338,5 +401,150 @@
 	    		}
 	    	});
 	    });
+		// registrar novedad libro
+		$(document).on('click','.btn-nov-libro',function(e){
+			var id_prestamo = $(this).attr('id');
+			$('#modalwindow').modal('show'); $(".modal-title").text("Registro de novedad para prestamo Libro");
+			$('.modal-footer').html('<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button><button class="btn btn-danger" id="btn-nov-lib">Guardar</button>');
+			$("#descripcion").val(""); $("#id_recurso").val(id_prestamo); 
+		});
+		$(document).on('click','#btn-nov-lib',function(){
+			if ($('#descripcion').val() == '') { alertify.error('<b>Debe indicar una descripci&oacute;n</b>'); $('#descripcion').focus(); return false; }
+			$.post('modulos/response_ajax.php',{'id_prestamo':$('#id_recurso').val(),'descripcion':$('#descripcion').val(),'function':'registrar_novedad','recurso':'libro'},function(resp){
+				if (resp != ''){
+					var id = $('#id_recurso').val();
+					$('#'+id+'.btn-pres-libro').remove();
+					$('#'+id+'.btn-nov-libro').attr('class','btn-nov-libro-del btn btn-danger').html('Ver Novedad(es)&nbsp;&nbsp;<i class="glyphicon glyphicon-remove-circle"></i>');
+					$('#modalwindow').modal('hide');
+					alertify.success('<b>Novedad registrada con exito</b>');
+				}
+			});
+		});
+		$(document).on('click','.btn-nov-libro-del',function(){
+			var id_prestamo = $(this).attr('id');
+			$.post('modulos/response_ajax.php',{'id_prestamo':id_prestamo,'recurso':'libro','function':'get_novedades'},function(resp){
+				if (resp != '') {
+					var resp = JSON.parse(resp);
+					$('#modalwindow').modal('show'); $(".modal-title").text("Eliminación de novedad para prestamo Libro");
+					$('.modal-footer').html('<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button><button class="btn btn-danger btn-nov-lib-fin" id="'+id_prestamo+'">Eliminar y entregar Libro</button>');
+					$('#row-des-entrega').fadeIn(); $("#id_recurso").val(id_prestamo); 
+					$('#descripcion').val(resp[0].descripcion).attr('disabled',true);
+				}
+			});
+		});
+		$(document).on('click','.btn-nov-lib-fin',function(){
+			var id_prestamo = $(this).attr('id');
+			if ($('#descripcion_entrega').val() == '') { alertify.error('<b>Debe indicar una descripci&oacute;n final</b>'); $('#descripcion_entrega').focus(); return false; }
+			$.post('modulos/response_ajax.php',{'id_prestamo':id_prestamo,'recurso':'libro','function':'set_novedades','descripcion':$('#descripcion').val(),'descripcion_entrega':$('#descripcion_entrega').val()},function(resp){
+				if (resp != '') {
+					if (resp != '') {
+						$('#'+id_prestamo+'.btn-nov-libro-del').attr({'class':'btn-pres-libro btn btn-danger','id':id_prestamo}).html('Devolver&nbsp;&nbsp;<i class="glyphicon glyphicon-ok-circle"></i>');
+						$.post('modulos/response_ajax.php',{'id_prestamo':id_prestamo,'function':'entrega_prestamo','recurso':'libro'},function(resp){
+	    					if (resp == "true") {
+	    						$("#row_lib_"+id_prestamo).remove();
+	    						if ($("#tbl-libros tbody tr").length == 0) { $("#tbl-libros").fadeOut(); } 
+	    					}
+	    				});
+						$('#modalwindow').modal('hide');
+					}
+				}
+			});
+		});
+		// registrar novedad tesis
+		$(document).on('click','.btn-nov-tesis',function(e){
+			var id_prestamo = $(this).attr('id');
+			$('#modalwindow').modal('show'); $(".modal-title").text("Registro de novedad para prestamo Tesis");
+			$('.modal-footer').html('<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button><button class="btn btn-danger" id="btn-nov-tes">Guardar</button>');
+			$("#descripcion").val(""); $("#id_recurso").val(id_prestamo); 
+		});
+		$(document).on('click','#btn-nov-tes',function(){
+			if ($('#descripcion').val() == '') { alertify.error('<b>Debe indicar una descripci&oacute;n</b>'); $('#descripcion').focus(); return false; }
+			$.post('modulos/response_ajax.php',{'id_prestamo':$('#id_recurso').val(),'descripcion':$('#descripcion').val(),'function':'registrar_novedad','recurso':'tesis'},function(resp){
+				if (resp != ''){
+					var id = $('#id_recurso').val();
+					$('#'+id+'.btn-pres-tesis').remove();
+					$('#'+id+'.btn-nov-tesis').attr('class','btn-nov-tesis-del btn btn-danger').html('Ver Novedad(es)&nbsp;&nbsp;<i class="glyphicon glyphicon-remove-circle"></i>');
+					$('#modalwindow').modal('hide');
+					alertify.success('<b>Novedad registrada con exito</b>');
+				}
+			});
+		});
+		$(document).on('click','.btn-nov-tesis-del',function(){
+			var id_prestamo = $(this).attr('id');
+			$.post('modulos/response_ajax.php',{'id_prestamo':id_prestamo,'recurso':'tesis','function':'get_novedades'},function(resp){
+				if (resp != '') {
+					var resp = JSON.parse(resp);
+					$('#modalwindow').modal('show'); $(".modal-title").text("Eliminación de novedad para prestamo Tesis");
+					$('.modal-footer').html('<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button><button class="btn btn-danger btn-nov-tes-fin" id="'+id_prestamo+'">Eliminar y entregar Tesis</button>');
+					$('#row-des-entrega').fadeIn(); $("#id_recurso").val(id_prestamo); 
+					$('#descripcion').val(resp[0].descripcion).attr('disabled',true);
+				}
+			});
+		});
+		$(document).on('click','.btn-nov-tes-fin',function(){
+			var id_prestamo = $(this).attr('id');
+			if ($('#descripcion_entrega').val() == '') { alertify.error('<b>Debe indicar una descripci&oacute;n final</b>'); $('#descripcion_entrega').focus(); return false; }
+			$.post('modulos/response_ajax.php',{'id_prestamo':id_prestamo,'recurso':'tesis','function':'set_novedades','descripcion':$('#descripcion').val(),'descripcion_entrega':$('#descripcion_entrega').val()},function(resp){
+				if (resp != '') {
+					if (resp != '') {
+						$('#'+id_prestamo+'.btn-nov-tesis-del').attr({'class':'btn-pres-tesis btn btn-danger','id':id_prestamo}).html('Devolver&nbsp;&nbsp;<i class="glyphicon glyphicon-ok-circle"></i>');
+						$.post('modulos/response_ajax.php',{'id_prestamo':id_prestamo,'function':'entrega_prestamo','recurso':'tesis'},function(resp){
+	    					if (resp == "true") {
+	    						$("#row_tes_"+id_prestamo).remove();
+	    						if ($("#tbl-tesis tbody tr").length == 0) { $("#tbl-tesis").fadeOut(); } 
+	    					}
+	    				});
+						$('#modalwindow').modal('hide');
+					}
+				}
+			});
+		});
+		// registrar novedad material
+		$(document).on('click','.btn-nov-mat',function(e){
+			var id_prestamo = $(this).attr('id');
+			$('#modalwindow').modal('show'); $(".modal-title").text("Registro de novedad para prestamo Material");
+			$('.modal-footer').html('<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button><button class="btn btn-danger" id="btn-nov-material">Guardar</button>');
+			$("#descripcion").val(""); $("#id_recurso").val(id_prestamo); 
+		});
+		$(document).on('click','#btn-nov-material',function(){
+			if ($('#descripcion').val() == '') { alertify.error('<b>Debe indicar una descripci&oacute;n</b>'); $('#descripcion').focus(); return false; }
+			$.post('modulos/response_ajax.php',{'id_prestamo':$('#id_recurso').val(),'descripcion':$('#descripcion').val(),'function':'registrar_novedad','recurso':'material'},function(resp){
+				if (resp != ''){
+					var id = $('#id_recurso').val();
+					$('#'+id+'.btn-pres-mat').remove();
+					$('#'+id+'.btn-nov-mat').attr('class','btn-nov-mat-del btn btn-danger').html('Ver Novedad(es)&nbsp;&nbsp;<i class="glyphicon glyphicon-remove-circle"></i>');
+					$('#modalwindow').modal('hide');
+					alertify.success('<b>Novedad registrada con exito</b>');
+				}
+			});
+		});
+		$(document).on('click','.btn-nov-mat-del',function(){
+			var id_prestamo = $(this).attr('id');
+			$.post('modulos/response_ajax.php',{'id_prestamo':id_prestamo,'recurso':'material','function':'get_novedades'},function(resp){
+				if (resp != '') {
+					var resp = JSON.parse(resp);
+					$('#modalwindow').modal('show'); $(".modal-title").text("Eliminación de novedad para prestamo Material");
+					$('.modal-footer').html('<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button><button class="btn btn-danger btn-nov-mat-fin" id="'+id_prestamo+'">Eliminar y entregar Material</button>');
+					$('#row-des-entrega').fadeIn(); $("#id_recurso").val(id_prestamo); 
+					$('#descripcion').val(resp[0].descripcion).attr('disabled',true);
+				}
+			});
+		});
+		$(document).on('click','.btn-nov-mat-fin',function(){
+			var id_prestamo = $(this).attr('id');
+			if ($('#descripcion_entrega').val() == '') { alertify.error('<b>Debe indicar una descripci&oacute;n final</b>'); $('#descripcion_entrega').focus(); return false; }
+			$.post('modulos/response_ajax.php',{'id_prestamo':id_prestamo,'recurso':'material','function':'set_novedades','descripcion':$('#descripcion').val(),'descripcion_entrega':$('#descripcion_entrega').val()},function(resp){
+				if (resp != '') {
+					$('#'+id_prestamo+'.btn-nov-mat-del').attr({'class':'btn-pres-mat btn btn-danger','id':id_prestamo}).html('Devolver&nbsp;&nbsp;<i class="glyphicon glyphicon-ok-circle"></i>');
+					$.post('modulos/response_ajax.php',{'id_prestamo':id_prestamo,'function':'entrega_prestamo','recurso':'material'},function(resp){
+    					if (resp == "true") {
+    						$("#row_mat_"+id_prestamo).remove();
+    						if ($("#tbl-mat tbody tr").length == 0) { $("#tbl-mat").fadeOut(); } 
+    					}
+    				});
+					$('#modalwindow').modal('hide');
+				}
+			});
+		});
 	});
 </script>

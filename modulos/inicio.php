@@ -16,7 +16,7 @@
           <li class="list-group-item">
             <strong><i class="glyphicon glyphicon-star"></i>&nbsp;Privilegio:&nbsp;&nbsp;</strong><?php echo $_SESSION['privilegio']; ?></li>
           <li class="list-group-item text-right">
-            <button class="btn btn-primary">Cambiar contrase&ntilde;a</button></li>
+            <button class="btn btn-primary" onClick="javascript:location.href='?page=act_operador&id_operador=<?php echo $_SESSION['id_operador']; ?>';">Actualizar datos</button></li>
         </ul>
       </div>
     </div>

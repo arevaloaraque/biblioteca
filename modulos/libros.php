@@ -54,8 +54,12 @@
 			  			<td class='descripcion_libro'><?php echo strtoupper($libro['descripcion']); ?></td>
 			  			<td class='text-center fecha_libro'><?php echo $libro['fecha_publicacion']; ?></td>
 			  			<td class='text-center'>
+			  				<?php if (trim($libro['status']) == 'f'): ?>
+			  					<button class="btn btn-success">Prestado&nbsp;&nbsp;<i class="glyphicon glyphicon-remove"></i></button>
+			  				<?php else: ?>
 			  				<button id="edit-<?php echo $libro['id_libro']; ?>" class="edit-libro text-info btn" data-toggle="tooltip" data-placement="top" title="Actualizar libro"><i class="glyphicon glyphicon-edit"></i></button>
 			  				<button id="del-<?php echo $libro['id_libro']; ?>" class="del-libro text-danger btn" data-toggle="tooltip" data-placement="top" title="Eliminar libro"><i class="glyphicon glyphicon-trash"></i></button>
+			  				<?php endif; ?>
 			  			</td>
 			  		</tr>
 			  	<?php } ?>
@@ -272,9 +276,9 @@
 		$('title').html('..:: Listado General de Libros ::..&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
 		valuesTitle();
 		// creacion de la ventana de dialogo
-		 $( "#dialog" ).dialog();
-		 $( ".ui-dialog" ).css({'border':'2px solid #000'});
-		 $( ".ui-dialog" ).hide();
+		$( "#dialog" ).dialog();
+		$( ".ui-dialog" ).css({'border':'2px solid #000'});
+		$( ".ui-dialog" ).hide();
 		// Configuracion datatable
 	    $('#datatable').dataTable({
 	      "AaSorting": [[0, "asc"]],

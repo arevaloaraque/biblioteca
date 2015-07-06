@@ -372,6 +372,68 @@
 			}
 		}
 
+		public function registrar_novedad() {
+			sleep(.7);
+			$id_novedad = array('libro'=>'id_novedad','tesis'=>'id_novedad_tesis','material'=>'id_novedad_material');
+			$idx_prestamo = array('libro'=>'id_prestamo','tesis'=>'id_prestamo_tesis','material'=>'id_prestamo_material');
+			$recurso = (isset($_POST['recurso']))?$_POST['recurso']:'';
+			$descripcion = $_POST['descripcion']; $id_prestamo = $_POST['id_prestamo'];
+			$res = $this->consultasbd->insert($tabla='tbl_novedad_'.$recurso,$campos='(descripcion,'.$idx_prestamo[$recurso].',fecha_novedad)',$values='\''.$descripcion.'\''.','.'\''.$id_prestamo.'\',\''.date('Y-m-d'.'\'').'');
+			if ($res) {
+				$res = $this->consultasbd->max_id($tabla='tbl_novedad_'.$recurso,$id=$id_novedad[$recurso]);
+				$dat = $this->consultasbd->fetch_array($res);
+				// auditoria
+				$auditar_mnsj = "Registró novedad en prestamo de ".$recurso.". datos: (descripcion =>".$descripcion.")";
+				$auditar_user = $_SESSION['id_operador'];
+				$auditar_date = date('Y-m-d');
+				$auditar_hour = date('H:m');
+				$this->consultasbd->insert($tabla='tbl_auditoria',$campos='(id_operador,descripcion,hora,fecha_auditoria)',$values='\''.$auditar_user.'\',\''.$auditar_mnsj.'\',\''.$auditar_hour.'\',\''.$auditar_date.'\'');
+				// FIN auditoria
+				echo true;
+			} else {
+				echo '';
+			}
+		}
+
+		public function set_novedades() {
+			$id_novedad = array('libro'=>'id_novedad','tesis'=>'id_novedad_tesis','material'=>'id_novedad_material');
+			$recurso = (isset($_POST['recurso']))?$_POST['recurso']:'';
+			$id_prestamo = $_POST['id_prestamo']; $descripcion = $_POST['descripcion'];
+			$descripcion_entrega = $_POST['descripcion_entrega'];
+			$idx_prestamo = array('libro'=>'id_prestamo','tesis'=>'id_prestamo_tesis','material'=>'id_prestamo_material');
+			$tabla = 'tbl_novedad_'.$recurso;
+			$set   = 'status=false, descripcion_final=\''.$descripcion_entrega.'\'';
+			$where = 'WHERE '.$idx_prestamo[$recurso].'=\''.$id_prestamo.'\'';
+			$res   = $this->consultasbd->update($tabla,$set,$where);
+			// auditoria
+			$auditar_mnsj = "Actualizó novedades. datos: (Descripcion entrega=>".$descripcion_entrega.",id_prestamo=>".$id_prestamo.")";
+			$auditar_user = $_SESSION['id_operador'];
+			$auditar_date = date('Y-m-d');
+			$auditar_hour = date('H:m');
+			$this->consultasbd->insert($tabla='tbl_auditoria',$campos='(id_operador,descripcion,hora,fecha_auditoria)',$values='\''.$auditar_user.'\',\''.$auditar_mnsj.'\',\''.$auditar_hour.'\',\''.$auditar_date.'\'');
+			// FIN auditoria
+			if ($res) {
+				echo true;
+			} else {
+				echo '';
+			}
+		}
+		public function get_novedades() {
+			$id_novedad = array('libro'=>'id_novedad','tesis'=>'id_novedad_tesis','material'=>'id_novedad_material');
+			$recurso = (isset($_POST['recurso']))?$_POST['recurso']:'';
+			$id_prestamo = $_POST['id_prestamo'];
+			$idx_prestamo = array('libro'=>'id_prestamo','tesis'=>'id_prestamo_tesis','material'=>'id_prestamo_material');
+			$res = $this->consultasbd->select($tabla='tbl_novedad_'.$recurso,$campos='*',$where='WHERE '.$idx_prestamo[$recurso].'=\''.$id_prestamo.'\'');
+			if ($this->consultasbd->num_rows($res)>0) {
+				$data = array();
+				while ($detalle = $this->consultasbd->fetch_array($res)) {
+					$data[] = $detalle;
+				}
+				echo json_encode($data);
+			} else {
+				echo '';
+			}
+		}
 	}
 	
 	include_once('modelo.php');

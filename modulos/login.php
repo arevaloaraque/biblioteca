@@ -55,7 +55,7 @@
       // FIN auditoria
       session_unset();
       session_destroy();
-      echo '<script>location.href = "index.php?page=login";</script>';
+      echo '<script>location.href = "index.php?page=login&resesion";</script>';
     endif;
 ?>
 <div class="container-fluid">
@@ -126,3 +126,8 @@
       });
   });
 </script>
+<?php if (isset($_GET['resesion'])): ?>
+  <script type="text/javascript">
+    alertify.success('<b>Vuelve a iniciar sesi&oacute;n</b>');
+  </script>
+<?php endif; ?>

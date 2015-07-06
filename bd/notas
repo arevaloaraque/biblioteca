@@ -1,0 +1,15 @@
+Bibliotecario:
+- registrar usuarios (todos execto admin)
+
+Penalizacion
+Bloquear usuario para todos los prestamos
+campos:
+id
+id_prestamo
+descripcion
+
+reporte de prestamo
+por status
+
+
+reporte de usuario por status

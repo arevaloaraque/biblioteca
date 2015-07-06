@@ -1,16 +1,24 @@
 <?php
 	include_once('modulos/modelo.php');
 	$class_alert = array('warning','danger');
+	$user = $consultasbd->select($tabla='tbl_usuario');
 	if (count($_GET)==1 && count($_POST)==0) {
 		$libros = $consultasbd->select($tabla='tbl_prestamo_libro',$campos='*',$where='');
 		$tesis = $consultasbd->select($tabla='tbl_prestamo_tesis',$campos='*',$where='');
 		$material = $consultasbd->select($tabla='tbl_prestamo_material',$campos='*',$where='');
+		$url_print = 'modulos/reporte_prestamos_pdf.php';
 	} else if (count($_POST)>0) {
 		$from_date = $_POST['from-date'];
 		$to_date = $_POST['to-date'];
-		$libros = $consultasbd->select($tabla='tbl_prestamo_libro',$campos='*',$where=' WHERE fecha_prestamo>=\''.$from_date.'\' AND fecha_prestamo<=\''.$to_date.'\'');
-		$tesis = $consultasbd->select($tabla='tbl_prestamo_tesis',$campos='*',$where=' WHERE fecha_prestamo>=\''.$from_date.'\' AND fecha_prestamo<=\''.$to_date.'\'');
-		$material = $consultasbd->select($tabla='tbl_prestamo_material',$campos='*',$where=' WHERE fecha_prestamo>=\''.$from_date.'\' AND fecha_prestamo<=\''.$to_date.'\'');
+		$usuario = $_POST['txt_ced_user'];
+		$url_print = 'modulos/reporte_prestamos_pdf.php?from_date='.$from_date.'&to_date='.$to_date.'&usuario='.$usuario;
+		$where_user = ($usuario == '')?'':'WHERE id_usuario=\''.$usuario.'\'';
+		$and_user = ($usuario == '')?'':' AND id_usuario=\''.$usuario.'\'';
+		$where = ($from_date != '' && $to_date != '')?' WHERE fecha_prestamo>=\''.$from_date.'\' AND fecha_prestamo<=\''.$to_date.'\'':'';
+		$where.= (strlen($where) > 0)?$and_user:$where_user;
+		$libros = $consultasbd->select($tabla='tbl_prestamo_libro',$campos='*',$where);
+		$tesis = $consultasbd->select($tabla='tbl_prestamo_tesis',$campos='*',$where);
+		$material = $consultasbd->select($tabla='tbl_prestamo_material',$campos='*',$where);
 	}
 ?>
 <div class="col-sm-9 col-md-10">
@@ -31,11 +39,54 @@
 					</div>
 					<div class="radio-inline">
 					    <label>
-					      <input type="radio" name="filter" id="filter-date" <?php echo (count($_POST)>0)?'checked="checked"':''; ?> />&nbsp;Rango&nbsp;de&nbsp;Fecha&nbsp;<img src="images/calendar.png" class="img img-circle">
+					      <input type="radio" name="filter" id="filter-date" <?php echo (count($_POST)>0)?'checked="checked"':''; ?> />&nbsp;Personalizado&nbsp;
 					    </label>
 					</div>
+					<?php if (count($_POST) == 0): ?>
+					<div class="radio-inline">
+					    <label>
+					      <button id="btn-filter-date" class="btn btn-danger" onclick='javascript:popup("<?php echo $url_print; ?>",700,500)'>Imprimir&nbsp;<i class="glyphicon glyphicon-print"></i></button>
+					    </label>
+					</div>
+					<?php endif; ?>
 					<form id="show-calendars" <?php echo (count($_POST)>0)?'':'style="display:none;"' ?> class="form-inline" action="?page=reporte_prestamos" method="POST">
-						Desde:&nbsp;<input type="text" name="from-date" id="from-date" class="form-control" readonly="readOnly" value="<?php echo (isset($_POST['from-date']))?$_POST['from-date']:''; ?>" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hasta&nbsp;<input type="text" name="to-date" id="to-date" class="form-control" readonly="readOnly" value="<?php echo (isset($_POST['to-date']))?$_POST['to-date']:''; ?>" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button id="btn-filter-date" class="btn btn-danger">Ver!</button>
+						<div class="row">
+							<div class="form-group col-lg-4">
+								<div class="input-group">
+								  <div class="input-group-addon"><small><b>Desde:&nbsp;</b></small></div>
+							      <input type="text" name="from-date" id="from-date" class="form-control" readonly="readOnly" value="<?php echo (isset($_POST['from-date']))?$_POST['from-date']:''; ?>" />
+							      <div class="input-group-addon"><img src="images/calendar.png"></div>
+							    </div>
+							</div>
+							<div class="form-group col-lg-4">
+								<div class="input-group">
+								  <div class="input-group-addon"><small><b>Hasta:&nbsp;</b></small></div>
+							      <input type="text" name="to-date" id="to-date" class="form-control" readonly="readOnly" value="<?php echo (isset($_POST['to-date']))?$_POST['to-date']:''; ?>" />
+							      <div class="input-group-addon"><img src="images/calendar.png"></div>
+							    </div>
+							</div>
+						</div>
+						<br/>
+						<div class="row">
+							<div class="form-group col-lg-6">
+							    <select name="txt_ced_user" id="txt_ced_user" class="form-control chosen-select form-control required" data-placeholder="Seleccione Usuario(omitir si no desea aplicar este filtro)" title="Usuario">
+					                <option value="">Todos</option>
+					                <?php 
+					                  $id_usuario = (isset($usuario))?$usuario:false;
+					                  while ($user_det = $consultasbd->fetch_array($user)) {
+					                  	$selected = ($id_usuario == $user_det['id_usuario'])?'selected=selected':'';
+					                    echo '<option value="'.$user_det['id_usuario'].'" '.$selected.'>'.$user_det['cedula'].' - '.$user_det['nombre'].' '.$user_det['apellido'].'</option>';
+					                  }
+					                ?>
+					            </select>
+							</div>
+							<div class="form-group col-lg-6">
+								<button id="btn-filter-date" class="btn btn-danger">Ver&nbsp;<i class="glyphicon glyphicon-eye-open"></i></button>
+								<?php if (count($_POST)>0): ?>
+								<button id="btn-filter-date" class="btn btn-danger" onclick='javascript:popup("<?php echo $url_print; ?>",700,500)'>Imprimir&nbsp;<i class="glyphicon glyphicon-print"></i></button>
+								<?php endif; ?>
+							</div>
+						</div>
 					</form>
 				</div>
 			</div>
@@ -58,7 +109,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="row">
+		<div class="row" id="content-print">
 				<div class="col-lg-12" id="tbl-libros">
 					<div class="table-responsive">
 					<?php if ($consultasbd->num_rows($libros)) { ?>
@@ -255,12 +306,19 @@
 </div>
 <script src="librerias/jquery-ui/jquery-ui.min.js" type="text/javascript"></script>
 <link rel="stylesheet" type="text/css" href="librerias/jquery-ui/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="plugins/chosen_v1.4.0/chosen.css">
+<script src="plugins/chosen_v1.4.0/chosen.jquery.js" type="text/javascript"></script>
 <script type="text/javascript">
-	function test () {
-		alertify.confirm('test',function(e){ if (e) {alert("ssss");} });
-		
-	}
+	var popup = function(){};
 	$(document).on('ready',function(){
+		popup = function (url,ancho,alto) {
+			var posicion_x; 
+			var posicion_y; 
+			posicion_x=(screen.width/2)-(ancho/2); 
+			posicion_y=(screen.height/2)-(alto/2); 
+			window.open(url, "leonpurpura.com", "width="+ancho+",height="+alto+",menubar=0,toolbar=0,directories=0,scrollbars=no,resizable=no,left="+posicion_x+",top="+posicion_y+"");
+		}
+		$('#txt_ced_user').chosen({no_results_text:'Sin Resultados',width:"100%"});
 		$(".only_num").keypress(function(evt){
 	        evt = (evt) ? evt : event
 	        var key = (evt.which) ? evt.which : evt.keyCode;
@@ -297,8 +355,8 @@
       });
       $("#btn-filter-date").on('click',function(e){
       	e.preventDefault();
-      	if($("#from-date").val() == '' || $("#to-date").val() == '') { alertify.error("<b>Debe indicar ambos limites de fecha</b>");  ($("#from-date").val() == '')?$("#from-date").focus():$("#to-date").focus(); return false; }
-      	else if($("#from-date").val() != '' && $("#to-date").val() != '') { $("#show-calendars").submit(); }
+      	if(($("#from-date").val() == '' || $("#to-date").val() == '') && $('#txt_ced_user').val() == '') { alertify.error("<b>Debe indicar al menos un filtro. Para fecha deben ser ambos campos</b>");  ($("#from-date").val() == '')?$("#from-date").focus():$("#to-date").focus(); return false; }
+      	else if(($("#from-date").val() != '' && $("#to-date").val() != '') || $('#txt_ced_user').val() != '') { $("#show-calendars").submit(); }
       });
 	});
 </script>

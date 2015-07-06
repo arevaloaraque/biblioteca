@@ -30,8 +30,12 @@
 			  			<td class='text-center nombre_material'><?php echo strtoupper($material['nombre']); ?></td>
 			  			<td class='descripcion_tipo'><?php echo strtoupper($material['descripcion_tipo']); ?></td>
 			  			<td class='text-center'>
+			  				<?php if (trim($material['status']) == 'f'): ?>
+			  					<button class="btn btn-success">Prestado&nbsp;&nbsp;<i class="glyphicon glyphicon-remove"></i></button>
+			  				<?php else: ?>
 			  				<button id="edit-<?php echo $material['id_material']; ?>" class="edit-material text-info btn" data-toggle="tooltip" data-placement="top" title="Actualizar material"><i class="glyphicon glyphicon-edit"></i></button>
 			  				<button id="del-<?php echo $material['id_material']; ?>" class="del-material text-danger btn" data-toggle="tooltip" data-placement="top" title="Eliminar material"><i class="glyphicon glyphicon-trash"></i></button>
+			  				<?php endif; ?>
 			  			</td>
 			  		</tr>
 			  	<?php } ?>

@@ -10,13 +10,14 @@
 		$nombre = (!empty($_POST['txt_nombre']))?$_POST['txt_nombre']:'';
 		$apellido = (!empty($_POST['txt_apellido']))?$_POST['txt_apellido']:'';
 		$clave = (!empty($_POST['txt_password']))?$_POST['txt_password']:'';
+		$privilegio = (!empty($_POST['txt_privilegio']))?$_POST['txt_privilegio']:'';
 		// consulta cedula
 		$sql_ced = $consultasbd->select($table='tbl_operador',$campos='*',$where='WHERE cedula=\''.$cedula.'\'');
 		$res_ced = $consultasbd->fetch_array($sql_ced);
 		if ($consultasbd->num_rows($sql_ced)>0) { echo '<script>alertify.error("<b>Cedula duplicada </b>");</script>'; $error_ced = 1; }
 		else {
 			// consulta privilegios
-			$sql_priv = $consultasbd->select($table='tbl_privilegios',$campos='*',$where='WHERE privilegio=\'BIBLIOTECARIO\'');
+			$sql_priv = $consultasbd->select($table='tbl_privilegios',$campos='*',$where='WHERE id_privilegio=\''.$privilegio.'\'');
 			$res_priv = $consultasbd->fetch_array($sql_priv);
 			if ($cedula == '' || $nombre == '' || $apellido == '' || $clave == '') { echo '<script>alertify.error("<b>Todos los campos son obligatorios </b>");</script>'; }
 			else { 
@@ -26,7 +27,7 @@
 				$res   = $consultasbd->insert($tabla,$campos,$values);
 				$id = $consultasbd->fetch_array($consultasbd->max_id($tabla='tbl_operador',$id='id_operador'));
 				// auditoria
-				$auditar_mnsj = "Registro Operador. datos: (Nombre=>".$nombre.",id=>".$id['id_operador'].")";
+				$auditar_mnsj = "Registro Operador. datos: (Nombre=>".$nombre.",id=>".$id['id'].")";
 				$auditar_user = $_SESSION['id_operador'];
 				$auditar_date = date('Y-m-d');
 				$auditar_hour = date('H:m');
@@ -65,7 +66,13 @@
 	    	<div class="row">
 	    		<div class="col-lg-6">
 	    			<label for="txt_privilegio">Privilegio&nbsp;&nbsp;<i class="glyphicon glyphicon-star"></i></label>
-	    			<input type="text" name="txt_privilegio" id="txt_privilegio" class="form-control required" title="Privilegio" value="BIBLIOTECARIO" disabled="disabled" />
+	    			<select class="form-control required" name="txt_privilegio" id="txt_privilegio" title="Privilegio">
+	    				<option value="">...</option>
+	    				<?php if (isset($_SESSION['privilegio']) && (trim($_SESSION['privilegio']) == 'ADMINISTRADOR')):?>
+	    				<option value="1">ADMIN</option>
+	    				<?php endif; ?>
+	    				<option value="2">BIBLIOTECARIO</option>
+	    			</select>
 	    		</div>
 	    		<div class="col-lg-6">
 	    			<label for="txt_password">Contrase&ntilde;a&nbsp;&nbsp;<i class="glyphicon glyphicon-lock"></i>&nbsp;&nbsp;<i class="text-info pull-right"></i></label>

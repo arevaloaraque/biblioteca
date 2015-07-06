@@ -14,6 +14,7 @@
 		$nombre = (!empty($_POST['txt_nombre']))?$_POST['txt_nombre']:'';
 		$apellido = (!empty($_POST['txt_apellido']))?$_POST['txt_apellido']:'';
 		$clave = (!empty($_POST['txt_password']))?$_POST['txt_password']:'';
+		$id_privilegio = (!empty($_POST['txt_privilegio']))?$_POST['txt_privilegio']:'';
 		$operador = $consultasbd->select($tabla='tbl_operador',$campos='*',$where=' WHERE id_operador=\''.$id_operador.'\'');
 		$operador = $consultasbd->fetch_array($operador);
 		// consulta privilegios
@@ -28,7 +29,7 @@
 					echo '<script>alertify.error("<b>Cedula duplicada </b>");</script>';
 				} else {
 					$tabla = 'tbl_operador';
-					$set   = 'cedula=\''.$cedula.'\', nombre=\''.$nombre.'\',apellido=\''.$apellido.'\', fecha_modifica=\''.date('Y-m-d').'\'';
+					$set   = 'cedula=\''.$cedula.'\', nombre=\''.$nombre.'\',apellido=\''.$apellido.'\', id_privilegio=\''.$id_privilegio.'\',fecha_modifica=\''.date('Y-m-d').'\'';
 					$set  .= (!empty($clave))?', password=\''.$clave.'\'':'';
 					$where = ' WHERE id_operador=\''.$id_operador.'\'';
 					$res   = $consultasbd->update($tabla,$set,$where);
@@ -39,11 +40,15 @@
 					$auditar_hour = date('H:m');
 					$consultasbd->insert($tabla='tbl_auditoria',$campos='(id_operador,descripcion,hora,fecha_auditoria)',$values='\''.$auditar_user.'\',\''.$auditar_mnsj.'\',\''.$auditar_hour.'\',\''.$auditar_date.'\'');
 					// FIN auditoria
-					echo '<script>location.href="index.php?page=list_operadores&up=true";</script>';
+					if ($_SESSION['id_operador'] == $id_operador) {
+						echo '<script>location.href="index.php?page=login&exit&resesion";</script>';
+					} else {
+						echo '<script>location.href="index.php?page=list_operadores&up=true";</script>';
+					}
 				}
 			} else {
 				$tabla = 'tbl_operador';
-				$set   = 'cedula=\''.$cedula.'\', nombre=\''.$nombre.'\',apellido=\''.$apellido.'\', fecha_modifica=\''.date('Y-m-d').'\'';
+				$set   = 'cedula=\''.$cedula.'\', nombre=\''.$nombre.'\',apellido=\''.$apellido.'\', id_privilegio=\''.$id_privilegio.'\', fecha_modifica=\''.date('Y-m-d').'\'';
 				$set  .= (!empty($clave))?', password=\''.md5($clave).'\'':'';
 				$where = ' WHERE id_operador=\''.$id_operador.'\'';
 				$res   = $consultasbd->update($tabla,$set,$where);
@@ -54,7 +59,11 @@
 				$auditar_hour = date('H:m');
 				$consultasbd->insert($tabla='tbl_auditoria',$campos='(id_operador,descripcion,hora,fecha_auditoria)',$values='\''.$auditar_user.'\',\''.$auditar_mnsj.'\',\''.$auditar_hour.'\',\''.$auditar_date.'\'');
 				// FIN auditoria
-				echo '<script>location.href="index.php?page=list_operadores&up=true";</script>';
+				if ($_SESSION['id_operador'] == $id_operador) {
+					echo '<script>location.href="index.php?page=login&exit&resesion";</script>';
+				} else {
+					echo '<script>location.href="index.php?page=list_operadores&up=true";</script>';
+				}
 			}
 		}
 	} else {
@@ -90,11 +99,20 @@
 	    	<div class="row">
 	    		<div class="col-lg-6">
 	    			<label for="txt_privilegio">Privilegio&nbsp;&nbsp;<i class="glyphicon glyphicon-star"></i></label>
-	    			<input type="text" name="txt_privilegio" id="txt_privilegio" class="form-control" title="Privilegio" disabled="disabled" value="<?php echo strtoupper($res_priv['privilegio']); ?>" />
+	    			<select class="form-control required" name="txt_privilegio" id="txt_privilegio" title="Privilegio">
+	    				<option value="">...</option>
+	    				<?php if ($res_priv['id_privilegio'] == 1): ?>
+	    				<option value="1" selected="selected">ADMIN</option>	
+	    				<option value="2">BIBLIOTECARIO</option>
+	    				<?php else: ?>
+	    				<option value="1">ADMIN</option>	
+	    				<option value="2" selected="selected">BIBLIOTECARIO</option>
+	    				<?php endif; ?>
+	    			</select>
 	    		</div>
 	    		<div class="col-lg-6">
 	    			<label for="txt_password">Contrase&ntilde;a&nbsp;&nbsp;<i class="glyphicon glyphicon-lock"></i>&nbsp;&nbsp;<i class="text-info pull-right"><small>Omitir&nbsp;si&nbsp;no&nbsp;desea&nbsp;actualizar</small>&nbsp;<i class="glyphicon glyphicon-info-sign"></i></i></label>
-	    			<input type="text" name="txt_password" id="txt_password" class="form-control" title="Clave de Acceso" />
+	    			<input type="password" name="txt_password" id="txt_password" class="form-control" title="Clave de Acceso" />
 	    		</div>
 	    	</div>
 	    	<br/>

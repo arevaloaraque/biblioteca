@@ -26,7 +26,7 @@
 					$res   = $consultasbd->insert($tabla,$campos,$values);
 					$id = $consultasbd->fetch_array($consultasbd->max_id($tabla='tbl_usuario',$id='id_usuario'));
 					// auditoria
-					$auditar_mnsj = "Registro Usuario. datos: (Nombre=>".$nombre.",id=>".$id['id_usuario'].")";
+					$auditar_mnsj = "Registro Usuario. datos: (Nombre=>".$nombre.",id=>".$id['id'].")";
 					$auditar_user = $_SESSION['id_operador'];
 					$auditar_date = date('Y-m-d');
 					$auditar_hour = date('H:m');

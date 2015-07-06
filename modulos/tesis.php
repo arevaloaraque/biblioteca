@@ -49,8 +49,12 @@
 			  			<td class='text-center mension_tesi'><?php echo strtoupper($tesi['mension']); ?></td>
 			  			<td class='text-center fecha_tesi'><?php echo $tesi['fecha_publicacion']; ?></td>
 			  			<td class='text-center'>
+			  				<?php if (trim($tesi['status']) == 'f'): ?>
+			  					<button class="btn btn-success">Prestada&nbsp;&nbsp;<i class="glyphicon glyphicon-remove"></i></button>
+			  				<?php else: ?>
 			  				<button id="edit-<?php echo $tesi['id_tesis']; ?>" class="edit-tesis text-info btn" data-toggle="tooltip" data-placement="top" title="Actualizar tesis"><i class="glyphicon glyphicon-edit"></i></button>
 			  				<button id="del-<?php echo $tesi['id_tesis']; ?>" class="del-tesis text-danger btn" data-toggle="tooltip" data-placement="top" title="Eliminar tesis"><i class="glyphicon glyphicon-trash"></i></button>
+			  				<?php endif; ?>
 			  			</td>
 			  		</tr>
 			  	<?php } ?>

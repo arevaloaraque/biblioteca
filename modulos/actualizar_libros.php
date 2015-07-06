@@ -24,6 +24,11 @@
 		$libro['id_editorial'] = $editorial;
 		$libro['id_materia'] = $materia;
 		$libro['fecha_publicacion'] = date('d-m-Y',strtotime($libro['fecha_publicacion']));
+
+		// verificar status
+		if ($libro['status'] == 'f') {
+			echo '<script>location.href="index.php?page=libros";</script>';
+		}
 	} else if (isset($_POST['id_libro_h'])){
 		$id_libro    = $_POST['id_libro_h'];
 		$autor 		 = $_POST['txt_autor'];

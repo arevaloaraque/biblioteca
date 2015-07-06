@@ -19,6 +19,11 @@
 		$tesi['id_autor_tesis'] = $autor;
 		$tesi['id_materia'] = $materia;
 		$tesi['fecha_publicacion'] = date('d-m-Y',strtotime($tesi['fecha_publicacion']));
+
+		// verificar status
+		if ($tesi['status'] == 'f') {
+			echo '<script>location.href="index.php?page=tesis";</script>';
+		}
 	} else if (isset($_POST['id_tesis_h'])){
 		$id_tesis    = $_POST['id_tesis_h'];
 		$materia 	 = $_POST['txt_materia'];

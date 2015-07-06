@@ -7,6 +7,11 @@
 		if ($consultasbd->num_rows($materiales) == 0){
 			echo '<script>location.href="index.php?page=materiales";</script>';
 		}
+
+		// verificar status
+		if ($material['status'] == 'f') {
+			echo '<script>location.href="index.php?page=materiales";</script>';
+		}
 	} else if (isset($_POST['id_material_h'])){
 		$id_material    = $_POST['id_material_h'];
 		$nombre  	    = $_POST['txt_nombre'];
