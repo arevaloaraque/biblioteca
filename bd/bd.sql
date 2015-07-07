@@ -3,6 +3,7 @@
 --
 
 SET statement_timeout = 0;
+SET lock_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
@@ -1883,6 +1884,10 @@ COPY tbl_auditoria (id_auditoria, id_operador, descripcion, hora, fecha_auditori
 342	1	Inicio sesión	21:07:00	2015-07-05
 343	1	Inicio sesión	22:07:00	2015-07-05
 344	1	Inicio sesión	23:07:00	2015-07-05
+345	1	Inicio sesión	08:07:00	2015-07-06
+346	1	Inicio sesión	12:07:00	2015-07-06
+347	1	Inicio sesión	09:07:00	2015-07-07
+348	1	Inicio sesión	11:07:00	2015-07-07
 \.
 
 
@@ -1890,7 +1895,7 @@ COPY tbl_auditoria (id_auditoria, id_operador, descripcion, hora, fecha_auditori
 -- Name: tbl_auditoria_id_auditoria_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('tbl_auditoria_id_auditoria_seq', 344, true);
+SELECT pg_catalog.setval('tbl_auditoria_id_auditoria_seq', 348, true);
 
 
 --

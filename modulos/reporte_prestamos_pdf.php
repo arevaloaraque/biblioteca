@@ -138,6 +138,14 @@ if ($usuario != '') {
 $usuario = $consultasbd->select($tabla='tbl_usuario',$campos='*',$where=' WHERE id_usuario=\''.$usuario.'\'');
 $datos_usuario = $consultasbd->fetch_array($usuario);
 }
+// datos para filtro
+$filtro_status = array();
+if (isset($_GET['sts-entregado']) && $_GET['sts-entregado'] != '') { array_push($filtro_status, 'entregado'); }
+if (isset($_GET['sts-vencido']) && $_GET['sts-vencido'] != '') { array_push($filtro_status, 'vencido'); }
+if (isset($_GET['sts-cerca-vencer']) && $_GET['sts-cerca-vencer'] != '') { array_push($filtro_status, 'cerca-vencer'); }
+if (isset($_GET['sts-activo']) && $_GET['sts-activo'] != '') { array_push($filtro_status, 'activo'); }
+
+if (!(isset($_GET['sts-entregado'])) && !(isset($_GET['sts-vencido'])) && !(isset($_GET['sts-cerca-vencer'])) && !(isset($_GET['sts-activo']))) { $filtro_status = array('entregado','vencido','cerca-vencer','activo'); }
 /************ crea el objeto FPDF***********/
 $pdf=new PDF('L','mm','Letter');
 $pdf->Open();
@@ -180,6 +188,7 @@ if ($consultasbd->num_rows($libros)) {
     $pdf->SetAligns(array('C','C','C','C','C','C','C'));
     $pdf->SetTextColor(0,0,0);
     $pdf->SetDrawColor(0,0,0);
+    $count_libros = 0;
     while ($libro = $consultasbd->fetch_array($libros)) {
         // datos del libro
         $datos_libro = $consultasbd->select($tabla='tbl_libros',$campos='*',$where='WHERE id_libro=\''.$libro['id_libro'].'\'');
@@ -208,17 +217,23 @@ if ($consultasbd->num_rows($libros)) {
         $segundos=strtotime($libro['fecha_devolucion']) - strtotime($libro['fecha_prestamo']);
         $diferencia_dias=intval($segundos/60/60/24);
         $a='';$b='';$c='';
+        $status = '';
         if (date('Y-m-d') > $libro['fecha_devolucion']) {
-            $a = 242; $b = 222; $c= 222;
+            $a = 242; $b = 222; $c= 222; $status = 'vencido';
         } else {
-            if ($diferencia_dias > 0 && $diferencia_dias < 2) { $a = 252; $b = 248; $c= 227; } else
-            if ($diferencia_dias <= 0) { $a = 242; $b = 222; $c= 222; }
-            else { $a = 255; $b = 255; $c= 255; }
+            if ($diferencia_dias > 0 && $diferencia_dias < 2) { $a = 252; $b = 248; $c= 227; $status = 'cerca-vencer'; } else
+            if ($diferencia_dias <= 0) { $a = 242; $b = 222; $c= 222; $status = 'vencido'; }
+            else { $a = 255; $b = 255; $c= 255; $status = 'activo'; }
         }
-        if (trim($libro['status']) == 'f') { $a = 223; $b = 240; $c= 216; $pdf->SetFillColor($a,$b,$c); } else { $pdf->SetFillColor($a,$b,$c); }
-        $pdf->Row(array($libro['id_prestamo'],utf8_decode(strtoupper($datos_libro['id_autor'])),utf8_decode(strtoupper($datos_libro['id_editorial'])),utf8_decode(strtoupper($datos_libro['descripcion'])),date('d-m-Y',strtotime($libro['fecha_prestamo'])),date('d-m-Y',strtotime($libro['fecha_devolucion'])),(($libro['status'] == 'f')?'ENTREGADO':'PENDIENTE')));
+        if (trim($libro['status']) == 'f') { $a = 223; $b = 240; $c= 216; $pdf->SetFillColor($a,$b,$c); $status = 'entregado'; } else { $pdf->SetFillColor($a,$b,$c); }
+        if (in_array($status,$filtro_status) == 1){
+            $pdf->Row(array($libro['id_prestamo'],utf8_decode(strtoupper($datos_libro['id_autor'])),utf8_decode(strtoupper($datos_libro['id_editorial'])),utf8_decode(strtoupper($datos_libro['descripcion'])),date('d-m-Y',strtotime($libro['fecha_prestamo'])),date('d-m-Y',strtotime($libro['fecha_devolucion'])),(($libro['status'] == 'f')?'ENTREGADO':'PENDIENTE')));
+            $count_libros++;
+        }
     }
 }
+if($count_libros==0){$pdf->SetTextColor(0,0,0);$pdf->SetFillColor(221,221,221);$pdf->Cell(237,8,'NO EXISTEN RESULTADOS PARA EL FILTRO SELECCIONADO',1,1,'C',true);};
+$pdf->Ln(8);
 $pdf->SetFont('Arial','B',9);
 if ($consultasbd->num_rows($tesis)) {
     $pdf->SetTextColor(0,0,0);
@@ -237,6 +252,7 @@ if ($consultasbd->num_rows($tesis)) {
     $pdf->SetAligns(array('C','C','C','C','C','C','C'));
     $pdf->SetTextColor(0,0,0);
     $pdf->SetDrawColor(0,0,0);
+    $count_tesis = 0;
     while ($tesi = $consultasbd->fetch_array($tesis)) {
         $datos_tesis = $consultasbd->select($tabla='tbl_tesis',$campos='*',$where='WHERE id_tesis=\''.$tesi['id_tesis'].'\'');
         $datos_tesis = $consultasbd->fetch_array($datos_tesis);
@@ -255,17 +271,64 @@ if ($consultasbd->num_rows($tesis)) {
         $segundos=strtotime($tesi['fecha_devolucion']) - strtotime($tesi['fecha_prestamo']);
         $diferencia_dias=intval($segundos/60/60/24);
         $a='';$b='';$c='';
-        if (date('Y-m-d') > $tesi['fecha_devolucion']) {
-            $a = 242; $b = 222; $c= 222;
+        $status = '';
+        if (date('Y-m-d') > $libro['fecha_devolucion']) {
+            $a = 242; $b = 222; $c= 222; $status = 'vencido';
         } else {
-            if ($diferencia_dias > 0 && $diferencia_dias < 2) { $a = 252; $b = 248; $c= 227; } else
-            if ($diferencia_dias <= 0) { $a = 242; $b = 222; $c= 222; }
-            else { $a = 255; $b = 255; $c= 255; }
+            if ($diferencia_dias > 0 && $diferencia_dias < 2) { $a = 252; $b = 248; $c= 227; $status = 'cerca-vencer'; } else
+            if ($diferencia_dias <= 0) { $a = 242; $b = 222; $c= 222; $status = 'vencido'; }
+            else { $a = 255; $b = 255; $c= 255; $status = 'activo'; }
         }
-        if (trim($tesi['status']) == 'f') { $a = 223; $b = 240; $c= 216; $pdf->SetFillColor($a,$b,$c); } else { $pdf->SetFillColor($a,$b,$c); }
-        $pdf->Row(array($tesi['id_prestamo_tesis'].$tesi['status'],utf8_decode(strtoupper($datos_tesis['id_materia'])),utf8_decode(strtoupper($datos_tesis['id_autor_tesis'])),utf8_decode(strtoupper($datos_tesis['titulo'])),date('d-m-Y',strtotime($tesi['fecha_prestamo'])),date('d-m-Y',strtotime($tesi['fecha_devolucion'])),(($tesi['status'] == 'f')?'ENTREGADO':'PENDIENTE')));
+        if (trim($tesi['status']) == 'f') { $a = 223; $b = 240; $c= 216; $pdf->SetFillColor($a,$b,$c); $status = 'entregado'; } else { $pdf->SetFillColor($a,$b,$c); }
+        if (in_array($status,$filtro_status) == 1){
+            $pdf->Row(array($tesi['id_prestamo_tesis'],utf8_decode(strtoupper($datos_tesis['id_materia'])),utf8_decode(strtoupper($datos_tesis['id_autor_tesis'])),utf8_decode(strtoupper($datos_tesis['titulo'])),date('d-m-Y',strtotime($tesi['fecha_prestamo'])),date('d-m-Y',strtotime($tesi['fecha_devolucion'])),(($tesi['status'] == 'f')?'ENTREGADO':'PENDIENTE')));
+            $count_tesis++;
+        }
     }
 }
+if($count_tesis==0){$pdf->SetTextColor(0,0,0);$pdf->SetFillColor(221,221,221);$pdf->Cell(237,8,'NO EXISTEN RESULTADOS PARA EL FILTRO SELECCIONADO',1,1,'C',true);};
+$pdf->Ln(8);
+$pdf->SetFont('Arial','B',9);
+if ($consultasbd->num_rows($material)) {
+    $pdf->SetTextColor(0,0,0);
+    $pdf->SetFillColor(221,221,221);
+    $pdf->Cell(237,8,'LISTA DE MATERIALES',1,1,'C',true);
+    $pdf->cell(28,8,'Cod. Prestamo',1,0,'C',true);
+    $pdf->cell(36,8,'Tipo',1,0,'C',true);
+    $pdf->cell(76,8,'Nombre',1,0,'C',true);
+    $pdf->cell(31,8,'Fecha Prestamo',1,0,'C',true);
+    $pdf->cell(36,8,utf8_decode('Fecha Devolución'),1,0,'C',true);
+    $pdf->cell(30,8,'Status',1,1,'C',true);
+    $pdf->SetFont('Arial','',9,true);
+    $pdf->SetFillColor(255,255,255);
+    $pdf->SetWidths(array(28,36,76,31,36,30));
+    $pdf->SetAligns(array('C','C','C','C','C','C','C'));
+    $pdf->SetTextColor(0,0,0);
+    $pdf->SetDrawColor(0,0,0);
+    $count_mat=0;
+    while ($mat = $consultasbd->fetch_array($material)) {
+        $datos_materiales = $consultasbd->query($sql = 'select * from tbl_material as tbl_mat left outer join tbl_tipo_material tbl_tipo on tbl_mat.id_tipo=tbl_tipo.id_tipo_material WHERE id_material=\''.$mat['id_material'].'\'');
+        $datos_materiales = $consultasbd->fetch_array($datos_materiales);
+        // total dias prestamo
+        $segundos=strtotime($mat['fecha_devolucion']) - strtotime($mat['fecha_prestamo']);
+        $diferencia_dias=intval($segundos/60/60/24);
+        $a='';$b='';$c='';
+        $status = '';
+        if (date('Y-m-d') > $libro['fecha_devolucion']) {
+            $a = 242; $b = 222; $c= 222; $status = 'vencido';
+        } else {
+            if ($diferencia_dias > 0 && $diferencia_dias < 2) { $a = 252; $b = 248; $c= 227; $status = 'cerca-vencer'; } else
+            if ($diferencia_dias <= 0) { $a = 242; $b = 222; $c= 222; $status = 'vencido'; }
+            else { $a = 255; $b = 255; $c= 255; $status = 'activo'; }
+        }
+        if (trim($mat['status']) == 'f') { $a = 223; $b = 240; $c= 216; $pdf->SetFillColor($a,$b,$c); $status = 'entregado'; } else { $pdf->SetFillColor($a,$b,$c); }
+        if (in_array($status,$filtro_status) == 1){
+            $pdf->Row(array($mat['id_prestamo_material'],utf8_decode(strtoupper($datos_materiales['descripcion_tipo'])),utf8_decode(strtoupper($datos_materiales['nombre'])),date('d-m-Y',strtotime($mat['fecha_prestamo'])),date('d-m-Y',strtotime($mat['fecha_devolucion'])),(($mat['status'] == 'f')?'ENTREGADO':'PENDIENTE')));
+            $count_mat++;
+        }
+    }
+}
+if($count_mat==0){$pdf->SetTextColor(0,0,0);$pdf->SetFillColor(221,221,221);$pdf->Cell(237,8,'NO EXISTEN RESULTADOS PARA EL FILTRO SELECCIONADO',1,1,'C',true);};
 /**************************************/
 // muestra la pagina
 $pdf->Output( utf8_decode('Reporte_de_Prestamos-BibloWeb-v1.0'.'.pdf'),'I');

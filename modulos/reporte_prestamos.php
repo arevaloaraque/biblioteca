@@ -2,11 +2,13 @@
 	include_once('modulos/modelo.php');
 	$class_alert = array('warning','danger');
 	$user = $consultasbd->select($tabla='tbl_usuario');
+	$filtro_status = array();
 	if (count($_GET)==1 && count($_POST)==0) {
 		$libros = $consultasbd->select($tabla='tbl_prestamo_libro',$campos='*',$where='');
 		$tesis = $consultasbd->select($tabla='tbl_prestamo_tesis',$campos='*',$where='');
 		$material = $consultasbd->select($tabla='tbl_prestamo_material',$campos='*',$where='');
 		$url_print = 'modulos/reporte_prestamos_pdf.php';
+		if (!(isset($_POST['sts-entregado'])) && !(isset($_POST['sts-vencido'])) && !(isset($_POST['sts-cerca-vencer'])) && !(isset($_POST['sts-activo']))) { $filtro_status = array('entregado','vencido','cerca-vencer','activo'); }
 	} else if (count($_POST)>0) {
 		$from_date = $_POST['from-date'];
 		$to_date = $_POST['to-date'];
@@ -19,11 +21,12 @@
 		$libros = $consultasbd->select($tabla='tbl_prestamo_libro',$campos='*',$where);
 		$tesis = $consultasbd->select($tabla='tbl_prestamo_tesis',$campos='*',$where);
 		$material = $consultasbd->select($tabla='tbl_prestamo_material',$campos='*',$where);
-		$filtro_status = array();
 		if (isset($_POST['sts-entregado'])) { array_push($filtro_status, 'entregado'); }
 		if (isset($_POST['sts-vencido'])) { array_push($filtro_status, 'vencido'); }
 		if (isset($_POST['sts-cerca-vencer'])) { array_push($filtro_status, 'cerca-vencer'); }
 		if (isset($_POST['sts-activo'])) { array_push($filtro_status, 'activo'); }
+
+		if (!(isset($_POST['sts-entregado'])) && !(isset($_POST['sts-vencido'])) && !(isset($_POST['sts-cerca-vencer'])) && !(isset($_POST['sts-activo']))) { $filtro_status = array('entregado','vencido','cerca-vencer','activo'); }
 	}
 ?>
 <div class="col-sm-9 col-md-10">
@@ -83,28 +86,28 @@
 											<td class="success">
 												<div class="checkbox">
 													<label>
-													  <input type="checkbox" name="sts-entregado" class="fil-status"> Entregado
+													  <input type="checkbox" name="sts-entregado" class="fil-status" <?php echo (isset($_POST['sts-entregado']))?'checked="checked"':'' ?> > Entregado
 													</label>
 												</div>
 											</td>
 											<td class="danger">
 												<div class="checkbox danger">
 													<label>
-													  <input type="checkbox" name="sts-vencido" class="fil-status"> Vencido
+													  <input type="checkbox" name="sts-vencido" class="fil-status" <?php echo (isset($_POST['sts-vencido']))?'checked="checked"':'' ?> > Vencido
 													</label>
 												</div>
 											</td>
 											<td class="warning">
 												<div class="checkbox">
 													<label>
-													  <input type="checkbox" name="sts-cerca-vencer" class="fil-status"> Cerca a Vencer
+													  <input type="checkbox" name="sts-cerca-vencer" class="fil-status" <?php echo (isset($_POST['sts-cerca-vencer']))?'checked="checked"':'' ?> > Cerca a Vencer
 													</label>
 												</div>
 											</td>
 											<td>
 												<div class="checkbox">
 													<label>
-													  <input type="checkbox" name="sts-activo" class="fil-status"> Activo
+													  <input type="checkbox" name="sts-activo" class="fil-status" <?php echo (isset($_POST['sts-activo']))?'checked="checked"':'' ?> > Activo
 													</label>
 												</div>
 											</td>
@@ -174,7 +177,7 @@
 										<th class="col-lg-3 text-center">Status</th>
 									</tr>
 								</thead>
-								<tbody>
+								<tbody id="tbody-libro">
 									<!--Libros-->
 									<?php while ($libro = $consultasbd->fetch_array($libros)) { ?>
 									<?php 
@@ -210,6 +213,8 @@
 											if ($diferencia_dias > 0 && $diferencia_dias < 2) { $alert = $class_alert[0]; $status = 'cerca-vencer';}
 											else { $alert = ''; $status = 'activo'; }
 										}
+										if ($libro['status'] == 'f') { $status = 'entregado'; }
+										if (in_array($status,$filtro_status) == 1){
 									?>
 								  		<tr id="row_lib_<?php echo $libro['id_prestamo']; ?>" class="<?php echo ($libro['status'] == 'f')?'success':$alert; ?>">
 								  			<td class='text-center'><?php echo $libro['id_prestamo']; ?></td>
@@ -222,7 +227,7 @@
 								  				<?php echo ($libro['status'] == 'f')?'ENTREGADO':'PENDIENTE'; ?>
 								  			</td>
 								  		</tr>
-								  	<?php } ?>
+								  	<?php } } ?>
 								</tbody>
 							</table>
 						</div>
@@ -243,10 +248,10 @@
 									<th class="col-lg-5">Titulo&nbsp;</th>
 									<th class="col-lg-1 text-center">Fecha&nbsp;Prestamo</th>
 									<th class="col-lg-1 text-center">Fecha&nbsp;Devoluci&oacute;n</th>
-									<th class="col-lg-1 text-center">Acci&oacute;n</th>
+									<th class="col-lg-1 text-center">Status</th>
 								</tr>
 							</thead>
-							<tbody>
+							<tbody id="tbody-tesis">
 								<!--Libros-->
 								<?php while ($tesi = $consultasbd->fetch_array($tesis)) { ?>
 								<?php
@@ -266,13 +271,17 @@
 									// total dias prestamo
 									$segundos=strtotime($tesi['fecha_devolucion']) - strtotime($tesi['fecha_prestamo']);
 									$diferencia_dias=intval($segundos/60/60/24);
-									if (date('Y-m-d') > $tesi['fecha_devolucion']) {
+									$status = '';
+									if (date('Y-m-d') > $libro['fecha_devolucion']) {
 										$alert = $class_alert[1];
+										$status = 'vencido';
 									} else {
-										if ($diferencia_dias <= 0) { $alert = $class_alert[1]; } else
-										if ($diferencia_dias > 0 && $diferencia_dias < 2) { $alert = $class_alert[0]; }
-										else { $alert = '';}
+										if ($diferencia_dias <= 0) { $alert = $class_alert[1]; $status = 'vencido'; } else
+										if ($diferencia_dias > 0 && $diferencia_dias < 2) { $alert = $class_alert[0]; $status = 'cerca-vencer';}
+										else { $alert = ''; $status = 'activo'; }
 									}
+									if ($tesi['status'] == 'f') { $status = 'entregado'; }
+									if (in_array($status,$filtro_status) == 1){
 								?>
 							  		<tr id="row_tes_<?php echo $tesi['id_prestamo_tesis']; ?>" class="<?php echo ($tesi['status'] == 'f')?'success':$alert; ?>">
 							  			<td class='text-center'><?php echo $tesi['id_prestamo_tesis']; ?></td>
@@ -285,7 +294,7 @@
 							  				<?php echo (trim($tesi['status']) == 'f')?'ENTREGADO':'PENDIENTE'; ?>
 							  			</td>
 							  		</tr>
-							  	<?php } ?>
+							  	<?php } } ?>
 							</tbody>
 						</table>
 					</div>
@@ -304,10 +313,10 @@
 										<th class="col-lg-4 text-center">Nombre</th>
 										<th class="col-lg-1 text-center">Fecha&nbsp;Prestamo</th>
 										<th class="col-lg-1 text-center">Fecha&nbsp;Devoluci&oacute;n</th>
-										<th class="col-lg-1 text-center">Acci&oacute;n</th>
+										<th class="col-lg-1 text-center">Status</th>
 									</tr>
 								</thead>
-								<tbody>
+								<tbody id="tbody-materiales">
 									<!--Libros-->
 									<?php while ($mat = $consultasbd->fetch_array($material)) { ?>
 									<?php
@@ -316,14 +325,17 @@
 										// total dias prestamo
 										$segundos=strtotime($mat['fecha_devolucion']) - strtotime($mat['fecha_prestamo']);
 										$diferencia_dias=intval($segundos/60/60/24);
-										if (date('Y-m-d') > $mat['fecha_devolucion']) {
+										$status = '';
+										if (date('Y-m-d') > $libro['fecha_devolucion']) {
 											$alert = $class_alert[1];
+											$status = 'vencido';
 										} else {
-											if ($diferencia_dias <= 0) { $alert = $class_alert[1]; } else
-											if ($diferencia_dias > 0 && $diferencia_dias < 2) { $alert = $class_alert[0]; } 
-											else { $alert = '';}
-											echo $alert;
+											if ($diferencia_dias <= 0) { $alert = $class_alert[1]; $status = 'vencido'; } else
+											if ($diferencia_dias > 0 && $diferencia_dias < 2) { $alert = $class_alert[0]; $status = 'cerca-vencer';}
+											else { $alert = ''; $status = 'activo'; }
 										}
+										if ($mat['status'] == 'f') { $status = 'entregado'; }
+										if (in_array($status,$filtro_status) == 1){
 									?>
 								  		<tr id="row_mat_<?php echo $mat['id_prestamo_material']; ?>" class="<?php echo ($mat['status'] == 'f')?'success':$alert; ?>">
 								  			<td class='text-center'><?php echo $mat['id_prestamo_material']; ?></td>
@@ -335,7 +347,7 @@
 								  				<?php echo ($mat['status'] == 'f')?'ENTREGADO':'PENDIENTE'; ?>
 								  			</td>
 								  		</tr>
-								  	<?php } ?>
+								  	<?php } } ?>
 								</tbody>
 							</table>
 						</div>
@@ -407,5 +419,17 @@
       	if(($("#from-date").val() == '' || $("#to-date").val() == '') && $('#txt_ced_user').val() == '' && $(".fil-status:checked").length == 0) { alertify.error("<b>Debe indicar al menos un filtro. Para fecha deben ser ambos campos</b>");  ($("#from-date").val() == '')?$("#from-date").focus():$("#to-date").focus(); return false; }
       	else if(($("#from-date").val() != '' && $("#to-date").val() != '') || $('#txt_ced_user').val() != '' || $(".fil-status:checked").length > 0) { $("#show-calendars").submit(); }
       });
+      // verificacion de filtros en tbody
+      if ($('#tbody-libro tr').length == 0) {
+      	$('#tbody-libro').html('<tr><td colspan="7" class="text-center"><h4>SIN RESULTADOS</h4></td></tr>');
+      }
+
+      if ($('#tbody-tesis tr').length == 0) {
+      	$('#tbody-tesis').html('<tr><td colspan="7" class="text-center"><h4>SIN RESULTADOS</h4></td></tr>');
+      }
+
+      if ($('#tbody-materiales tr').length == 0) {
+      	$('#tbody-materiales').html('<tr><td colspan="7" class="text-center"><h4>SIN RESULTADOS</h4></td></tr>');
+      }
 	});
 </script>
