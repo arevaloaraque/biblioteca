@@ -145,7 +145,8 @@ if (isset($_GET['sts-vencido']) && $_GET['sts-vencido'] != '') { array_push($fil
 if (isset($_GET['sts-cerca-vencer']) && $_GET['sts-cerca-vencer'] != '') { array_push($filtro_status, 'cerca-vencer'); }
 if (isset($_GET['sts-activo']) && $_GET['sts-activo'] != '') { array_push($filtro_status, 'activo'); }
 
-if (!(isset($_GET['sts-entregado'])) && !(isset($_GET['sts-vencido'])) && !(isset($_GET['sts-cerca-vencer'])) && !(isset($_GET['sts-activo']))) { $filtro_status = array('entregado','vencido','cerca-vencer','activo'); }
+if (!isset($_GET['sts-entregado']) && !isset($_GET['sts-vencido']) && !isset($_GET['sts-cerca-vencer']) && !isset($_GET['sts-activo'])) { $filtro_status = array('entregado','vencido','cerca-vencer','activo'); } else
+if ($_GET['sts-entregado'] == '' && $_GET['sts-vencido'] == '' && $_GET['sts-cerca-vencer'] == '' && $_GET['sts-activo'] == '') { $filtro_status = array('entregado','vencido','cerca-vencer','activo'); }
 /************ crea el objeto FPDF***********/
 $pdf=new PDF('L','mm','Letter');
 $pdf->Open();
@@ -154,7 +155,7 @@ $pdf->SetMargins(20,20,20);
 $pdf->Ln(4);
 /**************************************/
 $pdf->SetFont('Arial','B',10);
-$pdf->Cell(0,5,utf8_decode('Usuario: ').(isset($datos_usuario) && (count($datos_usuario)>0)?trim($datos_usuario['nombre']).' '.trim($datos_usuario['apellido']):'Todos'),0,1);
+$pdf->Cell(0,5,utf8_decode('Usuario: ').(isset($datos_usuario) && (count($datos_usuario)>0)?trim($datos_usuario['nombre']).' '.trim($datos_usuario['apellido']).'. Cedula: '.number_format($datos_usuario['cedula'],0,".","."):'Todos'),0,1);
 $pdf->Cell(0,5,((isset($from_date) && (isset($to_date))) && ($from_date != '' && $to_date != ''))?'Rango Fecha: '.date('d-m-Y',strtotime($from_date)).' - '.date('d-m-Y',strtotime($to_date)):'',0,1);
 $pdf->Ln(8);
 /**************************************/
@@ -171,24 +172,24 @@ $pdf->cell(59.25,8,'Activo',1,1,'C',true);
 $pdf->Ln(8);
 /**************************************/
 $pdf->SetFont('Arial','B',9);
+$count_libros = 0;
+$pdf->SetTextColor(0,0,0);
+$pdf->SetFillColor(221,221,221);
+$pdf->Cell(237,8,'LISTA DE LIBROS',1,1,'C',true);
+$pdf->cell(28,8,'Cod. Prestamo',1,0,'C',true);
+$pdf->cell(28,8,'Autor Libro',1,0,'C',true);
+$pdf->cell(36,8,'Editorial',1,0,'C',true);
+$pdf->cell(48,8,utf8_decode('Descripción'),1,0,'C',true);
+$pdf->cell(31,8,'Fecha Prestamo',1,0,'C',true);
+$pdf->cell(36,8,utf8_decode('Fecha Devolución'),1,0,'C',true);
+$pdf->cell(30,8,'Status',1,1,'C',true);
 if ($consultasbd->num_rows($libros)) {
-    $pdf->SetTextColor(0,0,0);
-    $pdf->SetFillColor(221,221,221);
-    $pdf->Cell(237,8,'LISTA DE LIBROS',1,1,'C',true);
-    $pdf->cell(28,8,'Cod. Prestamo',1,0,'C',true);
-    $pdf->cell(28,8,'Autor Libro',1,0,'C',true);
-    $pdf->cell(36,8,'Editorial',1,0,'C',true);
-    $pdf->cell(48,8,utf8_decode('Descripción'),1,0,'C',true);
-    $pdf->cell(31,8,'Fecha Prestamo',1,0,'C',true);
-    $pdf->cell(36,8,utf8_decode('Fecha Devolución'),1,0,'C',true);
-    $pdf->cell(30,8,'Status',1,1,'C',true);
     $pdf->SetFont('Arial','',9,true);
     $pdf->SetFillColor(255,255,255);
     $pdf->SetWidths(array(28,28,36,48,31,36,30));
     $pdf->SetAligns(array('C','C','C','C','C','C','C'));
     $pdf->SetTextColor(0,0,0);
-    $pdf->SetDrawColor(0,0,0);
-    $count_libros = 0;
+    $pdf->SetDrawColor(0,0,0);    
     while ($libro = $consultasbd->fetch_array($libros)) {
         // datos del libro
         $datos_libro = $consultasbd->select($tabla='tbl_libros',$campos='*',$where='WHERE id_libro=\''.$libro['id_libro'].'\'');
@@ -235,24 +236,24 @@ if ($consultasbd->num_rows($libros)) {
 if($count_libros==0){$pdf->SetTextColor(0,0,0);$pdf->SetFillColor(221,221,221);$pdf->Cell(237,8,'NO EXISTEN RESULTADOS PARA EL FILTRO SELECCIONADO',1,1,'C',true);};
 $pdf->Ln(8);
 $pdf->SetFont('Arial','B',9);
+$count_tesis = 0;
+$pdf->SetTextColor(0,0,0);
+$pdf->SetFillColor(221,221,221);
+$pdf->Cell(237,8,'LISTA DE TESIS',1,1,'C',true);
+$pdf->cell(28,8,'Cod. Prestamo',1,0,'C',true);
+$pdf->cell(36,8,'Materia',1,0,'C',true);
+$pdf->cell(28,8,'Autor Tesis',1,0,'C',true);
+$pdf->cell(48,8,utf8_decode('Titulo'),1,0,'C',true);
+$pdf->cell(31,8,'Fecha Prestamo',1,0,'C',true);
+$pdf->cell(36,8,utf8_decode('Fecha Devolución'),1,0,'C',true);
+$pdf->cell(30,8,'Status',1,1,'C',true);
 if ($consultasbd->num_rows($tesis)) {
-    $pdf->SetTextColor(0,0,0);
-    $pdf->SetFillColor(221,221,221);
-    $pdf->Cell(237,8,'LISTA DE TESIS',1,1,'C',true);
-    $pdf->cell(28,8,'Cod. Prestamo',1,0,'C',true);
-    $pdf->cell(36,8,'Materia',1,0,'C',true);
-    $pdf->cell(28,8,'Autor Tesis',1,0,'C',true);
-    $pdf->cell(48,8,utf8_decode('Titulo'),1,0,'C',true);
-    $pdf->cell(31,8,'Fecha Prestamo',1,0,'C',true);
-    $pdf->cell(36,8,utf8_decode('Fecha Devolución'),1,0,'C',true);
-    $pdf->cell(30,8,'Status',1,1,'C',true);
     $pdf->SetFont('Arial','',9,true);
     $pdf->SetFillColor(255,255,255);
     $pdf->SetWidths(array(28,28,36,48,31,36,30));
     $pdf->SetAligns(array('C','C','C','C','C','C','C'));
     $pdf->SetTextColor(0,0,0);
     $pdf->SetDrawColor(0,0,0);
-    $count_tesis = 0;
     while ($tesi = $consultasbd->fetch_array($tesis)) {
         $datos_tesis = $consultasbd->select($tabla='tbl_tesis',$campos='*',$where='WHERE id_tesis=\''.$tesi['id_tesis'].'\'');
         $datos_tesis = $consultasbd->fetch_array($datos_tesis);
@@ -289,23 +290,23 @@ if ($consultasbd->num_rows($tesis)) {
 if($count_tesis==0){$pdf->SetTextColor(0,0,0);$pdf->SetFillColor(221,221,221);$pdf->Cell(237,8,'NO EXISTEN RESULTADOS PARA EL FILTRO SELECCIONADO',1,1,'C',true);};
 $pdf->Ln(8);
 $pdf->SetFont('Arial','B',9);
+$count_mat=0;
+$pdf->SetTextColor(0,0,0);
+$pdf->SetFillColor(221,221,221);
+$pdf->Cell(237,8,'LISTA DE MATERIALES',1,1,'C',true);
+$pdf->cell(28,8,'Cod. Prestamo',1,0,'C',true);
+$pdf->cell(36,8,'Tipo',1,0,'C',true);
+$pdf->cell(76,8,'Nombre',1,0,'C',true);
+$pdf->cell(31,8,'Fecha Prestamo',1,0,'C',true);
+$pdf->cell(36,8,utf8_decode('Fecha Devolución'),1,0,'C',true);
+$pdf->cell(30,8,'Status',1,1,'C',true);
 if ($consultasbd->num_rows($material)) {
-    $pdf->SetTextColor(0,0,0);
-    $pdf->SetFillColor(221,221,221);
-    $pdf->Cell(237,8,'LISTA DE MATERIALES',1,1,'C',true);
-    $pdf->cell(28,8,'Cod. Prestamo',1,0,'C',true);
-    $pdf->cell(36,8,'Tipo',1,0,'C',true);
-    $pdf->cell(76,8,'Nombre',1,0,'C',true);
-    $pdf->cell(31,8,'Fecha Prestamo',1,0,'C',true);
-    $pdf->cell(36,8,utf8_decode('Fecha Devolución'),1,0,'C',true);
-    $pdf->cell(30,8,'Status',1,1,'C',true);
     $pdf->SetFont('Arial','',9,true);
     $pdf->SetFillColor(255,255,255);
     $pdf->SetWidths(array(28,36,76,31,36,30));
     $pdf->SetAligns(array('C','C','C','C','C','C','C'));
     $pdf->SetTextColor(0,0,0);
     $pdf->SetDrawColor(0,0,0);
-    $count_mat=0;
     while ($mat = $consultasbd->fetch_array($material)) {
         $datos_materiales = $consultasbd->query($sql = 'select * from tbl_material as tbl_mat left outer join tbl_tipo_material tbl_tipo on tbl_mat.id_tipo=tbl_tipo.id_tipo_material WHERE id_material=\''.$mat['id_material'].'\'');
         $datos_materiales = $consultasbd->fetch_array($datos_materiales);

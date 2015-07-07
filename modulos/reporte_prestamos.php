@@ -131,6 +131,7 @@
 					            </select>
 							</div>
 							<div class="form-group col-lg-6">
+								<button id="btn-reset" class="btn btn-danger">Limpiar&nbsp;<i class="glyphicon glyphicon-trash"></i></button>
 								<button id="btn-filter-date" class="btn btn-danger">Ver&nbsp;<i class="glyphicon glyphicon-eye-open"></i></button>
 								<?php if (count($_POST)>0): ?>
 								<button id="btn-filter-date" class="btn btn-danger" onclick='javascript:popup("<?php echo $url_print; ?>",700,500)'>Imprimir&nbsp;<i class="glyphicon glyphicon-print"></i></button>
@@ -413,6 +414,12 @@
       $("#from-date,#to-date").datepicker();
       $("#filter-date").on('click',function(){
       	$("#show-calendars").fadeIn();
+      });
+      $('#btn-reset').on('click',function(e){
+      	e.preventDefault();
+      	document.getElementById('from-date').value = '';
+      	document.getElementById('to-date').value = '';
+      	$(".fil-status:checked").removeAttr("checked");
       });
       $("#btn-filter-date").on('click',function(e){
       	e.preventDefault();
