@@ -1888,6 +1888,12 @@ COPY tbl_auditoria (id_auditoria, id_operador, descripcion, hora, fecha_auditori
 346	1	Inicio sesión	12:07:00	2015-07-06
 347	1	Inicio sesión	09:07:00	2015-07-07
 348	1	Inicio sesión	11:07:00	2015-07-07
+349	1	Inicio sesión	15:07:00	2015-07-08
+350	1	Cierre sesión	15:07:00	2015-07-08
+351	1	Inicio sesión	15:07:00	2015-07-08
+352	1	Inicio sesión	09:07:00	2015-07-09
+353	1	Inicio sesión	13:07:00	2015-07-13
+354	1	Inicio sesión	13:07:00	2015-07-13
 \.
 
 
@@ -1895,7 +1901,7 @@ COPY tbl_auditoria (id_auditoria, id_operador, descripcion, hora, fecha_auditori
 -- Name: tbl_auditoria_id_auditoria_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('tbl_auditoria_id_auditoria_seq', 348, true);
+SELECT pg_catalog.setval('tbl_auditoria_id_auditoria_seq', 354, true);
 
 
 --
