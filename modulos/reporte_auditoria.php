@@ -165,7 +165,7 @@
 	    $('#menu-item li.active').removeClass('active');
         $('#liPrestamos').addClass('active');
         // title page
-      	$('title').html('..:: Reporte - Novedades ::..&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
+      	$('title').html('..:: Reporte - Auditoria ::..&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
       	valuesTitle();
 	    $.datepicker.regional['es'] = {
             closeText: 'Cerrar',
