@@ -650,7 +650,7 @@ CREATE TABLE tbl_novedad_libro (
     id_novedad integer NOT NULL,
     descripcion text,
     id_prestamo integer,
-    fecha_novedad timestamp without time zone,
+    fecha_novedad date,
     descripcion_final text,
     status boolean DEFAULT true
 );
@@ -745,7 +745,7 @@ CREATE TABLE tbl_novedad_material (
     descripcion text NOT NULL,
     descripcion_final text,
     id_prestamo_material integer,
-    fecha_novedad timestamp without time zone NOT NULL,
+    fecha_novedad date NOT NULL,
     status boolean DEFAULT true NOT NULL
 );
 
@@ -820,7 +820,7 @@ CREATE TABLE tbl_novedad_tesis (
     descripcion text NOT NULL,
     descripcion_final text,
     id_prestamo_tesis integer,
-    fecha_novedad timestamp without time zone,
+    fecha_novedad date,
     status boolean DEFAULT true NOT NULL
 );
 
@@ -1894,6 +1894,9 @@ COPY tbl_auditoria (id_auditoria, id_operador, descripcion, hora, fecha_auditori
 352	1	Inicio sesión	09:07:00	2015-07-09
 353	1	Inicio sesión	13:07:00	2015-07-13
 354	1	Inicio sesión	13:07:00	2015-07-13
+355	1	Inicio sesión	06:07:00	2015-07-20
+356	1	Inicio sesión	13:07:00	2015-07-20
+357	1	Inicio sesión	14:07:00	2015-07-20
 \.
 
 
@@ -1901,7 +1904,7 @@ COPY tbl_auditoria (id_auditoria, id_operador, descripcion, hora, fecha_auditori
 -- Name: tbl_auditoria_id_auditoria_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('tbl_auditoria_id_auditoria_seq', 354, true);
+SELECT pg_catalog.setval('tbl_auditoria_id_auditoria_seq', 357, true);
 
 
 --
@@ -2108,8 +2111,8 @@ SELECT pg_catalog.setval('tbl_novedad_libro_id_novedad_seq', 15, true);
 --
 
 COPY tbl_novedad_material (id_novedad_material, descripcion, descripcion_final, id_prestamo_material, fecha_novedad, status) FROM stdin;
-4	asd	aqqqqqxxxxxxx	5	2015-07-05 00:00:00	f
-5	El libro posee manchas y el usuario se comprometió a repararlo.	\N	6	2015-07-05 00:00:00	t
+4	asd	aqqqqqxxxxxxx	5	2015-07-05	f
+5	El libro posee manchas y el usuario se comprometió a repararlo.	\N	6	2015-07-05	t
 \.
 
 

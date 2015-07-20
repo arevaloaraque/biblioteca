@@ -296,7 +296,8 @@
 	    });
 	    $('#btn_search_table').attr('title','Filtrar resultado');
 	    $('#btn_search_table').tooltip();
-
+	    $('#datatable_filter input').addClass('form-control');
+	    $('#datatable_length label select').addClass('form-control');
 	    // convertir selects a chosen
 	    $('#txt_autor').chosen({no_results_text:'<a class="crear_recurso_autor" title="Registrar nuevo autor" >Crear!</a>',width:"100%"});
 	    $('#txt_editorial').chosen({no_results_text:'<a class="crear_recurso_editorial" title="Registrar nueva editorial" >Crear!</a>',width:"100%"});

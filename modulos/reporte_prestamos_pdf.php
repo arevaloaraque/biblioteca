@@ -125,7 +125,6 @@ function Header()
 $from_date = (isset($_GET['from_date']) && $_GET['from_date'] != '')?$_GET['from_date']:'';
 $to_date = (isset($_GET['to_date']) && $_GET['to_date'] != '')?$_GET['to_date']:'';
 $usuario = (isset($_GET['usuario']) && $_GET['usuario'] !='')?$_GET['usuario']:'';
-$url_print = 'modulos/reporte_prestamos_pdf.php?from_date='.$from_date.'&to_date='.$to_date.'&usuario='.$usuario;
 $where_user = ($usuario == '')?'':'WHERE id_usuario=\''.$usuario.'\'';
 $and_user = ($usuario == '')?'':' AND id_usuario=\''.$usuario.'\'';
 $where = ($from_date != '' && $to_date != '')?' WHERE fecha_prestamo>=\''.$from_date.'\' AND fecha_prestamo<=\''.$to_date.'\'':'';

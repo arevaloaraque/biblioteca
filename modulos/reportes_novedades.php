@@ -5,32 +5,38 @@
 		$libros = $consultasbd->select($tabla='tbl_novedad_libro',$campos='*',$where='');
 		$tesis = $consultasbd->select($tabla='tbl_novedad_tesis',$campos='*',$where='');
 		$material = $consultasbd->select($tabla='tbl_novedad_material',$campos='*',$where='');
-		$url_print = 'modulos/reporte_novedades_pdf.php';
+		$mostrar = array('libros','tesis','materiales');
+		$url_print = 'modulos/reportes_novedades_pdf.php';
 	} else if (count($_POST)>0) {
 		$from_date = $_POST['from-date'];
 		$to_date = $_POST['to-date'];
 		$usuario = $_POST['txt_ced_user'];
-		$url_print = 'modulos/reportes_novedades_pdf.php?from_date='.$from_date.'&to_date='.$to_date.'&usuario='.$usuario.'&sts-entregado='.((isset($_POST['sts-entregado']))?$_POST['sts-entregado']:'').'&sts-vencido='.((isset($_POST['sts-vencido']))?$_POST['sts-vencido']:'').'&sts-cerca-vencer='.((isset($_POST['sts-cerca-vencer']))?$_POST['sts-cerca-vencer']:'').'&sts-activo='.((isset($_POST['sts-activo']))?$_POST['sts-activo']:'');
+		$url_print = 'modulos/reportes_novedades_pdf.php?from_date='.$from_date.'&to_date='.$to_date.'&usuario='.$usuario.'&sts-entregado='.((isset($_POST['sts-libro']))?$_POST['sts-libro']:'').'&sts-tesis='.((isset($_POST['sts-tesis']))?$_POST['sts-tesis']:'').'&sts-materiales='.((isset($_POST['sts-materiales']))?$_POST['sts-materiales']:'');
 		$wheree = ($from_date != '' && $to_date != '')?' WHERE fecha_novedad>=\''.$from_date.'\' AND fecha_novedad<=\''.$to_date.'\'':'';
 		$id_libros = array();
 		$id_tesis = array();
 		$id_materiales = array();
+		$mostrar = array();
+		if (isset($_POST['sts-libro'])) { array_push($mostrar, 'libros'); }
+		if (isset($_POST['sts-tesis'])) { array_push($mostrar, 'tesis'); }
+		if (isset($_POST['sts-materiales'])) { array_push($mostrar, 'materiales'); }
+		if (!isset($_POST['sts-libro']) && !isset($_POST['sts-tesis']) && !isset($_POST['sts-materiales'])) { $mostrar = array('libros','tesis','materiales'); }
 		if ($usuario != ''){
 			$prestamos = $consultasbd->select($tabla='tbl_prestamo_libro',$campos='id_prestamo',$where='WHERE id_usuario=\''.$usuario.'\'');
 			while ($prestamo = $consultasbd->fetch_array($prestamos)) {
 				$id_libros[] = $prestamo['id_prestamo'];
  			}
- 			$libros = $consultasbd->select_sql($tabla='tbl_novedad_libro',$campos='*',$where=(strlen($wheree)>0)?$wheree.' AND id_prestamo IN ('.implode(",",$id_libros).')':' WHERE  id_prestamo IN ('.implode(",",$id_libros).')');
+ 			$libros =(count($id_libros))?$consultasbd->select($tabla='tbl_novedad_libro',$campos='*',$where=(strlen($wheree)>0)?$wheree.' AND id_prestamo IN ('.implode(",",$id_libros).')':' WHERE  id_prestamo IN ('.implode(",",$id_libros).')'):false;
  			$prestamos_tesis = $consultasbd->select($tabla='tbl_prestamo_tesis',$campos='id_prestamo_tesis',$where='WHERE id_usuario=\''.$usuario.'\'');
 			while ($prestamo = $consultasbd->fetch_array($prestamos_tesis)) {
 				$id_tesis[] = $prestamo['id_prestamo_tesis'];
  			}
- 			$tesis = $consultasbd->select_sql($tabla='tbl_novedad_tesis',$campos='*',$where=(strlen($wheree)>0)?$wheree.' AND id_prestamo_tesis IN ('.implode(",",$id_tesis).')':' WHERE  id_prestamo_tesis IN ('.implode(",",$id_tesis).')');
+ 			$tesis =(count($id_tesis)>0)?$consultasbd->select($tabla='tbl_novedad_tesis',$campos='*',$where=(strlen($wheree)>0)?$wheree.' AND id_prestamo_tesis IN ('.implode(",",$id_tesis).')':' WHERE  id_prestamo_tesis IN ('.implode(",",$id_tesis).')'):false;
  			$prestamos_material = $consultasbd->select($tabla='tbl_prestamo_material',$campos='id_prestamo_material',$where='WHERE id_usuario=\''.$usuario.'\'');
 			while ($prestamo = $consultasbd->fetch_array($prestamos_material)) {
-				$id_tesis[] = $prestamo['id_prestamo_material'];
+				$id_materiales[] = $prestamo['id_prestamo_material'];
  			}
- 			$material = $consultasbd->select($tabla='tbl_novedad_tesis',$campos='*',$where=(strlen($wheree)>0)?$wheree.' AND id_prestamo_material IN ('.implode(",",$id_materiales).')':' WHERE  id_prestamo_material IN ('.implode(",",$id_materiales).')');
+ 			$material =(count($id_materiales)>0)?$consultasbd->select($tabla='tbl_novedad_material',$campos='*',$where=(strlen($wheree)>0)?$wheree.' AND id_prestamo_material IN ('.implode(",",$id_materiales).')':' WHERE  id_prestamo_material IN ('.implode(",",$id_materiales).')'):false;
 		} else {
 			$libros = $consultasbd->select($tabla='tbl_novedad_libro',$campos='*',$wheree);
 			$tesis = $consultasbd->select($tabla='tbl_novedad_tesis',$campos='*',$wheree);
@@ -181,6 +187,7 @@
 								</thead>
 								<tbody id="tbody-libro">
 									<!--Libros-->
+									<?php if(in_array('libros', $mostrar)) { ?>
 									<?php while ($libro = $consultasbd->fetch_array($libros)) { ?>
 								  		<tr id="row_lib_<?php echo $libro['id_prestamo']; ?>" class="success">
 								  			<td class='text-center'><?php echo $libro['id_novedad']; ?></td>
@@ -192,7 +199,7 @@
 								  				<?php echo ($libro['status'] == 'f')?'FINALIZADO':'PENDIENTE'; ?>
 								  			</td>
 								  		</tr>
-								  	<?php } ?>
+								  	<?php } } ?>
 								</tbody>
 							</table>
 						</div>
@@ -217,6 +224,7 @@
 							</thead>
 							<tbody id="tbody-tesis">
 								<!--Tesis-->
+								<?php if(in_array('tesis', $mostrar)) { ?>
 								<?php while ($tesi = $consultasbd->fetch_array($tesis)) { ?>
 							  		<tr id="row_tes_<?php echo $tesi['id_prestamo_tesis']; ?>" class="danger">
 							  			<td class='text-center'><?php echo $tesi['id_novedad_tesis']; ?></td>
@@ -228,7 +236,7 @@
 								  				<?php echo ($tesi['status'] == 'f')?'FINALIZADO':'PENDIENTE'; ?>
 								  			</td>
 							  		</tr>
-							  	<?php } ?>
+							  	<?php } } ?>
 							</tbody>
 						</table>
 					</div>
@@ -252,6 +260,7 @@
 								</thead>
 								<tbody id="tbody-materiales">
 									<!--Materiales-->
+									<?php if(in_array('materiales', $mostrar)) { ?>
 									<?php while ($mat = $consultasbd->fetch_array($material)) { ?>
 								  		<tr id="row_tes_<?php echo $mat['id_prestamo_tesis']; ?>" class="warning">
 							  			<td class='text-center'><?php echo $mat['id_novedad_material']; ?></td>
@@ -263,7 +272,7 @@
 									  				<?php echo ($mat['status'] == 'f')?'FINALIZADO':'PENDIENTE'; ?>
 									  			</td>
 								  		</tr>
-								  	<?php } ?>
+								  	<?php } } ?>
 								</tbody>
 							</table>
 						</div>
