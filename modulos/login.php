@@ -33,9 +33,9 @@
           // FIN auditoria
 
           if (isset($_POST['page_ant'])) {
-            header('location: index.php?page='.$_POST['page_ant']);
+            echo '<script>location.href="index.php?page='.$_POST['page_ant'].'";</script>';
           } else {
-            header('location: index.php');
+            echo '<script>location.href="index.php";</script>';
           }
 
         else:
