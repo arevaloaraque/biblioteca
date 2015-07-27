@@ -79,7 +79,6 @@
                 <ul id="ulPrestamos" class="ul-collapse collapse nav nav-stacked sub-nav">
                   <li><a href="?page=prestamos"><i class="glyphicon glyphicon-plus"></i>&nbsp;&nbsp;Nuevo</a></li>
                   <li><a href="?page=devolucion"><i class="glyphicon glyphicon-minus"></i>&nbsp;&nbsp;Devoluci&oacute;n</a></li>
-                  <li><a href="?page=novedades"><i class="glyphicon glyphicon-edit"></i>&nbsp;&nbsp;Novedades</a></li>
                 </ul>
               </li>
               <li id="liRecursos">

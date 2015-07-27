@@ -304,31 +304,54 @@
 			$user = $this->consultasbd->select('tbl_usuario',$campos='*',$where=' WHERE id_usuario=\''.$id_usuario.'\'');
 			// verificacion de usuario
 			if ($this->consultasbd->num_rows($user)>0) {
-				$recurso = $this->consultasbd->select($tabla_tmp,$campos='*',$where=' WHERE id_'.$tipo_recurso.'=\''.$id_recurso.'\' AND status=true');
-				// verificacion de recurso. disponibilidad
-				if ($this->consultasbd->num_rows($recurso)>0) {
-					$prestamos_user = $this->consultasbd->select('tbl_prestamo_'.$tipo_recurso,$campos='*',$where=' WHERE id_usuario=\''.$id_usuario.'\' AND status=true');
-					// verificacion de prestamos actuales del usuario. limite 2
-					if ($this->consultasbd->num_rows($prestamos_user)<2) {
-						// verificacion de novedades
-						if ($this->consultasbd->num_rows($prestamos_user)==1){
-							$prestamos_user = $this->consultasbd->fetch_array($prestamos_user);
-							$novedades = $this->consultasbd->select($tabla='tbl_novedad_'.$tipo_recurso,$campos='*',$where='WHERE '.$id_nov[$_POST['recurso']].'=\''.$prestamos_user['id_prestamo'.$prefix[$tipo_recurso]].'\'');
-							if ($this->consultasbd->fetch_array($novedades)>0) {
-								$data = ['mensj'=>'<b><i class="glyphicon glyphicon-thumbs-down"></i>&nbsp;Error</b>&nbsp;<span id="mensj">No se puede realizar el prestamo. El usuario posee novedades</span>','type'=>'alert-danger'];
+				//verificacion de novedades
+				$id_libros = [];
+				$id_tesis = [];
+				$id_materiales = [];
+				$prestamos = $this->consultasbd->select($tabla='tbl_prestamo_libro',$campos='id_prestamo',$where='WHERE id_usuario=\''.$id_usuario.'\'');
+				while ($prestamo = $this->consultasbd->fetch_array($prestamos)) {
+					$id_libros[] = $prestamo['id_prestamo'];
+	 			}
+	 			$libros =(count($id_libros))?$this->consultasbd->select($tabla='tbl_novedad_libro',$campos='*',$where='WHERE id_prestamo IN ('.implode(",",$id_libros).')'):false;
+	 			$prestamos_tesis = $this->consultasbd->select($tabla='tbl_prestamo_tesis',$campos='id_prestamo_tesis',$where='WHERE id_usuario=\''.$id_usuario.'\'');
+				while ($prestamo = $this->consultasbd->fetch_array($prestamos_tesis)) {
+					$id_tesis[] = $prestamo['id_prestamo_tesis'];
+	 			}
+	 			$tesis =(count($id_tesis)>0)?$this->consultasbd->select($tabla='tbl_novedad_tesis',$campos='*',$where='WHERE id_prestamo_tesis IN ('.implode(",",$id_tesis).')'):false;
+	 			$prestamos_material = $this->consultasbd->select($tabla='tbl_prestamo_material',$campos='id_prestamo_material',$where='WHERE id_usuario=\''.$id_usuario.'\'');
+				while ($prestamo = $this->consultasbd->fetch_array($prestamos_material)) {
+					$id_materiales[] = $prestamo['id_prestamo_material'];
+	 			}
+	 			$material =(count($id_materiales)>0)?$this->consultasbd->select($tabla='tbl_novedad_material',$campos='*',$where='WHERE id_prestamo_material IN ('.implode(",",$id_materiales).')'):false;
+				if ($this->consultasbd->num_rows($libros) == 0 || $this->consultasbd->num_rows($tesis) == 0 || $this->consultasbd->num_rows($material) == 0) {
+					$recurso = $this->consultasbd->select($tabla_tmp,$campos='*',$where=' WHERE id_'.$tipo_recurso.'=\''.$id_recurso.'\' AND status=true');
+					// verificacion de recurso. disponibilidad
+					if ($this->consultasbd->num_rows($recurso)>0) {
+						$prestamos_user = $this->consultasbd->select('tbl_prestamo_'.$tipo_recurso,$campos='*',$where=' WHERE id_usuario=\''.$id_usuario.'\' AND status=true');
+						// verificacion de prestamos actuales del usuario. limite 2
+						if ($this->consultasbd->num_rows($prestamos_user)<2) {
+							// verificacion de novedades
+							if ($this->consultasbd->num_rows($prestamos_user)==1){
+								$prestamos_user = $this->consultasbd->fetch_array($prestamos_user);
+								$novedades = $this->consultasbd->select($tabla='tbl_novedad_'.$tipo_recurso,$campos='*',$where='WHERE '.$id_nov[$_POST['recurso']].'=\''.$prestamos_user['id_prestamo'.$prefix[$tipo_recurso]].'\'');
+								if ($this->consultasbd->fetch_array($novedades)>0) {
+									$data = ['mensj'=>'<b><i class="glyphicon glyphicon-thumbs-down"></i>&nbsp;Error</b>&nbsp;<span id="mensj">No se puede realizar el prestamo. El usuario posee novedades</span>','type'=>'alert-danger'];
+								} else {
+									$data = ['mensj'=>'','type'=>'alert-success'];
+									$data = ['mensj'=>'<b><i class="glyphicon glyphicon-thumbs-up"></i>&nbsp;Busqueda exitosa</b>&nbsp;<span id="mensj">Verifique los datos y presione <b>PROCESAR PRESTAMO</b>. Este proceso es irreversible</span>','type'=>'alert-success'];
+								}
 							} else {
 								$data = ['mensj'=>'','type'=>'alert-success'];
 								$data = ['mensj'=>'<b><i class="glyphicon glyphicon-thumbs-up"></i>&nbsp;Busqueda exitosa</b>&nbsp;<span id="mensj">Verifique los datos y presione <b>PROCESAR PRESTAMO</b>. Este proceso es irreversible</span>','type'=>'alert-success'];
 							}
 						} else {
-							$data = ['mensj'=>'','type'=>'alert-success'];
-							$data = ['mensj'=>'<b><i class="glyphicon glyphicon-thumbs-up"></i>&nbsp;Busqueda exitosa</b>&nbsp;<span id="mensj">Verifique los datos y presione <b>PROCESAR PRESTAMO</b>. Este proceso es irreversible</span>','type'=>'alert-success'];
+							$data = ['mensj'=>'<b><i class="glyphicon glyphicon-thumbs-down"></i>&nbsp;Error</b>&nbsp;<span id="mensj">Limite de prestamos alcanzados. Solo se permiten 2 prestamos por categoria</span>','type'=>'alert-danger'];
 						}
 					} else {
-						$data = ['mensj'=>'<b><i class="glyphicon glyphicon-thumbs-down"></i>&nbsp;Error</b>&nbsp;<span id="mensj">Limite de prestamos alcanzados. Solo se permiten 2 prestamos por categoria</span>','type'=>'alert-danger'];
+						$data = ['mensj'=>'<b><i class="glyphicon glyphicon-thumbs-down"></i>&nbsp;Error</b>&nbsp;<span id="mensj">'.ucfirst($tipo_recurso).' no disponible</span>','type'=>'alert-danger'];
 					}
 				} else {
-					$data = ['mensj'=>'<b><i class="glyphicon glyphicon-thumbs-down"></i>&nbsp;Error</b>&nbsp;<span id="mensj">'.ucfirst($tipo_recurso).' no disponible</span>','type'=>'alert-danger'];
+					$data = ['mensj'=>'<b><i class="glyphicon glyphicon-thumbs-down"></i>&nbsp;Error</b>&nbsp;<span id="mensj">Este usuario posee novedades</span>','type'=>'alert-danger'];
 				}
 			} else {
 				$data = ['mensj'=>'<b><i class="glyphicon glyphicon-thumbs-down"></i>&nbsp;Error</b>&nbsp;<span id="mensj">No existe el usuario</span>','type'=>'alert-danger'];
