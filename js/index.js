@@ -42,3 +42,14 @@ function horaActual() {
 /* Menu cerrado por defecto */
 $('#ulRecursos .in').collapse('hide');
 /* FIN Menu cerrado por defecto */
+
+/* Confirm backup */
+var mensj = "¿Realmente desea realizar un Backup de la Base de datos?";
+$(document).on("click","#bkdb",function(e){
+	e.preventDefault();
+	alertify.confirm(mensj,function(e){
+		if (e) {
+			location.href = $("#bkdb").attr("href");
+		}
+	});
+});

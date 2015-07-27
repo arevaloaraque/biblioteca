@@ -110,6 +110,9 @@
                     <?php endif; ?>
                   </ul>
               </li>
+              <?php if (isset($_SESSION['privilegio']) && (trim($_SESSION['privilegio']) == 'ADMINISTRADOR')):?>
+              <li><a href="modulos/backup_db.php" id="bkdb"><i class="glyphicon glyphicon-download"></i>&nbsp;&nbsp;Backup Data</a></li>  
+              <?php endif; ?>
               <li><a href="?page=login&exit"><i class="glyphicon glyphicon-off"></i>&nbsp;&nbsp;Cerrar Sesión</a></li>
             </ul>
           </div><!--/.nav-collapse -->
